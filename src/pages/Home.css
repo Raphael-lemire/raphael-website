@@ -33,7 +33,7 @@
 }
 
 .header-logo {
-    height: 40px;
+    height: 55px;
     width: auto;
     object-fit: contain;
 }
@@ -526,7 +526,7 @@
     }
 
     .header-logo {
-        height: 32px;
+        height: 45px;
     }
 
     .logo-text {
