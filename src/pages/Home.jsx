@@ -21,7 +21,7 @@ export default function Home() {
                         <span className="logo-text">Raphael Lemire</span>
                     </div>
                     <nav>
-                        <a href={BROWSE_LISTINGS_URL} className="btn-outline" target="_blank" rel="noopener noreferrer">Browse Listings</a>
+                        <a href={BROWSE_LISTINGS_URL} className="btn-outline" target="_blank" rel="noopener noreferrer">Find a Home</a>
                     </nav>
                 </div>
             </header>
@@ -112,7 +112,7 @@ export default function Home() {
                         Searching for properties has never been easier. Use our interactive map with satellite views to explore Greater Moncton and surrounding areas. Set custom search zones and easily filter homes by swiping left or right to save your favorites.
                     </p>
                     <a href={BROWSE_LISTINGS_URL} className="btn-primary" target="_blank" rel="noopener noreferrer">
-                        Browse Listings
+                        Find a Home
                     </a>
                 </div>
             </section>
