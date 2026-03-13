@@ -36,7 +36,6 @@
     height: 55px;
     width: auto;
     object-fit: contain;
-    mix-blend-mode: multiply;
 }
 
 .btn-secondary {
@@ -450,6 +449,17 @@
     color: var(--bg-primary);
 }
 
+.contact-choice-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-primary);
+    padding: 4px 8px;
+    border-radius: 980px;
+    border: 2px solid var(--text-primary);
+    animation: slideInRight 0.3s ease-out;
+}
+
 .contact-info {
     display: flex;
     align-items: center;
@@ -477,6 +487,45 @@
 .contact-divider {
     color: var(--text-secondary);
     opacity: 0.5;
+}
+
+.contact-choice-btn {
+    padding: 6px 20px !important;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.btn-close-choice {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: var(--text-secondary);
+    padding: 0 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close-choice:hover {
+    color: var(--text-primary);
+}
+
+.contact-group {
+    display: flex;
+    align-items: center;
+    gap: 0;
+}
+
+.contact-mini-divider {
+    color: var(--text-secondary);
+    opacity: 0.3;
+    margin: 0 4px;
+}
+
+@keyframes slideInRight {
+    from { opacity: 0; transform: translateX(10px); }
+    to { opacity: 1; transform: translateX(0); }
 }
 
 /* Footer */

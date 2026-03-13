@@ -8,6 +8,7 @@ const BROWSE_LISTINGS_URL = "https://listed.inc/listings?presented-by=d8bb886f39
 
 export default function Home() {
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
+    const [showContactChoice, setShowContactChoice] = useState(false);
     const toggleFaq = (index) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };
@@ -180,11 +181,28 @@ export default function Home() {
 
                     <div className="contact-actions">
                         <Link to="/survey" className="btn-primary">Book a Consultation</Link>
-                        <a href="tel:5062275702" className="btn-secondary cta-call">Or Call Me Now</a>
+                        {!showContactChoice ? (
+                            <button 
+                                onClick={() => setShowContactChoice(true)} 
+                                className="btn-secondary cta-call"
+                            >
+                                Or Text/Call Me Now
+                            </button>
+                        ) : (
+                            <div className="contact-choice-group fade-in">
+                                <a href="tel:5062275702" className="btn-secondary contact-choice-btn">Call</a>
+                                <a href="sms:5062275702" className="btn-secondary contact-choice-btn">Text</a>
+                                <button onClick={() => setShowContactChoice(false)} className="btn-close-choice">✕</button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="contact-info">
-                        <a href="tel:5062275702" className="contact-link">📞 (506) 227-5702</a>
+                        <div className="contact-group">
+                            <a href="tel:5062275702" className="contact-link">📞 Call</a>
+                            <span className="contact-mini-divider">/</span>
+                            <a href="sms:5062275702" className="contact-link">Text: (506) 227-5702</a>
+                        </div>
                         <span className="contact-divider">|</span>
                         <a href="mailto:raphael@exitmoncton.ca" className="contact-link">✉️ raphael@exitmoncton.ca</a>
                     </div>
