@@ -8,7 +8,7 @@ const BROWSE_LISTINGS_URL = "https://listed.inc/listings?presented-by=d8bb886f39
 
 export default function Home() {
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
-    const [showContactChoice, setShowContactChoice] = useState(false);
+    const [showContactModal, setShowContactModal] = useState(false);
     const toggleFaq = (index) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };
@@ -181,28 +181,21 @@ export default function Home() {
 
                     <div className="contact-actions">
                         <Link to="/survey" className="btn-primary">Book a Consultation</Link>
-                        {!showContactChoice ? (
-                            <button 
-                                onClick={() => setShowContactChoice(true)} 
-                                className="btn-secondary cta-call"
-                            >
-                                Or Text/Call Me Now
-                            </button>
-                        ) : (
-                            <div className="contact-choice-group fade-in">
-                                <a href="tel:5062275702" className="btn-secondary contact-choice-btn">Call</a>
-                                <a href="sms:5062275702" className="btn-secondary contact-choice-btn">Text</a>
-                                <button onClick={() => setShowContactChoice(false)} className="btn-close-choice">✕</button>
-                            </div>
-                        )}
+                        <button 
+                            onClick={() => setShowContactModal(true)} 
+                            className="btn-secondary cta-call"
+                        >
+                            Or Text/Call Me Now
+                        </button>
                     </div>
 
                     <div className="contact-info">
-                        <div className="contact-group">
-                            <a href="tel:5062275702" className="contact-link">📞 Call</a>
-                            <span className="contact-mini-divider">/</span>
-                            <a href="sms:5062275702" className="contact-link">Text: (506) 227-5702</a>
-                        </div>
+                        <button 
+                            onClick={() => setShowContactModal(true)} 
+                            className="contact-link contact-trigger-link"
+                        >
+                            📞 Call / Text: (506) 227-5702
+                        </button>
                         <span className="contact-divider">|</span>
                         <a href="mailto:raphael@exitmoncton.ca" className="contact-link">✉️ raphael@exitmoncton.ca</a>
                     </div>
@@ -212,6 +205,76 @@ export default function Home() {
             <footer className="home-footer">
                 <p>&copy; {new Date().getFullYear()} Raphaël Lemire | EXIT Realty Associates | Moncton, NB</p>
             </footer>
+
+            {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
+        </div>
+    );
+}
+
+function ContactModal({ onClose }) {
+    const phone = "(506) 227-5702";
+    const email = "raphael@exitmoncton.ca";
+
+    const handleSaveContact = () => {
+        const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:Raphaël Lemire
+ORG:EXIT Realty Associates
+TEL;TYPE=CELL:5062275702
+EMAIL:raphael@exitmoncton.ca
+URL:https://www.raphaellemire.com
+END:VCARD`;
+        const blob = new Blob([vcard], { type: 'text/vcard' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', 'RaphaelLemire.vcf');
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    const handleCopy = () => {
+        navigator.clipboard.writeText("5062275702");
+        alert("Phone number copied to clipboard!");
+    };
+
+    return (
+        <div className="contact-modal-overlay" onClick={onClose}>
+            <div className="contact-card slide-up" onClick={e => e.stopPropagation()}>
+                <div className="card-header">
+                    <img src={profileImg} alt="Raphaël Lemire" className="card-avatar" />
+                    <h2>Raphaël Lemire</h2>
+                    <p>EXIT Realty Associates</p>
+                </div>
+                
+                <div className="card-actions">
+                    <a href={`tel:5062275702`} className="action-item">
+                        <span className="action-icon">📞</span>
+                        <span className="action-label">Call</span>
+                    </a>
+                    <a href={`sms:5062275702`} className="action-item">
+                        <span className="action-icon">💬</span>
+                        <span className="action-label">Message</span>
+                    </a>
+                    <a href={`mailto:${email}`} className="action-item">
+                        <span className="action-icon">✉️</span>
+                        <span className="action-label">Email</span>
+                    </a>
+                </div>
+
+                <div className="card-list">
+                    <button onClick={handleSaveContact} className="list-item">
+                        Save Contact
+                    </button>
+                    <button onClick={handleCopy} className="list-item">
+                        Copy Number
+                    </button>
+                    <button onClick={onClose} className="list-item cancel">
+                        Cancel
+                    </button>
+                </div>
+            </div>
         </div>
     );
 }
