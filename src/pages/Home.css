@@ -1115,7 +1115,8 @@
     }
 
     .browse-grid {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
         gap: 0;
         overflow: visible;
     }
@@ -1123,7 +1124,7 @@
     .browse-text.glass-card {
         padding: 40px 20px;
         width: 100%;
-        margin: 0 auto;
+        margin: -40px auto 0; /* Pull text up into the mockup space */
         border-radius: 24px;
         text-align: center;
         z-index: 10;
@@ -1147,10 +1148,12 @@
     }
 
     .app-showcase {
-        height: 480px; /* Drastically increased to accommodate mockup height */
-        margin-top: -60px; /* Aggressive pull-up to keep it tight to the button */
+        height: 480px;
+        margin-top: 0;
+        margin-bottom: 0;
         overflow: visible;
         z-index: 5;
+        order: -1; /* Move above text */
     }
 
     .mockup-img {
