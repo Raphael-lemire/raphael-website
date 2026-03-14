@@ -304,6 +304,15 @@
     width: 100%;
 }
 
+.browse-listings-section .section-title {
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.browse-listings-section .section-subtitle {
+    color: rgba(255, 255, 255, 0.9);
+}
+
 .browse-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -331,16 +340,16 @@
 }
 
 .section-title {
-    color: white;
+    color: var(--text-primary);
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 800;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     letter-spacing: -0.02em;
 }
 
 .section-subtitle {
-    color: rgba(255, 255, 255, 0.9);
+    color: var(--text-secondary);
     font-size: 1.25rem;
     margin-bottom: 48px;
     line-height: 1.6;
@@ -872,6 +881,7 @@
     .section-subtitle {
         font-size: 1.1rem;
         margin-bottom: 40px;
+        color: var(--text-secondary);
     }
 
     .about-container {
