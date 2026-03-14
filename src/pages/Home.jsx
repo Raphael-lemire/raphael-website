@@ -55,6 +55,9 @@ export default function Home() {
 
             {/* Mobile Menu Overlay */}
             <div className={`mobile-menu-overlay ${isMenuOpen ? 'is-open' : ''}`} onClick={closeMenu}>
+                <button className="mobile-menu-close" onClick={closeMenu} aria-label="Close Menu">
+                    &times;
+                </button>
                 <nav className="mobile-nav" onClick={e => e.stopPropagation()}>
                     <a href="#browse" onClick={closeMenu}>Find a Home</a>
                     <a href="#approach" onClick={closeMenu}>Strategy</a>
