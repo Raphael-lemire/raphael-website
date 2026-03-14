@@ -909,7 +909,7 @@
 
 /* Hamburger Menu */
 .hamburger {
-    display: none;
+    display: flex; /* Enabled globally */
     flex-direction: column;
     justify-content: space-around;
     width: 24px;
@@ -1055,10 +1055,6 @@
 }
 
 @media (max-width: 900px) {
-    .desktop-nav {
-        display: none;
-    }
-
     .hamburger {
         display: flex;
     }
