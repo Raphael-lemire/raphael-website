@@ -301,26 +301,20 @@
 .browse-container {
     position: relative;
     z-index: 2;
-    display: flex;
-    justify-content: center;
     width: 100%;
 }
 
-.glass-card {
-    background: rgba(255, 255, 255, 0.08); /* Transparent glass */
-    backdrop-filter: blur(40px) saturate(180%);
-    -webkit-backdrop-filter: blur(40px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 32px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    padding: 60px 40px;
-    max-width: 850px;
-    text-align: center;
-    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.browse-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
 }
 
-.glass-card:hover {
-    transform: scale(1.02);
+.browse-text.glass-card {
+    text-align: left;
+    max-width: 100%;
+    padding: 60px;
 }
 
 .browse-badge {
@@ -336,7 +330,7 @@
     margin-bottom: 24px;
 }
 
-.browse-content .section-title {
+.section-title {
     color: white;
     font-size: clamp(2.5rem, 5vw, 4rem);
     font-weight: 800;
@@ -345,12 +339,9 @@
     letter-spacing: -0.02em;
 }
 
-.browse-content .section-subtitle {
+.section-subtitle {
     color: rgba(255, 255, 255, 0.9);
     font-size: 1.25rem;
-    max-width: 650px;
-    margin-left: auto;
-    margin-right: auto;
     margin-bottom: 48px;
     line-height: 1.6;
 }
@@ -360,6 +351,72 @@
     font-size: 1.1rem;
     font-weight: 600;
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* App Showcase */
+.app-showcase {
+    position: relative;
+    height: 600px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.showcase-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.mockup-img {
+    position: absolute;
+    width: 280px;
+    border-radius: 40px;
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.4);
+    overflow: hidden;
+    border: 8px solid #1a1a1a;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mockup-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.map-mockup {
+    top: 50%;
+    left: 20%;
+    transform: translate(-50%, -50%) rotate(-5deg);
+    z-index: 1;
+    animation: float-slow 6s ease-in-out infinite;
+}
+
+.card-mockup {
+    top: 50%;
+    left: 65%;
+    transform: translate(-50%, -50%) rotate(5deg);
+    z-index: 2;
+    animation: float-fast 4s ease-in-out infinite;
+}
+
+.app-showcase:hover .map-mockup {
+    transform: translate(-50%, -50%) rotate(-8deg) translateX(-20px);
+}
+
+.app-showcase:hover .card-mockup {
+    transform: translate(-50%, -50%) rotate(8deg) translateX(20px);
+}
+
+@keyframes float-slow {
+    0%, 100% { transform: translate(-50%, -50%) rotate(-5deg); }
+    50% { transform: translate(-50%, -55%) rotate(-3deg); }
+}
+
+@keyframes float-fast {
+    0%, 100% { transform: translate(-50%, -50%) rotate(5deg); }
+    50% { transform: translate(-50%, -45%) rotate(7deg); }
 }
 
 /* About Section */
@@ -1022,22 +1079,28 @@
 
     /* Browse Listings Mobile Polish */
     .browse-listings-section {
-        padding: 80px 0;
+        padding: 60px 0;
     }
 
-    .glass-card {
+    .browse-grid {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+
+    .browse-text.glass-card {
         padding: 40px 20px;
-        width: 92%;
+        width: 100%;
         margin: 0 auto;
         border-radius: 24px;
+        text-align: center;
     }
 
-    .browse-content .section-title {
+    .section-title {
         font-size: 2.25rem;
         margin-bottom: 12px;
     }
 
-    .browse-content .section-subtitle {
+    .section-subtitle {
         font-size: 1rem;
         margin-bottom: 32px;
         line-height: 1.5;
@@ -1047,5 +1110,24 @@
         width: 100%;
         padding: 14px 24px;
         font-size: 1rem;
+    }
+
+    .app-showcase {
+        height: 450px;
+        margin-top: 20px;
+    }
+
+    .mockup-img {
+        width: 180px;
+        border-radius: 24px;
+        border-width: 4px;
+    }
+
+    .map-mockup {
+        left: 30%;
+    }
+
+    .card-mockup {
+        left: 70%;
     }
 }
