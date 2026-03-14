@@ -145,14 +145,20 @@ export default function Home() {
 
             {/* Browse Listings Section */}
             <section id="browse" className="browse-listings-section">
-                <div className="container browse-content glass-panel" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-                    <h2 className="section-title" style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>Find Your Dream Home</h2>
-                    <p className="section-subtitle" style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
-                        Searching for properties has never been easier. Use our interactive map with satellite views to explore Greater Moncton and surrounding areas. Set custom search zones and easily filter homes by swiping left or right to save your favorites.
-                    </p>
-                    <a href={BROWSE_LISTINGS_URL} className="btn-primary" target="_blank" rel="noopener noreferrer">
-                        Find a Home
-                    </a>
+                <div className="section-overlay"></div>
+                <div className="container browse-container">
+                    <div className="browse-content glass-card">
+                        <div className="browse-badge fade-in">Exclusive Search</div>
+                        <h2 className="section-title">Find Your Dream Home</h2>
+                        <p className="section-subtitle">
+                            Searching for properties has never been easier. Use our interactive map to explore Greater Moncton, Dieppe, and surrounding areas. Set custom zones and swipe to save your absolute favorites.
+                        </p>
+                        <div className="browse-actions">
+                            <a href={BROWSE_LISTINGS_URL} className="btn-primary browse-btn" target="_blank" rel="noopener noreferrer">
+                                Start Your Search
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </section>
 
