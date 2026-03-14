@@ -48,9 +48,12 @@ export default function Home() {
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                         aria-label="Menu"
                     >
-                        <span></span>
-                        <span></span>
-                        <span></span>
+                        <span className="hamburger-label">MENU</span>
+                        <div className="hamburger-box">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
                     </button>
                 </div>
             </header>
