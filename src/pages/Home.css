@@ -20,6 +20,10 @@
     align-items: center;
 }
 
+.desktop-nav {
+    display: none;
+}
+
 .logo-text {
     font-size: 1.2rem;
     font-weight: 700;
@@ -912,13 +916,20 @@
     display: flex; /* Enabled globally */
     flex-direction: column;
     justify-content: space-around;
-    width: 24px;
-    height: 24px;
+    width: 28px; /* Slightly larger for desktop premium feel */
+    height: 20px;
     background: transparent;
     border: none;
     cursor: pointer;
     padding: 0;
     z-index: 1100;
+}
+
+@media (max-width: 600px) {
+    .hamburger {
+        width: 24px;
+        height: 24px;
+    }
 }
 
 .hamburger span {
