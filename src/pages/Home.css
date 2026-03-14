@@ -931,10 +931,10 @@
 /* Scroll to Top Arrow */
 .scroll-to-top {
     position: fixed;
-    top: 10px; /* Positioned above the hamburger */
-    right: 18px;
-    width: 32px; /* Slightly smaller for a tighter look above hamburger */
-    height: 32px;
+    top: 24px; /* Desktop position */
+    right: 24px;
+    width: 44px;
+    height: 44px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -944,7 +944,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     cursor: pointer;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 1000;
@@ -973,10 +973,23 @@
 @media (max-width: 600px) {
     .home-header {
         position: fixed;
-        padding: 45px 0 12px;
+        padding: 12px 0;
         background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .scroll-to-top {
+        top: auto;
+        bottom: 24px;
+        right: 24px;
+        width: 48px;
+        height: 48px;
+        transform: translateY(10px);
+    }
+
+    .scroll-to-top.is-visible {
+        transform: translateY(0);
     }
 }
