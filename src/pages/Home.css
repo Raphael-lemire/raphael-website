@@ -1113,23 +1113,23 @@
     }
 
     .app-showcase {
-        height: 200px;
-        margin-top: -10px;
+        height: 160px;
+        margin-top: -20px;
     }
 
     .mockup-img {
-        width: 160px;
-        border-radius: 20px;
+        width: 200px;
+        border-radius: 24px;
         border-width: 3px;
     }
 
     .map-mockup {
-        left: 30%;
-        top: 40%;
+        left: 25%;
+        top: 35%;
     }
 
     .card-mockup {
-        left: 70%;
-        top: 40%;
+        left: 75%;
+        top: 35%;
     }
 }
