@@ -1113,8 +1113,9 @@
     }
 
     .app-showcase {
-        height: 160px;
+        height: 260px;
         margin-top: -20px;
+        overflow: visible;
     }
 
     .mockup-img {
@@ -1125,11 +1126,11 @@
 
     .map-mockup {
         left: 25%;
-        top: 35%;
+        top: 45%;
     }
 
     .card-mockup {
         left: 75%;
-        top: 35%;
+        top: 45%;
     }
 }
