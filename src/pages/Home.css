@@ -1079,12 +1079,14 @@
 
     /* Browse Listings Mobile Polish */
     .browse-listings-section {
-        padding: 20px 0;
+        padding: 20px 0 80px; /* Increased bottom padding to accommodate floating mockups */
+        overflow: visible;
     }
 
     .browse-grid {
         grid-template-columns: 1fr;
         gap: 0;
+        overflow: visible;
     }
 
     .browse-text.glass-card {
@@ -1093,6 +1095,7 @@
         margin: 0 auto;
         border-radius: 24px;
         text-align: center;
+        z-index: 10;
     }
 
     .section-title {
@@ -1113,9 +1116,10 @@
     }
 
     .app-showcase {
-        height: 260px;
-        margin-top: -20px;
+        height: 480px; /* Drastically increased to accommodate mockup height */
+        margin-top: -60px; /* Aggressive pull-up to keep it tight to the button */
         overflow: visible;
+        z-index: 5;
     }
 
     .mockup-img {
@@ -1126,11 +1130,11 @@
 
     .map-mockup {
         left: 25%;
-        top: 45%;
+        top: 50%;
     }
 
     .card-mockup {
         left: 75%;
-        top: 45%;
+        top: 50%;
     }
 }
