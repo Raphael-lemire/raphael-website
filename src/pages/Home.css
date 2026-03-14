@@ -856,13 +856,26 @@
     transition: color 0.2s;
 }
 
+.mobile-nav .btn-primary {
+    background: transparent;
+    color: var(--text-primary);
+    border: 2px solid var(--text-primary);
+    font-size: 1.25rem;
+    margin-top: 20px;
+}
+
+.mobile-nav .btn-primary:hover {
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
 /* Scroll to Top Arrow */
 .scroll-to-top {
     position: fixed;
-    top: 24px;
-    right: 24px;
-    width: 44px;
-    height: 44px;
+    top: 10px; /* Positioned above the hamburger */
+    right: 18px;
+    width: 32px; /* Slightly smaller for a tighter look above hamburger */
+    height: 32px;
     background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -901,10 +914,10 @@
 @media (max-width: 600px) {
     .home-header {
         position: fixed;
-        padding: 12px 0;
-        background: rgba(255, 255, 255, 0.8);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
+        padding: 45px 0 12px;
+        background: rgba(255, 255, 255, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
         border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     }
 }
