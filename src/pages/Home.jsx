@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import profileImg from '../assets/profile.png';
@@ -9,9 +9,26 @@ const BROWSE_LISTINGS_URL = "https://listed.inc/listings?presented-by=d8bb886f39
 export default function Home() {
     const [openFaqIndex, setOpenFaqIndex] = useState(null);
     const [showContactModal, setShowContactModal] = useState(false);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 400);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     const toggleFaq = (index) => {
         setOpenFaqIndex(openFaqIndex === index ? null : index);
     };
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const closeMenu = () => setIsMenuOpen(false);
     return (
         <div className="home-page">
             {/* Header/Nav */}
@@ -21,14 +38,35 @@ export default function Home() {
                         <img src={logoImg} alt="EXIT Realty Logo" className="header-logo" />
                         <span className="logo-text">Raphael Lemire</span>
                     </div>
-                    <nav>
+                    <nav className="desktop-nav">
                         <a href={BROWSE_LISTINGS_URL} className="btn-outline" target="_blank" rel="noopener noreferrer">Find a Home</a>
                     </nav>
+                    <button 
+                        className={`hamburger ${isMenuOpen ? 'is-active' : ''}`}
+                        onClick={() => setIsMenuOpen(!isMenuOpen)}
+                        aria-label="Menu"
+                    >
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
                 </div>
             </header>
 
+            {/* Mobile Menu Overlay */}
+            <div className={`mobile-menu-overlay ${isMenuOpen ? 'is-open' : ''}`} onClick={closeMenu}>
+                <nav className="mobile-nav" onClick={e => e.stopPropagation()}>
+                    <a href="#browse" onClick={closeMenu}>Find a Home</a>
+                    <a href="#approach" onClick={closeMenu}>Strategy</a>
+                    <a href="#about" onClick={closeMenu}>About Me</a>
+                    <a href="#faq" onClick={closeMenu}>FAQ</a>
+                    <a href="#contact" onClick={closeMenu}>Contact</a>
+                    <Link to="/survey" className="btn-primary" onClick={closeMenu}>Book a Consultation</Link>
+                </nav>
+            </div>
+
             {/* Hero Section */}
-            <section className="hero">
+            <section id="hero" className="hero">
                 <div className="container hero-content hero-split">
                     <div className="hero-text-side">
                         <div className="hero-tag slide-up">Greater Moncton Real Estate</div>
@@ -72,7 +110,7 @@ export default function Home() {
             </section>
 
             {/* My Approach Section */}
-            <section className="approach-section">
+            <section id="approach" className="approach-section">
                 <div className="container approach-container">
                     <h2 className="section-title">A tailored approach to Greater Moncton real estate.</h2>
                     <p className="section-subtitle">
@@ -106,7 +144,7 @@ export default function Home() {
             </section>
 
             {/* Browse Listings Section */}
-            <section className="browse-listings-section">
+            <section id="browse" className="browse-listings-section">
                 <div className="container browse-content glass-panel" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
                     <h2 className="section-title" style={{ color: 'var(--text-primary)', marginBottom: '1rem' }}>Find Your Dream Home</h2>
                     <p className="section-subtitle" style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>
@@ -119,7 +157,7 @@ export default function Home() {
             </section>
 
             {/* About Me Section */}
-            <section className="about-section">
+            <section id="about" className="about-section">
                 <div className="container about-container glass-panel">
                     <div className="about-content">
                         <h2 className="section-title">Meet Raphaël Lemire</h2>
@@ -133,7 +171,7 @@ export default function Home() {
             </section>
 
             {/* FAQ Section */}
-            <section className="faq-section">
+            <section id="faq" className="faq-section">
                 <div className="container faq-container">
                     <h2 className="section-title">Most Frequent Questions</h2>
                     <p className="section-subtitle">Everything you need to know about the process and the Greater Moncton market.</p>
@@ -174,7 +212,7 @@ export default function Home() {
             </section>
 
             {/* Final CTA */}
-            <section className="final-cta">
+            <section id="contact" className="final-cta">
                 <div className="container final-cta-content">
                     <h2>Ready to discuss your goals?</h2>
                     <p className="cta-subtitle">Schedule a quick consultation with me, absolutely free. Or reach out to me directly anytime.</p>
@@ -207,6 +245,15 @@ export default function Home() {
             </footer>
 
             {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
+
+            {/* Scroll to Top Arrow */}
+            <button 
+                className={`scroll-to-top ${showScrollTop ? 'is-visible' : ''}`} 
+                onClick={scrollToTop}
+                aria-label="Scroll to top"
+            >
+                ↑
+            </button>
         </div>
     );
 }
