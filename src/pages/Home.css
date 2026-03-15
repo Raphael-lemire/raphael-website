@@ -1079,6 +1079,39 @@
     transform: translateY(0);
 }
 
+/* Floating CTA Button */
+.floating-cta {
+    position: fixed;
+    bottom: 24px;
+    right: 24px; /* Default right position */
+    background: var(--text-primary);
+    color: var(--bg-primary);
+    padding: 12px 24px;
+    border-radius: 980px;
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-decoration: none;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.floating-cta.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.floating-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    background: var(--text-primary);
+    color: var(--bg-primary);
+}
+
 @media (max-width: 900px) {
     .hamburger {
         display: flex;
@@ -1098,10 +1131,18 @@
     .scroll-to-top {
         top: auto;
         bottom: 24px;
-        right: 24px;
+        right: 20px;
         width: 48px;
         height: 48px;
         transform: translateY(10px);
+    }
+
+    .floating-cta {
+        bottom: 24px;
+        right: 76px; /* Offset to sit beside the arrow */
+        padding: 10px 20px;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     }
 
     .scroll-to-top.is-visible {

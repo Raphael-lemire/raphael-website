@@ -13,10 +13,12 @@ export default function Home() {
     const [showContactModal, setShowContactModal] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [showFloatingCTA, setShowFloatingCTA] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
             setShowScrollTop(window.scrollY > 400);
+            setShowFloatingCTA(window.scrollY > 600);
         };
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -273,7 +275,14 @@ export default function Home() {
 
             {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
 
-            {/* Scroll to Top Arrow */}
+            {/* Floating CTA & Scroll to Top */}
+            <Link 
+                to="/survey" 
+                className={`floating-cta ${showFloatingCTA ? 'is-visible' : ''}`}
+            >
+                Book a Consultation
+            </Link>
+
             <button 
                 className={`scroll-to-top ${showScrollTop ? 'is-visible' : ''}`} 
                 onClick={scrollToTop}
