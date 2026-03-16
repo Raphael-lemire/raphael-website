@@ -191,7 +191,7 @@ export default function Home() {
                     <div className="about-content">
                         <h2 className="section-title">Meet Raphaël Lemire</h2>
                         <div className="about-text">
-                            <p>Before entering real estate, I built my professional experience in corrections at the SRCC in Shediac and in automotive sales. Those roles shaped the way I work today — with discipline, attention to detail, and a strong focus on helping people make confident decisions.</p>
+                            <p>I am proud to offer my services in both English and French to better serve our community. Before entering real estate, I built my professional experience at SRCC in Shediac and in automotive sales. Those roles shaped the way I work today — with discipline, attention to detail, and a strong focus on helping people make confident decisions.</p>
                             <p>I have been working in the real estate industry since 2022, assisting buyers and sellers across Moncton, Dieppe, and the surrounding communities. My goal is to make the process clear, strategic, and stress-free from the first consultation to closing.</p>
                             <p>I am also part of the BGRS program, which allows me to assist military members, RCMP families, and other government employees relocating to the Greater Moncton area.</p>
                         </div>
