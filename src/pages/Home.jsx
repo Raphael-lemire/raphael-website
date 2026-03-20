@@ -14,9 +14,11 @@ export default function Home() {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [showFloatingCTA, setShowFloatingCTA] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
         const handleScroll = () => {
+            setIsScrolled(window.scrollY > 20);
             setShowScrollTop(window.scrollY > 400);
             setShowFloatingCTA(window.scrollY > 600);
         };
@@ -36,7 +38,7 @@ export default function Home() {
     return (
         <div className="home-page">
             {/* Header/Nav */}
-            <header className="home-header">
+            <header className={`home-header ${isScrolled ? 'is-scrolled' : ''}`}>
                 <div className="container header-container">
                     <div className="logo-container">
                         <img src={logoImg} alt="EXIT Realty Logo" className="header-logo" />
@@ -77,18 +79,25 @@ export default function Home() {
 
             {/* Hero Section */}
             <section id="hero" className="hero">
+                <div className="hero-glow-1"></div>
+                <div className="hero-glow-2"></div>
                 <div className="container hero-content hero-split">
                     <div className="hero-text-side">
                         <div className="hero-tag slide-up">Greater Moncton Real Estate</div>
                         <h1 className="hero-title slide-up">
-                            Your dedicated partner in <br /> Real Estate.
+                            Buy or Sell in Greater Moncton with a <br /> <span className="title-highlight">Clear Strategy.</span>
                         </h1>
                         <p className="hero-subtitle slide-up fade-in" style={{ animationDelay: '0.2s' }}>
-                            Whether you're buying, selling, or investing, experience a seamless process tailored to your goals in Greater Moncton, Dieppe, Riverview, Shediac, and surrounding areas.
+                            I help buyers, sellers, and investors in Moncton, Dieppe, and surrounding areas make confident decisions with a simple, strategic approach.
                         </p>
                         <div className="hero-actions slide-up fade-in" style={{ animationDelay: '0.4s' }}>
                             <Link to="/survey" className="btn-primary">Book a Consultation</Link>
+                            <a href={BROWSE_LISTINGS_URL} className="btn-outline" target="_blank" rel="noopener noreferrer">Find a Home</a>
                         </div>
+                        <p className="hero-trust-line slide-up fade-in" style={{ animationDelay: '0.6s' }}>
+                            <strong>Free 15-Min Intro (Call, Video, or In-Person) • Zero Commitment</strong><br/>
+                            Serving Moncton, Dieppe, Shediac & surrounding areas • Bilingual (English & French) • BGRS Program Approved
+                        </p>
                     </div>
                     <div className="hero-image-side slide-up fade-in" style={{ animationDelay: '0.6s' }}>
                         <img src={profileImg} alt="Raphael Lemire | EXIT Realty" className="profile-img glass-panel" />
@@ -96,58 +105,29 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Value Proposition */}
-            <section className="value-prop">
-                <div className="container vp-container">
-                    <div className="vp-grid">
-                        <div className="vp-card glass-panel">
-                            <div className="vp-icon">🏆</div>
-                            <h3>Local Expertise</h3>
-                            <p>Deep knowledge of Greater Moncton and surrounding rural areas to find properties that perfectly match your lifestyle and budget.</p>
-                        </div>
-                        <div className="vp-card glass-panel">
-                            <div className="vp-icon">🤝</div>
-                            <h3>Dedicated Partner</h3>
-                            <p>I prioritize your goals, ensuring a transparent, stress-free process from the first showing to the final closing.</p>
-                        </div>
-                        <div className="vp-card glass-panel">
-                            <div className="vp-icon">📈</div>
-                            <h3>Proven Results</h3>
-                            <p>Leveraging EXIT Realty's premier network and marketing tools to get maximum value whether you're buying or selling.</p>
-                        </div>
+            {/* Compact Approach Section */}
+            <section id="approach" className="approach-section compact-approach">
+                <div className="container">
+                    <div className="approach-header">
+                        <h2>A Tailored Approach</h2>
+                        <p>Booking a consultation ensures clarity and confidence every step of the way.</p>
                     </div>
-                </div>
-            </section>
-
-            {/* My Approach Section */}
-            <section id="approach" className="approach-section">
-                <div className="container approach-container">
-                    <h2 className="section-title">A tailored approach to Greater Moncton real estate.</h2>
-                    <p className="section-subtitle">
-                        I believe buying or selling a home shouldn't be complicated. My process is designed to remove the friction, giving you clarity and confidence every step of the way.
-                    </p>
-
-                    <div className="process-steps">
-                        <div className="step-item">
-                            <div className="step-number">1</div>
-                            <div className="step-content">
-                                <h3>Consultation</h3>
-                                <p>We start by understanding your specific needs, budget, and timeline to define a clear winning strategy.</p>
-                            </div>
+                    
+                    <div className="horizontal-steps">
+                        <div className="h-step">
+                            <div className="step-num">01</div>
+                            <h3>Consultation</h3>
+                            <p>We define your goals, budget, and timeline clearly from the start.</p>
                         </div>
-                        <div className="step-item">
-                            <div className="step-number">2</div>
-                            <div className="step-content">
-                                <h3>Strategy</h3>
-                                <p>Whether marketing your property or hunting for the perfect home, I customize a plan targeting the right audience or neighborhoods.</p>
-                            </div>
+                        <div className="h-step">
+                            <div className="step-num">02</div>
+                            <h3>Strategy</h3>
+                            <p>I build a focused plan to help you buy, sell, or invest with confidence.</p>
                         </div>
-                        <div className="step-item">
-                            <div className="step-number">3</div>
-                            <div className="step-content">
-                                <h3>Success</h3>
-                                <p>From fierce negotiation to seamlessly handling the closing details, I'm by your side until the keys are in hand.</p>
-                            </div>
+                        <div className="h-step">
+                            <div className="step-num">03</div>
+                            <h3>Success</h3>
+                            <p>I negotiate aggressively and handle every detail through to closing.</p>
                         </div>
                     </div>
                 </div>
@@ -162,7 +142,7 @@ export default function Home() {
                             <div className="browse-badge fade-in">Exclusive Search</div>
                             <h2 className="section-title">Find Your Dream Home</h2>
                             <p className="section-subtitle">
-                                Searching for properties has never been easier. Use our interactive map to explore Greater Moncton, Dieppe, and surrounding areas. Set custom zones and swipe to save your absolute favorites.
+                                Skip endless scrolling. Use my interactive map to instantly find homes in Greater Moncton, Dieppe, and surrounding areas. Save your favorites and get access to the best opportunities as soon as they hit the market.
                             </p>
                             <div className="browse-actions">
                                 <a href={BROWSE_LISTINGS_URL} className="btn-primary browse-btn" target="_blank" rel="noopener noreferrer">
@@ -185,15 +165,54 @@ export default function Home() {
                 </div>
             </section>
 
+            {/* Proven Results Section */}
+            <section className="proven-results-section">
+                <div className="container">
+                    <h2 className="section-title text-center">Proven Results in Greater Moncton</h2>
+                    <div className="results-list">
+                        <div className="result-item glass-panel fade-in">
+                            <div className="result-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                            </div>
+                            <p>Proven urgency—multiple properties successfully sold in under 24 hours.</p>
+                        </div>
+                        <div className="result-item glass-panel fade-in" style={{ animationDelay: '0.2s' }}>
+                            <div className="result-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                            </div>
+                            <p>Winning multiple-offer situations by uncovering the seller's true motivations.</p>
+                        </div>
+                        <div className="result-item glass-panel fade-in" style={{ animationDelay: '0.4s' }}>
+                            <div className="result-icon">
+                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                            </div>
+                            <p>Securing the best deals by mastering conditions and closing dates, not just the price.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
             {/* About Me Section */}
             <section id="about" className="about-section">
                 <div className="container about-container glass-panel">
                     <div className="about-content">
                         <h2 className="section-title">Meet Raphaël Lemire</h2>
                         <div className="about-text">
-                            <p>I am proud to offer my services in both English and French to better serve our community. Before entering real estate, I built my professional experience at SRCC in Shediac and in automotive sales. Those roles shaped the way I work today — with discipline, attention to detail, and a strong focus on helping people make confident decisions.</p>
-                            <p>I have been working in the real estate industry since 2022, assisting buyers and sellers across Moncton, Dieppe, and the surrounding communities. My goal is to make the process clear, strategic, and stress-free from the first consultation to closing.</p>
-                            <p>I am also part of the BGRS program, which allows me to assist military members, RCMP families, and other government employees relocating to the Greater Moncton area.</p>
+                            <p className="about-intro">My goal is simple: make your real estate experience clear, strategic, and stress-free from start to finish. I am proud to offer my services in both English and French to better serve our community.</p>
+                            
+                            <blockquote className="about-quote">
+                                "My goal is to make the process clear, strategic, and stress-free from the first consultation to closing."
+                            </blockquote>
+                            
+                            <p>Working in the industry since 2022, I assist buyers and sellers across Moncton, Dieppe, and the surrounding communities.</p>
+                            
+                            <div className="bgrs-badge glass-panel">
+                                <span className="bgrs-icon">🍁</span>
+                                <div>
+                                    <h4>BGRS Program Approved</h4>
+                                    <p>Assisting military members, RCMP families, and government employees relocating to Greater Moncton.</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -243,17 +262,14 @@ export default function Home() {
             {/* Final CTA */}
             <section id="contact" className="final-cta">
                 <div className="container final-cta-content">
-                    <h2>Ready to discuss your goals?</h2>
-                    <p className="cta-subtitle">Schedule a quick consultation with me, absolutely free. Or reach out to me directly anytime.</p>
+                    <h2>Ready to make a move?</h2>
+                    <p className="cta-subtitle">
+                        Schedule a free 15-minute intro (via phone, video, or in-person) to discuss your goals, timeline, and budget.<br/>
+                        Zero pressure, zero commitment—just a clear strategy to get you started.
+                    </p>
 
                     <div className="contact-actions">
                         <Link to="/survey" className="btn-primary">Book a Consultation</Link>
-                        <button 
-                            onClick={() => setShowContactModal(true)} 
-                            className="btn-secondary cta-call"
-                        >
-                            Or Text/Call Me Now
-                        </button>
                     </div>
 
                     <div className="contact-info">
@@ -367,7 +383,7 @@ function FAQItem({ question, answer, isOpen, onToggle }) {
         <div className={`faq-item glass-panel ${isOpen ? 'is-open' : ''}`} onClick={onToggle}>
             <div className="faq-question">
                 <h3>{question}</h3>
-                <span className="faq-icon">{isOpen ? '−' : '+'}</span>
+                <span className="faq-icon">+</span>
             </div>
             {isOpen && (
                 <div className="faq-answer fade-in">

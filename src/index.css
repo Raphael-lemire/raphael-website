@@ -4,8 +4,9 @@
   --bg-secondary: #f5f5f7;
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
-  --accent-color: #0071e3;
-  --accent-hover: #0066cc;
+  --accent-color: #1d1d1f;
+  --accent-hover: #424245;
+  --accent-rgb: 29, 29, 31;
 
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);

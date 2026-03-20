@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ProgressBar from '../components/ProgressBar';
+import logoImg from '../assets/logo.png';
 import './Survey.css';
 
 export default function Survey() {
@@ -72,17 +73,18 @@ export default function Survey() {
     return (
         <div className="survey-page">
             <header className="survey-header">
-                <div className="container header-container-survey" style={{ justifyContent: 'flex-start' }}>
+                <div className="container header-container-survey">
+                    <img src={logoImg} alt="EXIT Realty" className="survey-logo" />
                     <Link to="/" className="back-link">
-                        &larr; Back to Overview
+                        ✕ Close
                     </Link>
                 </div>
             </header>
 
             <main className="survey-content container fade-in slide-up">
                 <ProgressBar currentStep={1} />
-                <h1>Tell Me About Your Goals</h1>
-                <p className="survey-subtitle">Help us understand your needs so we can tailor the perfect experience.</p>
+                <h1>Let's Build Your Strategy.</h1>
+                <p className="survey-subtitle">Take 2 minutes to share your goals so we can hit the ground running on our free 15-minute intro.</p>
 
                 <div className="embed-container glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
                     <iframe
@@ -103,6 +105,9 @@ export default function Survey() {
                         title="Buyer / Seller intake- Core"
                     >
                     </iframe>
+                </div>
+                <div className="survey-trust">
+                    🔒 Your information is 100% secure and never shared.
                 </div>
             </main>
         </div>
