@@ -194,7 +194,7 @@
 }
 
 .title-highlight {
-    background: linear-gradient(135deg, var(--text-primary) 10%, var(--accent-color) 100%);
+    background: linear-gradient(135deg, #1d1d1f 0%, #007bb5 60%, #00A0B4 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -262,8 +262,9 @@
 }
 
 .result-item:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px);
+    box-shadow: 0 20px 40px rgba(0, 160, 180, 0.08);
+    border-color: rgba(0, 160, 180, 0.15);
 }
 
 .result-icon {
@@ -273,9 +274,8 @@
     width: 56px;
     height: 56px;
     border-radius: 16px;
-    background: rgba(var(--accent-rgb), 0.05);
-    color: var(--text-primary);
-    border: 1px solid rgba(0,0,0,0.05);
+    background: linear-gradient(135deg, rgba(0, 170, 180, 0.1), rgba(0, 100, 200, 0.1));
+    color: #00A0B4;
 }
 
 .result-item p {
@@ -332,69 +332,92 @@
     margin-right: auto;
 }
 
-.horizontal-steps {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 32px;
-}
-
-.h-step {
-    padding: 32px;
-    text-align: left;
+.premium-timeline {
     position: relative;
-    background: rgba(255, 255, 255, 0.7);
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+.premium-timeline::before {
+    content: '';
+    position: absolute;
+    left: 40px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 160, 180, 0.2), rgba(0, 100, 200, 0.4), rgba(0, 160, 180, 0.2), transparent);
+}
+.timeline-step {
+    position: relative;
+    padding-left: 90px;
+    margin-bottom: 40px;
+    text-align: left;
+}
+.timeline-marker {
+    position: absolute;
+    left: 31px;
+    top: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--bg-primary);
+    border: 4px solid var(--text-primary);
+    box-shadow: 0 0 0 6px rgba(0, 160, 180, 0.05);
+    z-index: 2;
+    transition: all 0.3s ease;
+}
+.timeline-step:hover .timeline-marker {
+    border-color: #00A0B4; /* Teal */
+    box-shadow: 0 0 15px rgba(0, 160, 180, 0.4);
+    transform: scale(1.1);
+}
+.timeline-content {
+    background: rgba(255, 255, 255, 0.8);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border-radius: 24px;
-    border: 1px solid rgba(0, 0, 0, 0.05);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    padding: 32px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.04);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
 }
-
-.h-step:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
-    background: rgba(255, 255, 255, 0.95);
-    border-color: rgba(var(--accent-rgb), 0.2);
+.timeline-step:hover .timeline-content {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(0, 160, 180, 0.08);
+    border-color: rgba(0, 160, 180, 0.15);
 }
-
-.step-num {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    padding: 6px 14px;
-    border-radius: 100px;
-    display: block;
-    width: max-content;
-    margin-bottom: 20px;
-    letter-spacing: 0.05em;
-}
-
-.h-step h3 {
+.timeline-content h3 {
     font-size: 1.5rem;
     margin-bottom: 12px;
     color: var(--text-primary);
-    position: relative;
-    z-index: 1;
 }
-
-.h-step p {
-    color: #6b7280;
+.timeline-content p {
+    color: var(--text-secondary);
     line-height: 1.6;
     margin: 0;
     font-size: 0.95rem;
-    position: relative;
-    z-index: 1;
 }
-
-@media (max-width: 900px) {
-    .horizontal-steps {
-        grid-template-columns: 1fr;
-        gap: 20px;
+.step-label {
+    display: inline-block;
+    font-size: 0.8rem;
+    color: #00A0B4;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+@media (max-width: 600px) {
+    .premium-timeline::before {
+        left: 20px;
+    }
+    .timeline-step {
+        padding-left: 60px;
+    }
+    .timeline-marker {
+        left: 11px;
+    }
+    .timeline-content {
+        padding: 24px;
     }
 }
 
@@ -1108,16 +1131,12 @@
         font-size: 0.95rem;
     }
 
-    .h-step {
-        padding: 24px 20px;
-    }
-
     .result-item {
         padding: 24px 20px;
         gap: 16px;
     }
 
-    .result-item p, .h-step p {
+    .result-item p {
         font-size: 0.95rem;
         line-height: 1.5;
     }

@@ -111,21 +111,30 @@ export default function Home() {
                         <h2>A Tailored Approach</h2>
                     </div>
                     
-                    <div className="horizontal-steps">
-                        <div className="h-step">
-                            <div className="step-num">01</div>
-                            <h3>Consultation</h3>
-                            <p>We define your goals, budget, and timeline clearly from the start.</p>
+                    <div className="premium-timeline">
+                        <div className="timeline-step fade-in">
+                            <div className="timeline-marker"></div>
+                            <div className="timeline-content">
+                                <span className="step-label">Step 01</span>
+                                <h3>Consultation</h3>
+                                <p>We define your goals, budget, and timeline clearly from the start.</p>
+                            </div>
                         </div>
-                        <div className="h-step">
-                            <div className="step-num">02</div>
-                            <h3>Strategy</h3>
-                            <p>I build a focused plan to help you buy, sell, or invest with confidence.</p>
+                        <div className="timeline-step fade-in" style={{ animationDelay: '0.2s' }}>
+                            <div className="timeline-marker"></div>
+                            <div className="timeline-content">
+                                <span className="step-label">Step 02</span>
+                                <h3>Strategy</h3>
+                                <p>I build a focused plan to help you buy, sell, or invest with confidence.</p>
+                            </div>
                         </div>
-                        <div className="h-step">
-                            <div className="step-num">03</div>
-                            <h3>Success</h3>
-                            <p>I negotiate aggressively and handle every detail through to closing.</p>
+                        <div className="timeline-step fade-in" style={{ animationDelay: '0.4s' }}>
+                            <div className="timeline-marker"></div>
+                            <div className="timeline-content">
+                                <span className="step-label">Step 03</span>
+                                <h3>Success</h3>
+                                <p>I negotiate aggressively and handle every detail through to closing.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
