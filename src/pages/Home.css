@@ -339,37 +339,39 @@
 }
 
 .h-step {
-    padding: 32px 24px;
+    padding: 32px;
     text-align: left;
     position: relative;
-    border-top: 4px solid var(--accent-color);
-    background: var(--bg-secondary);
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 24px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.03);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), background 0.4s;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
 }
 
 .h-step:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 30px rgba(var(--accent-rgb), 0.1);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    background: rgba(255, 255, 255, 0.95);
+    border-color: rgba(var(--accent-rgb), 0.2);
 }
 
 .step-num {
-    font-size: 5rem;
-    font-weight: 800;
-    color: rgba(var(--accent-rgb), 0.05); /* Watermark style */
-    position: absolute;
-    top: -15px;
-    right: 16px;
-    line-height: 1;
-    z-index: 0;
-    pointer-events: none;
-    transition: color 0.3s ease;
-}
-
-.h-step:hover .step-num {
-    color: rgba(var(--accent-rgb), 0.15);
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    background: var(--bg-secondary);
+    padding: 6px 14px;
+    border-radius: 100px;
+    display: block;
+    width: max-content;
+    margin-bottom: 20px;
+    letter-spacing: 0.05em;
 }
 
 .h-step h3 {
@@ -1059,8 +1061,8 @@
     }
 
     .hero-subtitle {
-        font-size: 1.05rem;
-        line-height: 1.5;
+        font-size: 1rem;
+        line-height: 1.4;
         margin-bottom: 32px;
         padding: 0 10px;
     }
@@ -1071,11 +1073,11 @@
     }
 
     .hero-split {
-        gap: 32px;
+        gap: 24px;
     }
 
-    .value-prop, .approach-section, .browse-listings-section, .about-section, .faq-section {
-        padding: 64px 0;
+    .value-prop, .approach-section, .browse-listings-section, .about-section, .faq-section, .proven-results-section {
+        padding: 48px 0;
     }
 
     .section-title {
@@ -1084,21 +1086,46 @@
     }
 
     .section-subtitle {
-        font-size: 1.1rem;
-        margin-bottom: 40px;
+        font-size: 1.05rem;
+        margin-bottom: 32px;
         color: var(--text-secondary);
+        line-height: 1.4;
     }
 
     .about-container {
-        padding: 32px 24px;
+        padding: 24px 20px;
     }
 
     .faq-item {
-        padding: 20px 24px;
+        padding: 16px 20px;
     }
 
     .faq-question h3 {
-        font-size: 1.05rem;
+        font-size: 1rem;
+    }
+    
+    .faq-answer p {
+        font-size: 0.95rem;
+    }
+
+    .h-step {
+        padding: 24px 20px;
+    }
+
+    .result-item {
+        padding: 24px 20px;
+        gap: 16px;
+    }
+
+    .result-item p, .h-step p {
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+    
+    .about-quote {
+        font-size: 1.2rem;
+        margin: 24px 0 24px 12px;
+        padding-left: 16px;
     }
 
     .final-cta {
