@@ -482,8 +482,11 @@
 
 .browse-badge {
     display: inline-block;
-    background: var(--text-primary);
-    color: var(--bg-primary);
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
     padding: 6px 16px;
     border-radius: 100px;
     font-size: 0.8rem;
@@ -513,7 +516,17 @@
     padding: 16px 40px;
     font-size: 1.1rem;
     font-weight: 600;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    background: linear-gradient(135deg, #00A0B4 0%, #007bb5 100%);
+    color: white !important;
+    border: none;
+    box-shadow: 0 10px 30px rgba(0, 160, 180, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.browse-btn:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 40px rgba(0, 160, 180, 0.6);
+    background: linear-gradient(135deg, #00b5cc 0%, #008cc9 100%);
 }
 
 /* App Showcase */
