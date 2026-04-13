@@ -82,6 +82,10 @@
     border-color: var(--text-primary);
 }
 
+.btn-outline:active {
+    transform: scale(0.97);
+}
+
 /* Hero Section */
 .hero {
     flex: 1;
@@ -308,6 +312,11 @@
 .section-title {
     font-size: clamp(2rem, 4vw, 3rem);
     margin-bottom: 24px;
+    background: linear-gradient(135deg, var(--text-primary) 0%, #004566 70%, #007bb5 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-bottom: 4px; /* Ensure descenders are not cut off */
 }
 
 .section-subtitle {
@@ -1403,6 +1412,10 @@
     color: var(--bg-primary);
 }
 
+.floating-cta:active, .floating-call:active {
+    transform: scale(0.96);
+}
+
 @media (max-width: 900px) {
     .hamburger {
         display: flex;
@@ -1561,6 +1574,24 @@
     .hero-subtitle {
         font-size: 1.05rem;
         margin-bottom: 32px;
+    }
+    
+    .hero-glow-1 {
+        width: 120vw;
+        height: 120vw;
+        top: -10%;
+        left: -30%;
+        background: radial-gradient(circle, rgba(0, 170, 180, 0.2) 0%, rgba(255, 255, 255, 0) 65%);
+        filter: blur(40px);
+    }
+    
+    .hero-glow-2 {
+        width: 120vw;
+        height: 120vw;
+        bottom: 20%;
+        right: -30%;
+        background: radial-gradient(circle, rgba(0, 100, 200, 0.15) 0%, rgba(255, 255, 255, 0) 65%);
+        filter: blur(40px);
     }
     
     .profile-img {
