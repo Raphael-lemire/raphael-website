@@ -215,7 +215,15 @@
 .hero-actions {
     display: flex;
     justify-content: center;
+    align-items: center;
     gap: 16px;
+}
+
+.hero-actions .btn-outline {
+    padding: 12px 24px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: normal;
 }
 
 .hero-trust-line {

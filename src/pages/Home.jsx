@@ -291,7 +291,8 @@ export default function Home() {
             </section>
 
             <footer className="home-footer">
-                <p>&copy; {new Date().getFullYear()} Raphaël Lemire | EXIT Realty Associates | Moncton, NB</p>
+                <p>&copy; {new Date().getFullYear()} Raphaël Lemire | EXIT Realty Associates</p>
+                <p className="footer-address" style={{ marginTop: '8px', fontSize: '0.85rem' }}>260 Champlain St., Suite 102, Dieppe, NB E1A 1P3</p>
             </footer>
 
             {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
