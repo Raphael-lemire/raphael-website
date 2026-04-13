@@ -297,7 +297,14 @@ export default function Home() {
 
             {showContactModal && <ContactModal onClose={() => setShowContactModal(false)} />}
 
-            {/* Floating CTA & Scroll to Top */}
+            {/* Floating CTAs & Scroll to Top */}
+            <button 
+                onClick={() => setShowContactModal(true)}
+                className={`floating-call ${showFloatingCTA ? 'is-visible' : ''}`}
+            >
+                Text / Call
+            </button>
+
             <Link 
                 to="/survey" 
                 className={`floating-cta ${showFloatingCTA ? 'is-visible' : ''}`}
