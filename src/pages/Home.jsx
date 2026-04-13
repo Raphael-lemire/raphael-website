@@ -105,47 +105,44 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Redesigned Premium Approach Section */}
-            <section id="approach" className="approach-section">
+            {/* Minimal Compact Approach Section */}
+            <section id="approach" className="approach-section-minimal">
                 <div className="container">
                     <ScrollReveal animation="slide-up">
-                        <div className="approach-header text-center">
+                        <div className="approach-header-minimal text-center">
                             <h2>A Tailored Approach</h2>
-                            <p className="approach-subtitle">Clear steps so you know exactly what to expect from start to finish.</p>
+                            <p className="approach-subtitle-minimal">Clear steps so you know exactly what to expect from start to finish.</p>
                         </div>
                     </ScrollReveal>
                     
-                    <div className="approach-grid">
+                    <div className="compact-steps-container">
                         <ScrollReveal animation="slide-up" delay={0.1}>
-                            <div className="approach-card">
-                                <div className="card-watermark">01</div>
-                                <div className="card-icon">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                            <div className="compact-step">
+                                <span className="step-num">01</span>
+                                <div>
+                                    <h4>Consultation</h4>
+                                    <p>We begin by defining your exact goals, budget, and timeline.</p>
                                 </div>
-                                <h3>Consultation</h3>
-                                <p>We begin by defining your exact goals, budget, and timeline. No pressure, just a transparent conversation to ensure we are the right fit to move forward.</p>
+                            </div>
+                        </ScrollReveal>
+
+                        <ScrollReveal animation="slide-up" delay={0.2}>
+                            <div className="compact-step">
+                                <span className="step-num">02</span>
+                                <div>
+                                    <h4>Strategy</h4>
+                                    <p>A focused, data-driven plan built for the Moncton market.</p>
+                                </div>
                             </div>
                         </ScrollReveal>
 
                         <ScrollReveal animation="slide-up" delay={0.3}>
-                            <div className="approach-card">
-                                <div className="card-watermark">02</div>
-                                <div className="card-icon">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <div className="compact-step">
+                                <span className="step-num">03</span>
+                                <div>
+                                    <h4>Execution</h4>
+                                    <p>I handle negotiations and orchestrate every detail to closing.</p>
                                 </div>
-                                <h3>Strategy</h3>
-                                <p>I construct a focused, data-driven plan based on the current Moncton market. We map out the best opportunities so you can buy or sell with absolute confidence.</p>
-                            </div>
-                        </ScrollReveal>
-
-                        <ScrollReveal animation="slide-up" delay={0.5}>
-                            <div className="approach-card">
-                                <div className="card-watermark">03</div>
-                                <div className="card-icon">
-                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                                </div>
-                                <h3>Execution</h3>
-                                <p>From aggressive negotiation to orchestrating inspections and final paperwork, I handle every detail rigorously through to a successful closing day.</p>
                             </div>
                         </ScrollReveal>
                     </div>
