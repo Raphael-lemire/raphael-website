@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import ScrollReveal from '../components/ScrollReveal';
 import { Link } from 'react-router-dom';
 import './Home.css';
 import profileImg from '../assets/profile.png';
@@ -104,38 +105,49 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* Compact Approach Section */}
-            <section id="approach" className="approach-section compact-approach">
+            {/* Redesigned Premium Approach Section */}
+            <section id="approach" className="approach-section">
                 <div className="container">
-                    <div className="approach-header">
-                        <h2>A Tailored Approach</h2>
-                    </div>
+                    <ScrollReveal animation="slide-up">
+                        <div className="approach-header text-center">
+                            <h2>A Tailored Approach</h2>
+                            <p className="approach-subtitle">Clear steps so you know exactly what to expect from start to finish.</p>
+                        </div>
+                    </ScrollReveal>
                     
-                    <div className="premium-timeline">
-                        <div className="timeline-step fade-in">
-                            <div className="timeline-marker"></div>
-                            <div className="timeline-content">
-                                <span className="step-label">Step 01</span>
+                    <div className="approach-grid">
+                        <ScrollReveal animation="slide-up" delay={0.1}>
+                            <div className="approach-card">
+                                <div className="card-watermark">01</div>
+                                <div className="card-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                </div>
                                 <h3>Consultation</h3>
-                                <p>We define your goals, budget, and timeline clearly from the start.</p>
+                                <p>We begin by defining your exact goals, budget, and timeline. No pressure, just a transparent conversation to ensure we are the right fit to move forward.</p>
                             </div>
-                        </div>
-                        <div className="timeline-step fade-in" style={{ animationDelay: '0.2s' }}>
-                            <div className="timeline-marker"></div>
-                            <div className="timeline-content">
-                                <span className="step-label">Step 02</span>
+                        </ScrollReveal>
+
+                        <ScrollReveal animation="slide-up" delay={0.3}>
+                            <div className="approach-card">
+                                <div className="card-watermark">02</div>
+                                <div className="card-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                                </div>
                                 <h3>Strategy</h3>
-                                <p>I build a focused plan to help you buy, sell, or invest with confidence.</p>
+                                <p>I construct a focused, data-driven plan based on the current Moncton market. We map out the best opportunities so you can buy or sell with absolute confidence.</p>
                             </div>
-                        </div>
-                        <div className="timeline-step fade-in" style={{ animationDelay: '0.4s' }}>
-                            <div className="timeline-marker"></div>
-                            <div className="timeline-content">
-                                <span className="step-label">Step 03</span>
-                                <h3>Success</h3>
-                                <p>I negotiate aggressively and handle every detail through to closing.</p>
+                        </ScrollReveal>
+
+                        <ScrollReveal animation="slide-up" delay={0.5}>
+                            <div className="approach-card">
+                                <div className="card-watermark">03</div>
+                                <div className="card-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                                </div>
+                                <h3>Execution</h3>
+                                <p>From aggressive negotiation to orchestrating inspections and final paperwork, I handle every detail rigorously through to a successful closing day.</p>
                             </div>
-                        </div>
+                        </ScrollReveal>
                     </div>
                 </div>
             </section>
@@ -177,34 +189,42 @@ export default function Home() {
                 <div className="container">
                     <h2 className="section-title text-center">Proven Results in Greater Moncton</h2>
                     <div className="results-list">
-                        <div className="result-item glass-panel fade-in">
-                            <div className="result-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                        <ScrollReveal animation="slide-up" delay={0}>
+                            <div className="result-item glass-panel" style={{ height: '100%' }}>
+                                <div className="result-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+                                </div>
+                                <p><strong>Proven Urgency:</strong> Multiple properties successfully sold in under 24 hours.</p>
                             </div>
-                            <p><strong>Proven Urgency:</strong> Multiple properties successfully sold in under 24 hours.</p>
-                        </div>
-                        <div className="result-item glass-panel fade-in" style={{ animationDelay: '0.2s' }}>
-                            <div className="result-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                        </ScrollReveal>
+                        <ScrollReveal animation="slide-up" delay={0.2}>
+                            <div className="result-item glass-panel" style={{ height: '100%' }}>
+                                <div className="result-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="6"></circle><circle cx="12" cy="12" r="2"></circle></svg>
+                                </div>
+                                <p><strong>Strategic Offers:</strong> Winning multiple-offer situations by understanding motivations.</p>
                             </div>
-                            <p><strong>Strategic Offers:</strong> Winning multiple-offer situations by understanding motivations.</p>
-                        </div>
-                        <div className="result-item glass-panel fade-in" style={{ animationDelay: '0.4s' }}>
-                            <div className="result-icon">
-                                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                        </ScrollReveal>
+                        <ScrollReveal animation="slide-up" delay={0.4}>
+                            <div className="result-item glass-panel" style={{ height: '100%' }}>
+                                <div className="result-icon">
+                                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+                                </div>
+                                <p><strong>Master Negotiation:</strong> Securing deals by mastering conditions, not just the price.</p>
                             </div>
-                            <p><strong>Master Negotiation:</strong> Securing deals by mastering conditions, not just the price.</p>
-                        </div>
+                        </ScrollReveal>
                     </div>
                 </div>
             </section>
 
             {/* About Me Section */}
             <section id="about" className="about-section">
-                <div className="container about-container glass-panel">
-                    <div className="about-content">
-                        <h2 className="section-title">Meet Raphaël Lemire</h2>
-                        <div className="about-text">
+                <div className="container">
+                    <ScrollReveal animation="slide-up">
+                        <div className="about-container glass-panel">
+                            <div className="about-content">
+                                <h2 className="section-title">Meet Raphaël Lemire</h2>
+                                <div className="about-text">
                             <p className="about-intro">I independently assist buyers and sellers across Greater Moncton, and am proud to offer services in both English and French.</p>
                             
                             <blockquote className="about-quote">
@@ -220,6 +240,8 @@ export default function Home() {
                             </div>
                         </div>
                     </div>
+                    </div>
+                </ScrollReveal>
                 </div>
             </section>
 
@@ -266,8 +288,9 @@ export default function Home() {
 
             {/* Final CTA */}
             <section id="contact" className="final-cta">
-                <div className="container final-cta-content">
-                    <h2>Ready to make a move?</h2>
+                <ScrollReveal animation="slide-up">
+                    <div className="container final-cta-content">
+                        <h2>Ready to make a move?</h2>
                     <p className="cta-subtitle">
                         Schedule a free 15-minute intro (via phone, video, or in-person) to discuss your goals, timeline, and budget.<br/>
                         Zero pressure, zero commitment—just a clear strategy to get you started.
@@ -287,7 +310,8 @@ export default function Home() {
                         <span className="contact-divider">|</span>
                         <a href="mailto:raphael@exitmoncton.ca" className="contact-link">✉️ raphael@exitmoncton.ca</a>
                     </div>
-                </div>
+                    </div>
+                </ScrollReveal>
             </section>
 
             <footer className="home-footer">
