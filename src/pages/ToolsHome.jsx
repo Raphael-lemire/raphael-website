@@ -13,6 +13,12 @@ const tools = [
     href: '/closing-cost-calculator/',
     status: 'Live',
   },
+  {
+    title: 'Tax Vault',
+    description: 'Collect received invoices, receipt photos, and tax documents into a clean year-end package.',
+    href: '/tax-vault/',
+    status: 'Live',
+  },
 ];
 
 function ToolsHome() {

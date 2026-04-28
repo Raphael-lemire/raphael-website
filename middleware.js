@@ -62,5 +62,5 @@ export default function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/tools/:path*', '/listing-tracker/:path*', '/closing-cost-calculator/:path*'],
+  matcher: ['/tools/:path*', '/listing-tracker/:path*', '/closing-cost-calculator/:path*', '/tax-vault/:path*'],
 };
