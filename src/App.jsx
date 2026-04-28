@@ -7,6 +7,7 @@ import ThankYou from './pages/ThankYou';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
 import ListingTracker from './pages/ListingTracker';
+import ToolsHome from './pages/ToolsHome';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/privacy-policy" element={<Privacy />} />
             <Route path="/terms-of-service" element={<Terms />} />
+            <Route path="/tools" element={<ToolsHome />} />
             <Route path="/listing-tracker" element={<ListingTracker />} />
           </Routes>
         </main>

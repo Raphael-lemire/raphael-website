@@ -336,6 +336,7 @@ function ListingTracker() {
           <h1>Listing Tracker</h1>
         </div>
         <div className="tracker-top-actions">
+          <a className="tracker-secondary" href="/tools">Tools Home</a>
           <a className="tracker-secondary" href="/closing-cost-calculator/">Closing Cost Calculator</a>
           <button className="tracker-primary" type="button" onClick={resetForm}>Add Listing</button>
         </div>

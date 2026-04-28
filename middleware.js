@@ -1,6 +1,6 @@
 /* global process */
 
-const REALM = 'Listing Tracker';
+const REALM = 'Raphael Tools';
 
 function unauthorized() {
   return new Response('Authentication required.', {
@@ -27,7 +27,7 @@ export default function middleware(request) {
   const password = process.env.LISTING_TRACKER_PASSWORD;
 
   if (!username || !password) {
-    return new Response('Listing tracker password is not configured in Vercel.', {
+    return new Response('Private tools password is not configured in Vercel.', {
       status: 503,
       headers: {
         'Content-Type': 'text/plain; charset=UTF-8',
@@ -62,5 +62,5 @@ export default function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/listing-tracker/:path*', '/closing-cost-calculator/:path*'],
+  matcher: ['/tools/:path*', '/listing-tracker/:path*', '/closing-cost-calculator/:path*'],
 };
