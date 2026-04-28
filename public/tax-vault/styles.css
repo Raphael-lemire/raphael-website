@@ -259,6 +259,10 @@ button {
   display: block;
 }
 
+.file-drop .button {
+  justify-self: start;
+}
+
 .file-drop span {
   margin-top: 4px;
   color: var(--muted);
@@ -372,6 +376,22 @@ button {
 .record-notes {
   margin: 12px 0 0;
   overflow-wrap: anywhere;
+}
+
+.record-missing {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.missing-chip {
+  border-radius: 999px;
+  background: #fff4e7;
+  color: var(--amber);
+  padding: 4px 8px;
+  font-size: 0.74rem;
+  font-weight: 850;
 }
 
 .record-amount {

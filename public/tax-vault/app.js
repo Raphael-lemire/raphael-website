@@ -24,6 +24,7 @@ const categories = [
 
 const els = {
   amount: document.querySelector("#amountInput"),
+  autofill: document.querySelector("#autofillButton"),
   category: document.querySelector("#categoryInput"),
   clearForm: document.querySelector("#clearFormButton"),
   date: document.querySelector("#dateInput"),
@@ -59,6 +60,7 @@ const els = {
 
 let db;
 let records = [];
+let selectedFileHints = null;
 
 function openDb() {
   return new Promise((resolve, reject) => {
@@ -168,6 +170,15 @@ function normalizeAmount(value) {
   return Number.isFinite(parsed) ? parsed : 0;
 }
 
+function cleanMoney(value) {
+  const parsed = Number.parseFloat(String(value || "").replace(/[$,\s]/g, ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+function formatDecimal(value) {
+  return value ? value.toFixed(2) : "";
+}
+
 function statusLabel(status) {
   return {
     ready: "Ready",
@@ -183,6 +194,23 @@ function typeLabel(type) {
     "tax-doc": "Tax document",
     income: "Received invoice",
   }[type] || "Receipt";
+}
+
+function requiredMissingFields(record) {
+  const missing = [];
+  if (!record.date) missing.push("date");
+  if (!record.vendor?.trim()) missing.push("vendor");
+  if (!record.category?.trim()) missing.push("category");
+  if (["expense", "received-invoice", "income"].includes(record.type) && Number(record.amount || 0) <= 0) {
+    missing.push("amount");
+  }
+  return missing;
+}
+
+function smartStatus(record, preferredStatus = record.status) {
+  const missing = requiredMissingFields(record);
+  if (missing.length) return "needs-info";
+  return preferredStatus === "review" ? "review" : "ready";
 }
 
 function escapeCsv(value) {
@@ -360,6 +388,18 @@ function renderRecords() {
     ].join(" · ");
     node.querySelector(".record-amount").textContent = money(record.amount);
     node.querySelector(".record-notes").textContent = record.notes || "";
+    const missing = requiredMissingFields(record);
+    if (missing.length) {
+      const missingNode = document.createElement("div");
+      missingNode.className = "record-missing";
+      for (const field of missing) {
+        const chip = document.createElement("span");
+        chip.className = "missing-chip";
+        chip.textContent = `Missing ${field}`;
+        missingNode.append(chip);
+      }
+      node.querySelector(".record-notes").after(missingNode);
+    }
 
     const editButton = node.querySelector(".edit-button");
     const viewButton = node.querySelector(".view-button");
@@ -382,12 +422,14 @@ function render() {
 function resetForm() {
   els.form.reset();
   els.recordId.value = "";
+  selectedFileHints = null;
   els.date.value = todayIso();
   els.taxYear.value = String(currentYear());
   els.category.value = "Office supplies";
   els.status.value = "ready";
   els.fileLabel.textContent = "Upload a received invoice or take a receipt photo";
   els.fileHint.textContent = "Images and PDFs stay in this browser unless you export them.";
+  els.autofill.hidden = true;
   els.delete.hidden = true;
 }
 
@@ -419,6 +461,126 @@ function openRecordFile(record) {
   window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
 }
 
+function plainTextFromBuffer(buffer) {
+  return new TextDecoder("utf-8", { fatal: false })
+    .decode(buffer)
+    .replace(/[\r\n\t]/g, " ")
+    .replace(/[^\x20-\x7E]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractAmountAfter(text, labels) {
+  for (const label of labels) {
+    const pattern = new RegExp(`${label}[^0-9$-]{0,35}(\\$?\\s?\\d[\\d,]*\\.\\d{2})`, "i");
+    const match = text.match(pattern);
+    if (match) return cleanMoney(match[1]);
+  }
+  return 0;
+}
+
+function extractLargestMoney(text) {
+  const matches = [...text.matchAll(/\$?\s?\d[\d,]*\.\d{2}/g)]
+    .map((match) => cleanMoney(match[0]))
+    .filter((value) => value > 0 && value < 1000000);
+  return matches.length ? Math.max(...matches) : 0;
+}
+
+function extractDateFromText(text, fallbackYear) {
+  const ymd = text.match(/(20\d{2})[-/ .](0?[1-9]|1[0-2])[-/ .]([0-2]?\d|3[01])/);
+  if (ymd) {
+    return `${ymd[1]}-${String(ymd[2]).padStart(2, "0")}-${String(ymd[3]).padStart(2, "0")}`;
+  }
+
+  const dmy = text.match(/([0-2]?\d|3[01])[-/ .](0?[1-9]|1[0-2])[-/ .](20\d{2})/);
+  if (dmy) {
+    return `${dmy[3]}-${String(dmy[2]).padStart(2, "0")}-${String(dmy[1]).padStart(2, "0")}`;
+  }
+
+  return "";
+}
+
+function extractVendorFromText(text, fallback) {
+  const words = text
+    .split(/\s{2,}|(?:invoice|receipt|bill|statement|date|total|hst|gst|pst)/i)
+    .map((line) => line.trim())
+    .filter((line) => /[A-Za-z]/.test(line) && line.length >= 3 && line.length <= 56);
+  return words[0] || fallback;
+}
+
+async function getAutofillHints(file, sourcePath = file.webkitRelativePath || file.name) {
+  const fallbackYear = Number(els.yearFilter.value) || currentYear();
+  const buffer = await file.arrayBuffer();
+  const text = plainTextFromBuffer(buffer);
+  const filenameVendor = guessVendorFromFile(file);
+  const date = extractDateFromText(text, fallbackYear) || guessDateFromFile(file, fallbackYear, sourcePath);
+  const amount = extractAmountAfter(text, ["amount due", "balance due", "grand total", "total"]) || extractLargestMoney(text);
+  const tax = extractAmountAfter(text, ["hst", "gst\\/hst", "gst", "pst", "sales tax", "tax"]);
+
+  return {
+    amount,
+    date,
+    tax,
+    vendor: extractVendorFromText(text, filenameVendor),
+  };
+}
+
+function applyHintsToForm(hints) {
+  if (!hints) return;
+  if (hints.date) {
+    els.date.value = hints.date;
+    els.taxYear.value = hints.date.slice(0, 4);
+  }
+  if (hints.vendor && (!els.vendor.value || els.vendor.value === "Imported document")) {
+    els.vendor.value = hints.vendor;
+  }
+  if (hints.amount && !normalizeAmount(els.amount.value)) {
+    els.amount.value = formatDecimal(hints.amount);
+  }
+  if (hints.tax && !normalizeAmount(els.tax.value)) {
+    els.tax.value = formatDecimal(hints.tax);
+  }
+  els.status.value = smartStatus(
+    {
+      type: els.type.value,
+      date: els.date.value,
+      vendor: els.vendor.value,
+      category: els.category.value,
+      amount: normalizeAmount(els.amount.value),
+    },
+    els.status.value,
+  );
+}
+
+function updateFormStatusFromFields() {
+  if (els.status.value === "review") return;
+  els.status.value = smartStatus(
+    {
+      type: els.type.value,
+      date: els.date.value,
+      vendor: els.vendor.value,
+      category: els.category.value,
+      amount: normalizeAmount(els.amount.value),
+    },
+    els.status.value,
+  );
+}
+
+async function autofillSelectedFile() {
+  const file = els.documentFile.files[0];
+  if (!file) return;
+  els.autofill.disabled = true;
+  els.autofill.textContent = "Autofilling...";
+  try {
+    selectedFileHints = selectedFileHints || (await getAutofillHints(file));
+    applyHintsToForm(selectedFileHints);
+    toast("Autofill checked the file. Review anything still missing.");
+  } finally {
+    els.autofill.disabled = false;
+    els.autofill.textContent = "Autofill";
+  }
+}
+
 async function handleSubmit(event) {
   event.preventDefault();
   const existing = records.find((record) => record.id === els.recordId.value);
@@ -442,6 +604,7 @@ async function handleSubmit(event) {
     createdAt: existing?.createdAt || new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   };
+  record.status = smartStatus(record, record.status);
 
   await saveRecord(record);
   await refreshRecords();
@@ -517,25 +680,30 @@ async function importFileEntries(entries, options = {}) {
       }
 
       const fileData = await readFile(file, sourcePath);
-      const date = guessDateFromFile(file, selectedYear, sourcePath);
+      const hints = await getAutofillHints(file, sourcePath);
+      const date = hints.date || guessDateFromFile(file, selectedYear, sourcePath);
       const taxYear = Number(date.slice(0, 4)) || selectedYear;
-      await saveRecord({
+      const importedRecord = {
         ...fileData,
         id: crypto.randomUUID(),
         type: "received-invoice",
         status: "needs-info",
         date,
         taxYear,
-        vendor: guessVendorFromFile(file),
-        amount: 0,
-        tax: 0,
+        vendor: hints.vendor || guessVendorFromFile(file),
+        amount: hints.amount || 0,
+        tax: hints.tax || 0,
         category: "Received invoice / bill",
         payment: "",
-        notes: "Imported from taxes folder. Review amount, category, and notes.",
+        notes: hints.amount
+          ? "Autofilled from the imported file. Review before tax time."
+          : "Imported from taxes folder. Add the amount and any unclear details.",
         fileFingerprint: fingerprint,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-      });
+      };
+      importedRecord.status = smartStatus(importedRecord, importedRecord.status);
+      await saveRecord(importedRecord);
       existingFingerprints.add(fingerprint);
       imported += 1;
     }
@@ -737,6 +905,7 @@ function bindEvents() {
   els.exportPackage.addEventListener("click", exportPackage);
   els.importFolder.addEventListener("click", connectTaxFolder);
   els.folderImport.addEventListener("change", importFolderFiles);
+  els.autofill.addEventListener("click", autofillSelectedFile);
 
   for (const element of [els.yearFilter, els.search, els.statusFilter, els.typeFilter]) {
     element.addEventListener("input", () => {
@@ -745,11 +914,18 @@ function bindEvents() {
     });
   }
 
+  for (const element of [els.date, els.vendor, els.amount, els.category, els.type]) {
+    element.addEventListener("input", updateFormStatusFromFields);
+  }
+
   els.documentFile.addEventListener("change", () => {
     const file = els.documentFile.files[0];
     if (!file) return;
+    selectedFileHints = null;
     els.fileLabel.textContent = file.name;
     els.fileHint.textContent = `${(file.size / 1024 / 1024).toFixed(2)} MB selected`;
+    els.autofill.hidden = false;
+    autofillSelectedFile();
   });
 
   els.date.addEventListener("change", () => {
