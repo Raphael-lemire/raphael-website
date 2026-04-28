@@ -23,6 +23,12 @@ const ids = [
   "transferTaxRate",
   "propertyType",
   "addInsuranceToMortgage",
+  "interestRate",
+  "amortizationYears",
+  "paymentFrequency",
+  "monthlyPropertyTax",
+  "monthlyUtilities",
+  "monthlyCondoFee",
   "legalFee",
   "titleInsurance",
   "inspection",
@@ -129,6 +135,64 @@ function mortgageInsuranceRate(loanToValue) {
   if (loanToValue <= 0.9) return 0.031;
   if (loanToValue <= 0.95) return 0.04;
   return null;
+}
+
+const paymentFrequencyLabels = {
+  monthly: "Monthly payment",
+  biweekly: "Bi-weekly payment",
+  acceleratedBiweekly: "Accelerated bi-weekly",
+  weekly: "Weekly payment",
+  acceleratedWeekly: "Accelerated weekly",
+};
+
+function periodicPayment(principal, annualRate, amortizationYears, paymentsPerYear) {
+  if (principal <= 0 || amortizationYears <= 0) return 0;
+  if (annualRate <= 0) return principal / (amortizationYears * paymentsPerYear);
+
+  const periodicRate = ((1 + annualRate / 2) ** (2 / paymentsPerYear)) - 1;
+  const totalPayments = amortizationYears * paymentsPerYear;
+
+  return principal * ((periodicRate * ((1 + periodicRate) ** totalPayments)) / (((1 + periodicRate) ** totalPayments) - 1));
+}
+
+function paymentEstimate(mortgageAmount) {
+  const annualRate = value("interestRate") / 100;
+  const amortizationYears = value("amortizationYears");
+  const monthlyPayment = periodicPayment(mortgageAmount, annualRate, amortizationYears, 12);
+  const frequency = value("paymentFrequency");
+
+  const payment =
+    frequency === "acceleratedBiweekly"
+      ? monthlyPayment / 2
+      : frequency === "acceleratedWeekly"
+        ? monthlyPayment / 4
+        : frequency === "biweekly"
+          ? periodicPayment(mortgageAmount, annualRate, amortizationYears, 26)
+          : frequency === "weekly"
+            ? periodicPayment(mortgageAmount, annualRate, amortizationYears, 52)
+            : monthlyPayment;
+
+  const paymentsPerYear =
+    frequency === "monthly"
+      ? 12
+      : frequency === "biweekly" || frequency === "acceleratedBiweekly"
+        ? 26
+        : 52;
+
+  const annualMortgagePayments = payment * paymentsPerYear;
+  const monthlyCarryingCost =
+    (annualMortgagePayments / 12) +
+    value("monthlyPropertyTax") +
+    value("monthlyUtilities") +
+    value("monthlyCondoFee");
+
+  return {
+    frequency,
+    label: paymentFrequencyLabels[frequency] || "Payment",
+    payment,
+    annualMortgagePayments,
+    monthlyCarryingCost,
+  };
 }
 
 function daysInYear(year) {
@@ -243,6 +307,7 @@ function calculate() {
       : 0;
   const insurancePaidAtClose = value("addInsuranceToMortgage") ? 0 : insurancePremium;
   const mortgageAmount = baseMortgage + (value("addInsuranceToMortgage") ? insurancePremium : 0);
+  const payment = paymentEstimate(mortgageAmount);
   const taxLevyShare = buyerTaxLevyShare(value("annualTaxLevy"), value("closingDate"));
   const netSaleEquity = sellerNetEquity();
   const equityApplied = value("useSaleEquity")
@@ -303,6 +368,7 @@ function calculate() {
     insuranceRate,
     loanToValue,
     mortgageAmount,
+    payment,
     cashNeeded,
     closingCosts,
     otherBuyerCosts,
@@ -335,6 +401,10 @@ function render() {
     ? "Review"
     : money(result.insurancePremium);
   document.querySelector("#ltv").textContent = percentFormatter.format(result.loanToValue || 0);
+  document.querySelector("#paymentFrequencyLabel").textContent = result.payment.label;
+  document.querySelector("#estimatedPayment").textContent = money(result.payment.payment);
+  document.querySelector("#monthlyCarryingCost").textContent = money(result.payment.monthlyCarryingCost);
+  document.querySelector("#annualMortgagePayments").textContent = money(result.payment.annualMortgagePayments);
   document.querySelector("#taxLevySharePreview").textContent = money(result.taxLevyShare);
   document.querySelector("#sellerNetPreview").textContent = money(result.netSaleEquity);
 
@@ -422,6 +492,8 @@ function summaryText() {
     `Estimated seller net equity: ${money(result.netSaleEquity)}`,
     `Sale equity applied to purchase: ${money(result.equityApplied)}`,
     `Estimated mortgage amount: ${money(result.mortgageAmount)}`,
+    `${result.payment.label}: ${money(result.payment.payment)}`,
+    `Estimated monthly carrying cost: ${money(result.payment.monthlyCarryingCost)}`,
     `Buyer share of tax levy: ${money(result.taxLevyShare)}`,
     `Mortgage insurance premium: ${result.highRatioWarning ? "Review with lender" : money(result.insurancePremium)}`,
     "",
