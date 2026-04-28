@@ -46,6 +46,7 @@ const els = {
   readyCount: document.querySelector("#readyCount"),
   recordId: document.querySelector("#recordId"),
   recordsList: document.querySelector("#recordsList"),
+  save: document.querySelector("#saveButton"),
   search: document.querySelector("#searchInput"),
   status: document.querySelector("#statusInput"),
   statusFilter: document.querySelector("#statusFilter"),
@@ -148,12 +149,13 @@ function currentYear() {
   return new Date().getFullYear();
 }
 
-function readFile(file, sourcePath = file.webkitRelativePath || file.name) {
+function readFile(file, sourcePath) {
   if (!file) return Promise.resolve(null);
+  const resolvedSourcePath = sourcePath || file.webkitRelativePath || file.name;
   return file.arrayBuffer().then((buffer) => ({
     fileBlob: new Blob([buffer], { type: file.type || "application/octet-stream" }),
     fileName: file.name,
-    sourcePath,
+    sourcePath: resolvedSourcePath,
     fileSize: file.size,
     fileType: file.type || "application/octet-stream",
   }));
@@ -446,6 +448,7 @@ function resetForm() {
   els.fileLabel.textContent = "Upload a received invoice or take a receipt photo";
   els.fileHint.textContent = "Images and PDFs stay in this browser unless you export them.";
   els.autofill.hidden = true;
+  els.save.textContent = "Save Record";
   els.delete.hidden = true;
 }
 
@@ -466,6 +469,7 @@ function fillForm(record) {
   els.fileHint.textContent = record.fileName
     ? "Choose a new file only if you want to replace the current one."
     : "Add a PDF or photo if you have one.";
+  els.save.textContent = "Update Record";
   els.delete.hidden = false;
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
@@ -488,18 +492,11 @@ function plainTextFromBuffer(buffer) {
 
 function extractAmountAfter(text, labels) {
   for (const label of labels) {
-    const pattern = new RegExp(`${label}[^0-9$-]{0,35}(\\$?\\s?\\d[\\d,]*\\.\\d{2})`, "i");
+    const pattern = new RegExp(`${label}[^0-9$-]{0,24}(\\$?\\s?\\d[\\d,]*\\.\\d{2})`, "i");
     const match = text.match(pattern);
     if (match) return cleanMoney(match[1]);
   }
   return 0;
-}
-
-function extractLargestMoney(text) {
-  const matches = [...text.matchAll(/\$?\s?\d[\d,]*\.\d{2}/g)]
-    .map((match) => cleanMoney(match[0]))
-    .filter((value) => value > 0 && value < 1000000);
-  return matches.length ? Math.max(...matches) : 0;
 }
 
 function extractDateFromText(text, fallbackYear) {
@@ -530,7 +527,14 @@ async function getAutofillHints(file, sourcePath = file.webkitRelativePath || fi
   const text = plainTextFromBuffer(buffer);
   const filenameVendor = guessVendorFromFile(file);
   const date = extractDateFromText(text, fallbackYear) || guessDateFromFile(file, fallbackYear, sourcePath);
-  const amount = extractAmountAfter(text, ["amount due", "balance due", "grand total", "total"]) || extractLargestMoney(text);
+  const amount = extractAmountAfter(text, [
+    "amount due",
+    "balance due",
+    "total due",
+    "invoice total",
+    "grand total",
+    "amount paid",
+  ]);
   const tax = extractAmountAfter(text, ["hst", "gst\\/hst", "gst", "pst", "sales tax", "tax"]);
 
   return {
