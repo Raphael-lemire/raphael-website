@@ -95,6 +95,26 @@ button {
   gap: 10px;
 }
 
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  margin-bottom: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--green);
+  padding: 0 12px;
+  text-decoration: none;
+  font-size: 0.86rem;
+  font-weight: 850;
+}
+
+.back-link:hover {
+  border-color: rgba(29, 107, 80, 0.35);
+  background: white;
+}
+
 .button,
 .icon-button {
   min-height: 42px;
