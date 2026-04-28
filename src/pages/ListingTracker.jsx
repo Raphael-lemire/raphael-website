@@ -226,6 +226,26 @@ function exportCalendar(listing) {
   URL.revokeObjectURL(url);
 }
 
+function googleCalendarUrl(listing, reminder) {
+  const start = toIcsDate(reminder.date);
+  const end = toIcsDate(addDays(reminder.date, 1));
+  const details = [
+    reminder.description,
+    `Status: ${listing.status}`,
+    `Contract ends: ${formatDisplayDate(listing.contractEnd)}`,
+    listing.listingLink ? `Listing link: ${listing.listingLink}` : '',
+  ].filter(Boolean).join('\n');
+
+  const params = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: `${listing.address}: ${reminder.title}`,
+    dates: `${start}/${end}`,
+    details,
+  });
+
+  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+}
+
 function makeInitialForm() {
   const start = formatInputDate(todayStart());
 
@@ -422,7 +442,7 @@ function ListingTracker() {
           <div className="tracker-list-header">
             <div>
               <h2>Your listings</h2>
-              <p>{listings.length ? 'Use the calendar export on each card to add reminders.' : 'Add your first listing to start tracking follow-ups.'}</p>
+              <p>{listings.length ? 'Add reminders to Google Calendar or export all dates as a calendar file.' : 'Add your first listing to start tracking follow-ups.'}</p>
             </div>
             <select value={filter} onChange={(event) => setFilter(event.target.value)} aria-label="Filter listings by status">
               <option value="all">All listings</option>
@@ -509,6 +529,23 @@ function ListingCard({ listing, onEdit, onDelete }) {
           </li>
         ))}
       </ul>
+
+      <details className="tracker-google-calendar">
+        <summary>Add reminders to Google Calendar</summary>
+        <div className="tracker-google-links">
+          {reminders.map((reminder) => (
+            <a
+              href={googleCalendarUrl(listing, reminder)}
+              key={`${reminder.title}-${reminder.date.toISOString()}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span>{reminder.title}</span>
+              <strong>{formatDisplayDate(reminder.date)}</strong>
+            </a>
+          ))}
+        </div>
+      </details>
 
       <p className="tracker-notes">{listing.notes || 'No notes added.'}</p>
 

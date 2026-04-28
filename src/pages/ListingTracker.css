@@ -394,6 +394,53 @@
   border-color: rgba(196, 134, 39, 0.28);
 }
 
+.tracker-google-calendar {
+  margin: 0 0 14px;
+  border: 1px solid var(--tracker-line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.tracker-google-calendar summary {
+  cursor: pointer;
+  padding: 12px;
+  color: var(--tracker-accent-dark);
+  font-weight: 900;
+}
+
+.tracker-google-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+.tracker-google-links a {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+  border: 1px solid var(--tracker-line);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--tracker-ink);
+  text-decoration: none;
+}
+
+.tracker-google-links a:hover {
+  border-color: rgba(45, 111, 93, 0.45);
+  color: var(--tracker-ink);
+}
+
+.tracker-google-links span {
+  color: var(--tracker-muted);
+  font-size: 0.84rem;
+  font-weight: 700;
+}
+
+.tracker-google-links strong {
+  color: var(--tracker-accent-dark);
+}
+
 .tracker-notes {
   color: var(--tracker-muted);
   white-space: pre-wrap;
@@ -431,7 +478,8 @@
   .tracker-summary,
   .tracker-two-column,
   .tracker-meta,
-  .tracker-reminder-list {
+  .tracker-reminder-list,
+  .tracker-google-links {
     grid-template-columns: 1fr;
   }
 
