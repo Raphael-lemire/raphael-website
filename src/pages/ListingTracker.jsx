@@ -335,7 +335,10 @@ function ListingTracker() {
           <p className="tracker-eyebrow">Private listing workspace</p>
           <h1>Listing Tracker</h1>
         </div>
-        <button className="tracker-primary" type="button" onClick={resetForm}>Add Listing</button>
+        <div className="tracker-top-actions">
+          <a className="tracker-secondary" href="/closing-cost-calculator/">Closing Cost Calculator</a>
+          <button className="tracker-primary" type="button" onClick={resetForm}>Add Listing</button>
+        </div>
       </header>
 
       <section className="tracker-summary" aria-label="Listing summary">

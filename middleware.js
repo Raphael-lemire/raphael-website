@@ -62,5 +62,5 @@ export default function middleware(request) {
 }
 
 export const config = {
-  matcher: ['/listing-tracker/:path*'],
+  matcher: ['/listing-tracker/:path*', '/closing-cost-calculator/:path*'],
 };
