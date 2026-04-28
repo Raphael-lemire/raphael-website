@@ -22,6 +22,14 @@ function getBasicCredentials(request) {
 function isAuthorized(request) {
   const expectedUsername = process.env.LISTING_TRACKER_USERNAME;
   const expectedPassword = process.env.LISTING_TRACKER_PASSWORD;
+  const automationToken = process.env.LISTING_TRACKER_AUTOMATION_TOKEN;
+  const authorization = request.headers.authorization || '';
+  const [scheme, value] = authorization.split(' ');
+
+  if (scheme === 'Bearer' && automationToken && value === automationToken) {
+    return true;
+  }
+
   const credentials = getBasicCredentials(request);
 
   return Boolean(
