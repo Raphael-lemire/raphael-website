@@ -3,6 +3,7 @@ import './ListingTracker.css';
 
 const STORAGE_KEY = 'listing-tracker-v1';
 const CLOSED_STATUSES = new Set(['Sold', 'Expired', 'Cancelled']);
+const API_ENDPOINT = '/api/listings';
 
 const emptyForm = {
   id: '',
@@ -267,10 +268,68 @@ function ListingTracker() {
   const [form, setForm] = useState(makeInitialForm);
   const [filter, setFilter] = useState('all');
   const [lastStartDefault, setLastStartDefault] = useState(form.contractEnd);
+  const [syncState, setSyncState] = useState('loading');
+  const [syncMessage, setSyncMessage] = useState('Loading private storage...');
+  const [hasRemoteStorage, setHasRemoteStorage] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(listings));
   }, [listings]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadRemoteListings() {
+      try {
+        const response = await fetch(API_ENDPOINT);
+        if (!response.ok) throw new Error(response.status === 503 ? 'Storage is not connected yet.' : 'Private storage could not be loaded.');
+        const data = await response.json();
+        if (cancelled) return;
+        setListings(Array.isArray(data.listings) ? data.listings : []);
+        setHasRemoteStorage(true);
+        setSyncState('synced');
+        setSyncMessage('Saved to private storage');
+      } catch (error) {
+        if (cancelled) return;
+        setHasRemoteStorage(false);
+        setSyncState('local');
+        setSyncMessage(`${error.message} Using this browser until storage is connected.`);
+      }
+    }
+
+    loadRemoteListings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  async function persistListings(nextListings) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(nextListings));
+    setListings(nextListings);
+
+    if (!hasRemoteStorage) return;
+
+    setSyncState('saving');
+    setSyncMessage('Saving to private storage...');
+
+    try {
+      const response = await fetch(API_ENDPOINT, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ listings: nextListings }),
+      });
+
+      if (!response.ok) throw new Error('Private storage save failed.');
+      setSyncState('synced');
+      setSyncMessage('Saved to private storage');
+    } catch (error) {
+      setSyncState('local');
+      setSyncMessage(`${error.message} Your latest changes are saved in this browser.`);
+    }
+  }
 
   const activeListings = listings.filter((listing) => !CLOSED_STATUSES.has(listing.status));
   const attentionListings = activeListings.filter((listing) => nextAction(listing).type === 'overdue');
@@ -328,11 +387,13 @@ function ListingTracker() {
       updatedAt: new Date().toISOString(),
     };
 
-    setListings((current) => {
-      const existingIndex = current.findIndex((item) => item.id === id);
-      if (existingIndex === -1) return [...current, listing];
-      return current.map((item) => (item.id === id ? listing : item));
-    });
+    const nextListings = (() => {
+      const existingIndex = listings.findIndex((item) => item.id === id);
+      if (existingIndex === -1) return [...listings, listing];
+      return listings.map((item) => (item.id === id ? listing : item));
+    })();
+
+    persistListings(nextListings);
     resetForm();
   }
 
@@ -344,7 +405,7 @@ function ListingTracker() {
 
   function deleteListing(listing) {
     if (!window.confirm(`Delete ${listing.address}?`)) return;
-    setListings((current) => current.filter((item) => item.id !== listing.id));
+    persistListings(listings.filter((item) => item.id !== listing.id));
     if (form.id === listing.id) resetForm();
   }
 
@@ -376,6 +437,10 @@ function ListingTracker() {
           <p>Ending in 30 days</p>
         </article>
       </section>
+
+      <div className={`tracker-sync-banner ${syncState}`}>
+        {syncMessage}
+      </div>
 
       <section className="tracker-workspace">
         <form className="tracker-form" onSubmit={saveListing}>

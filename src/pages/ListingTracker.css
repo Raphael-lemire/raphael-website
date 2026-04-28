@@ -114,6 +114,35 @@
   color: var(--tracker-muted);
 }
 
+.tracker-sync-banner {
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--tracker-line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--tracker-muted);
+  font-weight: 800;
+}
+
+.tracker-sync-banner.synced {
+  border-color: rgba(45, 111, 93, 0.28);
+  background: #eef7f2;
+  color: var(--tracker-accent-dark);
+}
+
+.tracker-sync-banner.saving,
+.tracker-sync-banner.loading {
+  border-color: rgba(196, 134, 39, 0.3);
+  background: #fff9ec;
+  color: #6f4a0e;
+}
+
+.tracker-sync-banner.local {
+  border-color: rgba(173, 61, 61, 0.2);
+  background: #fff5f1;
+  color: #7a3a24;
+}
+
 .tracker-workspace {
   display: grid;
   grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
