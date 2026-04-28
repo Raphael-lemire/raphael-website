@@ -213,6 +213,22 @@ function smartStatus(record, preferredStatus = record.status) {
   return preferredStatus === "review" ? "review" : "ready";
 }
 
+function normalizeRecord(record) {
+  const upgraded = record.type === "income"
+    ? {
+        ...record,
+        type: "received-invoice",
+        category: record.category === "Income invoice" ? "Received invoice / bill" : record.category,
+      }
+    : { ...record };
+  upgraded.status = smartStatus(upgraded, upgraded.status);
+  return upgraded;
+}
+
+function recordsAreDifferent(left, right) {
+  return left.type !== right.type || left.category !== right.category || left.status !== right.status;
+}
+
 function escapeCsv(value) {
   const stringValue = String(value ?? "");
   if (/[",\n]/.test(stringValue)) {
@@ -890,11 +906,10 @@ async function exportPackage() {
 }
 
 async function refreshRecords() {
-  records = (await getAllRecords()).map((record) =>
-    record.type === "income"
-      ? { ...record, type: "received-invoice", category: record.category === "Income invoice" ? "Received invoice / bill" : record.category }
-      : record,
-  );
+  const loadedRecords = await getAllRecords();
+  records = loadedRecords.map(normalizeRecord);
+  const changedRecords = records.filter((record, index) => recordsAreDifferent(record, loadedRecords[index]));
+  await Promise.all(changedRecords.map((record) => saveRecord(record)));
 }
 
 function bindEvents() {
