@@ -1,5 +1,6 @@
+import { get, put } from '@vercel/blob';
+
 const BLOB_PATH = 'listing-tracker/listings.json';
-const BLOB_BASE_URL = 'https://blob.vercel-storage.com';
 
 function getBasicCredentials(request) {
   const authorization = request.headers.authorization || '';
@@ -54,34 +55,26 @@ async function readBody(request) {
 }
 
 async function readListings(token) {
-  const response = await fetch(`${BLOB_BASE_URL}/${BLOB_PATH}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const result = await get(BLOB_PATH, {
+    access: 'private',
+    token,
   });
 
-  if (response.status === 404) return [];
-  if (!response.ok) throw new Error(`Blob read failed with ${response.status}`);
-  return response.json();
+  if (!result?.stream) return [];
+
+  const text = await new Response(result.stream).text();
+  return JSON.parse(text || '[]');
 }
 
 async function writeListings(token, listings) {
-  const response = await fetch(`${BLOB_BASE_URL}/${BLOB_PATH}`, {
-    method: 'PUT',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json; charset=utf-8',
-      'x-content-type': 'application/json; charset=utf-8',
-      'x-add-random-suffix': '0',
-      'x-cache-control-max-age': '0',
-    },
-    body: JSON.stringify(listings, null, 2),
+  await put(BLOB_PATH, JSON.stringify(listings, null, 2), {
+    access: 'private',
+    addRandomSuffix: false,
+    allowOverwrite: true,
+    cacheControlMaxAge: 60,
+    contentType: 'application/json; charset=utf-8',
+    token,
   });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Blob write failed with ${response.status}: ${text}`);
-  }
 }
 
 export default async function handler(request, response) {
