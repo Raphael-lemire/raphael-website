@@ -1,0 +1,438 @@
+.listing-tracker-page {
+  --tracker-bg: #f5f7f2;
+  --tracker-panel: #ffffff;
+  --tracker-panel-soft: #eef3ea;
+  --tracker-ink: #1d2520;
+  --tracker-muted: #647069;
+  --tracker-line: #d8e0d6;
+  --tracker-accent: #2d6f5d;
+  --tracker-accent-dark: #214f43;
+  --tracker-gold: #c48627;
+  --tracker-danger: #ad3d3d;
+  --tracker-shadow: 0 18px 45px rgba(34, 52, 44, 0.12);
+
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px max(16px, calc((100vw - 1180px) / 2)) 48px;
+  background: var(--tracker-bg);
+  color: var(--tracker-ink);
+}
+
+.listing-tracker-page button,
+.listing-tracker-page input,
+.listing-tracker-page select,
+.listing-tracker-page textarea {
+  font: inherit;
+}
+
+.listing-tracker-page button,
+.listing-tracker-page select {
+  cursor: pointer;
+}
+
+.tracker-topbar,
+.tracker-form-heading,
+.tracker-list-header,
+.tracker-card-top,
+.tracker-progress-label,
+.tracker-card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tracker-topbar {
+  margin-bottom: 20px;
+}
+
+.tracker-eyebrow {
+  margin: 0 0 6px;
+  color: var(--tracker-accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.listing-tracker-page h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.listing-tracker-page h2 {
+  margin-bottom: 6px;
+  font-size: 1.25rem;
+  letter-spacing: 0;
+}
+
+.listing-tracker-page h3 {
+  margin-bottom: 4px;
+  font-size: 1.2rem;
+  letter-spacing: 0;
+}
+
+.listing-tracker-page p {
+  margin: 0;
+}
+
+.tracker-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tracker-summary article {
+  min-height: 92px;
+  padding: 18px;
+  background: var(--tracker-panel);
+  border: 1px solid var(--tracker-line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(34, 52, 44, 0.06);
+}
+
+.tracker-summary span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.tracker-summary p,
+.tracker-list-header p,
+.tracker-card-top p {
+  color: var(--tracker-muted);
+}
+
+.tracker-workspace {
+  display: grid;
+  grid-template-columns: minmax(320px, 390px) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.tracker-form,
+.tracker-listing-area {
+  background: var(--tracker-panel);
+  border: 1px solid var(--tracker-line);
+  border-radius: 8px;
+  box-shadow: var(--tracker-shadow);
+}
+
+.tracker-form {
+  position: sticky;
+  top: 16px;
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+}
+
+.tracker-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--tracker-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.tracker-form input,
+.tracker-form select,
+.tracker-form textarea,
+.tracker-list-header select {
+  width: 100%;
+  border: 1px solid var(--tracker-line);
+  border-radius: 6px;
+  background: #fbfcfa;
+  color: var(--tracker-ink);
+  padding: 11px 12px;
+  outline: none;
+}
+
+.tracker-form textarea {
+  resize: vertical;
+}
+
+.tracker-form input:focus,
+.tracker-form select:focus,
+.tracker-form textarea:focus,
+.tracker-list-header select:focus {
+  border-color: var(--tracker-accent);
+  box-shadow: 0 0 0 3px rgba(45, 111, 93, 0.16);
+}
+
+.tracker-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.tracker-primary,
+.tracker-secondary,
+.tracker-ghost,
+.tracker-danger,
+.tracker-link-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  padding: 0 14px;
+  font-weight: 800;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.tracker-primary {
+  background: var(--tracker-accent);
+  color: #fff;
+}
+
+.tracker-primary:hover {
+  background: var(--tracker-accent-dark);
+  color: #fff;
+}
+
+.tracker-secondary,
+.tracker-link-button {
+  border-color: var(--tracker-line);
+  background: var(--tracker-panel-soft);
+  color: var(--tracker-accent-dark);
+}
+
+.tracker-ghost {
+  min-height: 36px;
+  background: transparent;
+  color: var(--tracker-accent-dark);
+  border-color: var(--tracker-line);
+}
+
+.tracker-danger {
+  border-color: rgba(173, 61, 61, 0.24);
+  background: #fff1f1;
+  color: var(--tracker-danger);
+}
+
+.tracker-full {
+  width: 100%;
+}
+
+.tracker-listing-area {
+  min-height: 560px;
+  padding: 20px;
+}
+
+.tracker-list-header {
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.tracker-list-header select {
+  max-width: 210px;
+}
+
+.tracker-listing-list {
+  display: grid;
+  gap: 14px;
+}
+
+.tracker-empty-state {
+  min-height: 300px;
+  display: grid;
+  place-items: center;
+  border: 1px dashed var(--tracker-line);
+  border-radius: 8px;
+  color: var(--tracker-muted);
+  text-align: center;
+  padding: 24px;
+}
+
+.tracker-card {
+  padding: 18px;
+  border: 1px solid var(--tracker-line);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.tracker-card.needs-attention {
+  border-color: rgba(196, 134, 39, 0.65);
+  box-shadow: inset 4px 0 0 var(--tracker-gold);
+}
+
+.tracker-card.closed {
+  background: #f8f9f7;
+  opacity: 0.78;
+}
+
+.tracker-card-top {
+  align-items: flex-start;
+}
+
+.tracker-status {
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: var(--tracker-panel-soft);
+  color: var(--tracker-accent-dark);
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.tracker-status.status-sold {
+  background: #e9f5ee;
+  color: #1d6b3f;
+}
+
+.tracker-status.status-expired,
+.tracker-status.status-cancelled {
+  background: #f4eeee;
+  color: var(--tracker-danger);
+}
+
+.tracker-meta {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 18px 0;
+}
+
+.tracker-meta div {
+  padding: 12px;
+  border-radius: 6px;
+  background: var(--tracker-panel-soft);
+}
+
+.tracker-meta dt {
+  margin-bottom: 4px;
+  color: var(--tracker-muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.tracker-meta dd {
+  margin: 0;
+  font-weight: 800;
+}
+
+.tracker-progress-wrap {
+  margin: 16px 0;
+}
+
+.tracker-progress-label {
+  margin-bottom: 8px;
+  color: var(--tracker-muted);
+  font-size: 0.9rem;
+}
+
+.tracker-progress-track {
+  position: relative;
+  height: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #dfe8dc;
+}
+
+.tracker-progress-fill {
+  height: 100%;
+  width: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--tracker-accent), #75a14f);
+}
+
+.tracker-milestone {
+  position: absolute;
+  top: 0;
+  width: 2px;
+  height: 100%;
+  background: rgba(29, 37, 32, 0.42);
+}
+
+.tracker-next-reminder {
+  margin: 14px 0 10px;
+  padding: 12px;
+  border-radius: 6px;
+  background: #fff8ea;
+  color: #6f4a0e;
+  font-weight: 800;
+}
+
+.tracker-reminder-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.tracker-reminder-list li {
+  padding: 10px;
+  border: 1px solid var(--tracker-line);
+  border-radius: 6px;
+  color: var(--tracker-muted);
+  font-size: 0.86rem;
+}
+
+.tracker-reminder-list strong {
+  display: block;
+  color: var(--tracker-ink);
+}
+
+.tracker-reminder-list .past {
+  color: #8b6f43;
+  background: #fff9ec;
+  border-color: rgba(196, 134, 39, 0.28);
+}
+
+.tracker-notes {
+  color: var(--tracker-muted);
+  white-space: pre-wrap;
+}
+
+.tracker-card-actions {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin-top: 16px;
+}
+
+@media (max-width: 900px) {
+  .tracker-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .tracker-form {
+    position: static;
+  }
+}
+
+@media (max-width: 680px) {
+  .listing-tracker-page {
+    padding: 18px 10px 40px;
+  }
+
+  .tracker-topbar,
+  .tracker-list-header,
+  .tracker-card-top {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .tracker-summary,
+  .tracker-two-column,
+  .tracker-meta,
+  .tracker-reminder-list {
+    grid-template-columns: 1fr;
+  }
+
+  .tracker-primary,
+  .tracker-secondary,
+  .tracker-ghost,
+  .tracker-danger,
+  .tracker-link-button,
+  .tracker-list-header select {
+    width: 100%;
+  }
+}

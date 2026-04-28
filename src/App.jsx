@@ -6,6 +6,7 @@ import Survey from './pages/Survey'
 import ThankYou from './pages/ThankYou';
 import Privacy from './pages/Privacy';
 import Terms from './pages/Terms';
+import ListingTracker from './pages/ListingTracker';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/privacy-policy" element={<Privacy />} />
             <Route path="/terms-of-service" element={<Terms />} />
+            <Route path="/listing-tracker" element={<ListingTracker />} />
           </Routes>
         </main>
       </div>
