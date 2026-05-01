@@ -1,0 +1,615 @@
+name: Apply booking calendar update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/apply-booking-update.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  apply-booking-update:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply booking calendar patch
+        run: |
+          cat <<'PATCH' >/tmp/booking-update.patch
+diff --git a/api/highlevel-book-appointment.js b/api/highlevel-book-appointment.js
+index 4ac6815..36eadcf 100644
+--- a/api/highlevel-book-appointment.js
++++ b/api/highlevel-book-appointment.js
+@@ -115,6 +115,62 @@ function getAppointmentTimeLabel(body) {
+   }).format(start);
+ }
+ 
++function getMeetingMethodValue(body) {
++  const meetingMethod = getString(body.meetingMethod);
++  const normalized = meetingMethod.toLowerCase();
++
++  if (normalized.includes("phone")) {
++    return "Phone call";
++  }
++
++  if (normalized.includes("google") || normalized.includes("meet") || normalized.includes("video")) {
++    return "Google Meet video call";
++  }
++
++  if (normalized.includes("person") || normalized.includes("office") || normalized.includes("champlain")) {
++    return "In person at 260 Champlain St, Dieppe";
++  }
++
++  return meetingMethod;
++}
++
++function getMeetingMethodShort(body) {
++  const meetingMethod = getMeetingMethodValue(body);
++  const normalized = meetingMethod.toLowerCase();
++
++  if (normalized.includes("phone")) {
++    return "Phone call";
++  }
++
++  if (normalized.includes("google") || normalized.includes("meet") || normalized.includes("video")) {
++    return "Google Meet";
++  }
++
++  if (normalized.includes("person") || normalized.includes("office") || normalized.includes("champlain")) {
++    return "In person";
++  }
++
++  return meetingMethod;
++}
++
++function getMeetingMethodTag(body) {
++  const meetingMethod = getMeetingMethodValue(body).toLowerCase();
++
++  if (meetingMethod.includes("phone")) {
++    return "meeting: phone";
++  }
++
++  if (meetingMethod.includes("google") || meetingMethod.includes("meet") || meetingMethod.includes("video")) {
++    return "meeting: google meet";
++  }
++
++  if (meetingMethod.includes("person") || meetingMethod.includes("office") || meetingMethod.includes("champlain")) {
++    return "meeting: in person";
++  }
++
++  return "";
++}
++
+ function addSlotStartTime(slots, value) {
+   if (!value) return;
+ 
+@@ -207,6 +263,7 @@ function buildAppointmentNote(body) {
+     `- Budget / questions: ${getBudgetValue(body) || "Not answered"}`,
+     "",
+     "Appointment",
++    `- Meeting preference: ${getMeetingMethodValue(body) || "Not answered"}`,
+     `- Selected time: ${getAppointmentTimeLabel(body) || getString(body.startTime)}`,
+     `- Original page: ${getString(body.pageUrl) || "Not captured"}`,
+   ];
+@@ -254,11 +311,16 @@ function getIntentTag(body) {
+ function buildTags(body) {
+   const tags = new Set(["website lead", "source: consultation", "status: appointment booked"]);
+   const intentTag = getIntentTag(body);
++  const meetingMethodTag = getMeetingMethodTag(body);
+ 
+   if (intentTag) {
+     tags.add(intentTag);
+   }
+ 
++  if (meetingMethodTag) {
++    tags.add(meetingMethodTag);
++  }
++
+   if (getString(body.name).toLowerCase().includes("test") || getString(body.email).toLowerCase().includes("test")) {
+     tags.add("test lead");
+   }
+@@ -398,13 +460,16 @@ function buildOpportunityPayload(body, contactId) {
+ }
+ 
+ function buildAppointmentPayload(body, contactId, calendarId) {
++  const meetingMethod = getMeetingMethodShort(body);
++  const title = [getString(body.name), meetingMethod].filter(Boolean).join(" - ");
++
+   return {
+     locationId: LOCATION_ID,
+     calendarId,
+     contactId,
+     startTime: getString(body.startTime),
+     endTime: getString(body.endTime),
+-    title: getString(body.name),
++    title: title || getString(body.name),
+     appointmentStatus: "confirmed",
+     toNotify: true,
+     ...(process.env.HIGHLEVEL_ASSIGNED_USER_ID
+diff --git a/app.js b/app.js
+index d6a254b..0706c29 100644
+--- a/app.js
++++ b/app.js
+@@ -15,6 +15,7 @@ const miniForm = document.querySelector("[data-mini-form]");
+ const consultationDialog = document.querySelector("[data-consultation-dialog]");
+ const consultationSteps = document.querySelectorAll("[data-consultation-step]");
+ const slotStatus = document.querySelector("[data-slot-status]");
++const dateList = document.querySelector("[data-date-list]");
+ const slotList = document.querySelector("[data-slot-list]");
+ const calendarFrame = document.querySelector("[data-calendar-frame]");
+ const calendarFallbackLink = document.querySelector("[data-calendar-fallback-link]");
+@@ -25,6 +26,8 @@ let toastTimer;
+ let consultationDraft = {
+   answers: {},
+   slot: null,
++  slots: [],
++  selectedDateKey: "",
+ };
+ 
+ const consultationFieldParams = {
+@@ -102,6 +105,8 @@ function resetConsultationFlow() {
+   consultationDraft = {
+     answers: {},
+     slot: null,
++    slots: [],
++    selectedDateKey: "",
+   };
+   if (selectedSlotSummary) {
+     selectedSlotSummary.textContent = "";
+@@ -109,6 +114,9 @@ function resetConsultationFlow() {
+   if (slotList) {
+     slotList.textContent = "";
+   }
++  if (dateList) {
++    dateList.textContent = "";
++  }
+   if (calendarFrame) {
+     calendarFrame.hidden = true;
+     calendarFrame.removeAttribute("src");
+@@ -168,6 +176,38 @@ function formatSlotDate(startTime) {
+   }).format(new Date(startTime));
+ }
+ 
++function getSlotDateKey(startTime) {
++  const parts = new Intl.DateTimeFormat("en-CA", {
++    year: "numeric",
++    month: "2-digit",
++    day: "2-digit",
++    timeZone: siteConfig.timezone,
++  }).formatToParts(new Date(startTime));
++  const dateParts = Object.fromEntries(parts.map((part) => [part.type, part.value]));
++
++  if (!dateParts.year || !dateParts.month || !dateParts.day) {
++    return "";
++  }
++
++  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
++}
++
++function getSlotDateMeta(startTime) {
++  const parts = new Intl.DateTimeFormat("en-CA", {
++    weekday: "short",
++    month: "short",
++    day: "numeric",
++    timeZone: siteConfig.timezone,
++  }).formatToParts(new Date(startTime));
++  const dateParts = Object.fromEntries(parts.map((part) => [part.type, part.value]));
++
++  return {
++    weekday: dateParts.weekday || "",
++    month: dateParts.month || "",
++    day: dateParts.day || "",
++  };
++}
++
+ function formatSlotTime(startTime) {
+   return new Intl.DateTimeFormat("en-CA", {
+     hour: "numeric",
+@@ -206,72 +246,137 @@ function renderSlotFallback(message = "Open the booking calendar to choose a tim
+ 
+ function groupSlotsByDate(slots) {
+   return slots.reduce((groups, slot) => {
+-    const key = new Intl.DateTimeFormat("en-CA", {
+-      dateStyle: "short",
+-      timeZone: siteConfig.timezone,
+-    }).format(new Date(slot.startTime));
++    const key = getSlotDateKey(slot.startTime);
++
++    if (!key) {
++      return groups;
++    }
+ 
+     if (!groups.has(key)) {
+-      groups.set(key, []);
++      groups.set(key, {
++        key,
++        label: formatSlotDate(slot.startTime),
++        meta: getSlotDateMeta(slot.startTime),
++        slots: [],
++      });
+     }
+ 
+-    groups.get(key).push(slot);
++    groups.get(key).slots.push(slot);
+     return groups;
+   }, new Map());
+ }
+ 
++function renderDatePicker(dayGroups, selectedKey) {
++  if (!dateList) return;
++
++  dateList.textContent = "";
++
++  dayGroups.forEach((dayGroup) => {
++    const button = document.createElement("button");
++    button.className = `date-button${dayGroup.key === selectedKey ? " is-active" : ""}`;
++    button.type = "button";
++    button.setAttribute("aria-pressed", String(dayGroup.key === selectedKey));
++    button.setAttribute("aria-label", `Show times for ${dayGroup.label}`);
++
++    const weekday = document.createElement("span");
++    weekday.className = "date-weekday";
++    weekday.textContent = dayGroup.meta.weekday;
++
++    const day = document.createElement("span");
++    day.className = "date-number";
++    day.textContent = dayGroup.meta.day;
++
++    const month = document.createElement("span");
++    month.className = "date-month";
++    month.textContent = dayGroup.meta.month;
++
++    button.append(weekday, day, month);
++    button.addEventListener("click", () => {
++      consultationDraft.selectedDateKey = dayGroup.key;
++      renderSlots(consultationDraft.slots);
++    });
++    dateList.append(button);
++  });
++}
++
++function renderSelectedDaySlots(dayGroup) {
++  if (!slotList || !dayGroup) return;
++
++  slotList.textContent = "";
++
++  const day = document.createElement("section");
++  day.className = "slot-day";
++
++  const heading = document.createElement("h3");
++  heading.textContent = dayGroup.label;
++  day.append(heading);
++
++  const buttons = document.createElement("div");
++  buttons.className = "slot-buttons";
++
++  dayGroup.slots.forEach((slot) => {
++    const button = document.createElement("button");
++    button.className = "slot-button";
++    button.type = "button";
++    button.textContent = formatSlotTime(slot.startTime);
++    button.addEventListener("click", () => {
++      consultationDraft.slot = slot;
++      if (selectedSlotSummary) {
++        selectedSlotSummary.textContent = `Selected time: ${formatSlotSummary(slot.startTime)}`;
++      }
++      setConsultationStep("contact");
++      consultationContactForm?.querySelector("input[name='meetingMethod']")?.focus();
++    });
++    buttons.append(button);
++  });
++
++  day.append(buttons);
++  slotList.append(day);
++}
++
+ function renderSlots(slots) {
+   if (!slotList) return;
+ 
+   slotList.textContent = "";
++  if (dateList) {
++    dateList.textContent = "";
++  }
+ 
+   if (!slots.length) {
+     renderSlotFallback("No quick time buttons were found. Open the booking calendar to choose a time.");
+     return;
+   }
+ 
++  consultationDraft.slots = slots;
++  const dayGroups = Array.from(groupSlotsByDate(slots).values());
++
++  if (!dayGroups.length) {
++    renderSlotFallback("No quick time buttons were found. Open the booking calendar to choose a time.");
++    return;
++  }
++
+   if (calendarFallbackLink) {
+     calendarFallbackLink.hidden = true;
+     calendarFallbackLink.removeAttribute("href");
+   }
+-  setSlotStatus("Select one of the available times below.");
+-
+-  groupSlotsByDate(slots).forEach((daySlots) => {
+-    const day = document.createElement("section");
+-    day.className = "slot-day";
+-
+-    const heading = document.createElement("h3");
+-    heading.textContent = formatSlotDate(daySlots[0].startTime);
+-    day.append(heading);
+-
+-    const buttons = document.createElement("div");
+-    buttons.className = "slot-buttons";
+-
+-    daySlots.forEach((slot) => {
+-      const button = document.createElement("button");
+-      button.className = "slot-button";
+-      button.type = "button";
+-      button.textContent = formatSlotTime(slot.startTime);
+-      button.addEventListener("click", () => {
+-        consultationDraft.slot = slot;
+-        if (selectedSlotSummary) {
+-          selectedSlotSummary.textContent = `Selected time: ${formatSlotSummary(slot.startTime)}`;
+-        }
+-        setConsultationStep("contact");
+-        consultationContactForm?.querySelector("input[name='name']")?.focus();
+-      });
+-      buttons.append(button);
+-    });
++  setSlotStatus("Choose a date, then pick a time.");
+ 
+-    day.append(buttons);
+-    slotList.append(day);
+-  });
++  const selectedKey = dayGroups.some((dayGroup) => dayGroup.key === consultationDraft.selectedDateKey)
++    ? consultationDraft.selectedDateKey
++    : dayGroups[0].key;
++  consultationDraft.selectedDateKey = selectedKey;
++
++  renderDatePicker(dayGroups, selectedKey);
++  renderSelectedDaySlots(dayGroups.find((dayGroup) => dayGroup.key === selectedKey));
+ }
+ 
+ async function loadConsultationSlots() {
+   if (!slotList || !slotStatus) return;
+ 
+   slotList.textContent = "";
++  if (dateList) {
++    dateList.textContent = "";
++  }
+   if (calendarFrame) {
+     calendarFrame.hidden = true;
+     calendarFrame.removeAttribute("src");
+@@ -288,7 +393,7 @@ async function loadConsultationSlots() {
+   }
+ 
+   const startDate = Date.now();
+-  const endDate = startDate + 21 * 24 * 60 * 60 * 1000;
++  const endDate = startDate + 35 * 24 * 60 * 60 * 1000;
+   const url = new URL(siteConfig.slotsEndpoint, window.location.origin);
+   url.searchParams.set("startDate", String(startDate));
+   url.searchParams.set("endDate", String(endDate));
+@@ -386,6 +491,8 @@ async function handleConsultationForm(event) {
+   consultationDraft = {
+     answers: data,
+     slot: null,
++    slots: [],
++    selectedDateKey: "",
+   };
+ 
+   const calendarUrl = buildCalendarUrlWithConsultationAnswers(data);
+diff --git a/index.html b/index.html
+index 03fa819..8938ae6 100644
+--- a/index.html
++++ b/index.html
+@@ -313,6 +313,7 @@
+         <button class="button secondary calendar-back" type="button" data-consultation-back>Back to questions</button>
+         <p class="consult-form-intro">Pick a time that works for you. Your quick answers will stay attached to the appointment.</p>
+         <div class="slot-status" data-slot-status>Loading available times...</div>
++        <div class="date-list" data-date-list></div>
+         <div class="slot-list" data-slot-list></div>
+         <a class="button secondary calendar-open-link" data-calendar-fallback-link target="_blank" rel="noopener" hidden>
+           Open Booking Calendar
+@@ -336,6 +337,30 @@
+           </button>
+         </div>
+         <p class="selected-slot" data-selected-slot></p>
++        <fieldset class="meeting-options">
++          <legend>How would you like to meet?</legend>
++          <label class="meeting-option">
++            <input name="meetingMethod" type="radio" value="Phone call" required />
++            <span>
++              <strong>Phone call</strong>
++              <small>I will call the number you provide.</small>
++            </span>
++          </label>
++          <label class="meeting-option">
++            <input name="meetingMethod" type="radio" value="Google Meet video call" required />
++            <span>
++              <strong>Google Meet video call</strong>
++              <small>Video call details will be included in the follow-up.</small>
++            </span>
++          </label>
++          <label class="meeting-option">
++            <input name="meetingMethod" type="radio" value="In person at 260 Champlain St, Dieppe" required />
++            <span>
++              <strong>In person</strong>
++              <small>260 Champlain St, Dieppe.</small>
++            </span>
++          </label>
++        </fieldset>
+         <label>
+           Name
+           <input name="name" autocomplete="name" placeholder="Your name" required />
+@@ -358,6 +383,6 @@
+         <p class="form-note">Your answers and appointment details will be saved together.</p>
+       </form>
+     </dialog>
+-    <script src="./app.js?v=restore-flow-calendar-20260430"></script>
++    <script src="./app.js?v=meeting-calendar-20260501"></script>
+   </body>
+ </html>
+diff --git a/styles.css b/styles.css
+index 57b46f7..9043b83 100644
+--- a/styles.css
++++ b/styles.css
+@@ -774,6 +774,55 @@ select {
+   padding: 14px 16px;
+ }
+ 
++.date-list {
++  display: grid;
++  gap: 8px;
++  grid-template-columns: repeat(7, minmax(0, 1fr));
++}
++
++.date-button {
++  background: white;
++  border: 1px solid var(--line);
++  border-radius: 14px;
++  color: var(--ink);
++  cursor: pointer;
++  display: grid;
++  font: inherit;
++  gap: 2px;
++  justify-items: center;
++  min-height: 74px;
++  padding: 9px 6px;
++  transition:
++    background 0.2s ease,
++    border-color 0.2s ease,
++    color 0.2s ease;
++}
++
++.date-button:hover,
++.date-button:focus-visible,
++.date-button.is-active {
++  background: var(--ink);
++  border-color: var(--ink);
++  color: white;
++  outline: none;
++}
++
++.date-weekday,
++.date-month {
++  color: inherit;
++  font-size: 11px;
++  font-weight: 900;
++  line-height: 1;
++  text-transform: uppercase;
++}
++
++.date-number {
++  color: inherit;
++  font-size: 22px;
++  font-weight: 900;
++  line-height: 1;
++}
++
+ .slot-list {
+   display: grid;
+   gap: 18px;
+@@ -833,6 +882,67 @@ select {
+   padding: 14px 16px;
+ }
+ 
++.meeting-options {
++  border: 0;
++  display: grid;
++  gap: 10px;
++  margin: 0;
++  padding: 0;
++}
++
++.meeting-options legend {
++  font-size: 13px;
++  font-weight: 900;
++  margin-bottom: 10px;
++}
++
++.meeting-option {
++  align-items: flex-start;
++  background: white;
++  border: 1px solid var(--line);
++  border-radius: 14px;
++  cursor: pointer;
++  display: flex;
++  gap: 10px;
++  padding: 12px 14px;
++  transition:
++    background 0.2s ease,
++    border-color 0.2s ease,
++    color 0.2s ease;
++}
++
++.meeting-option input {
++  flex: 0 0 auto;
++  height: 18px;
++  margin-top: 2px;
++  width: 18px;
++}
++
++.meeting-option strong {
++  display: block;
++  font-size: 14px;
++  line-height: 1.2;
++}
++
++.meeting-option small {
++  color: var(--muted);
++  display: block;
++  font-size: 12px;
++  font-weight: 700;
++  line-height: 1.35;
++  margin-top: 3px;
++}
++
++.meeting-option:has(input:checked) {
++  background: var(--ink);
++  border-color: var(--ink);
++  color: white;
++}
++
++.meeting-option:has(input:checked) small {
++  color: rgba(255, 255, 255, 0.72);
++}
++
+ .consent-line {
+   align-items: flex-start;
+   color: var(--muted);
+@@ -1243,6 +1353,10 @@ details p {
+     max-height: none;
+   }
+ 
++  .date-list {
++    grid-template-columns: repeat(3, minmax(0, 1fr));
++  }
++
+   .slot-buttons {
+     grid-template-columns: repeat(2, minmax(0, 1fr));
+   }
+PATCH
+          git apply --check /tmp/booking-update.patch
+          git apply /tmp/booking-update.patch
+          rm -f .github/workflows/apply-booking-update.yml
+
+      - name: Verify booking update
+        run: |
+          node --check app.js
+          node --check api/highlevel-book-appointment.js
+          npm run build
+
+      - name: Commit booking update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html app.js styles.css api/highlevel-book-appointment.js .github/workflows/apply-booking-update.yml
+          git commit -m "Improve booking calendar and meeting options [skip ci]"
+          git push
