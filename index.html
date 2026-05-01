@@ -1,16 +1,363 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="/favicon.png?v=2" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Raphaël Lemire | Real Estate in Moncton, Dieppe & Shediac</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Raphael Lemire | Real Estate in Greater Moncton</title>
+    <meta
+      name="description"
+      content="Buy or sell in Greater Moncton with a clear strategy. Search homes with Listed or request a simple home value plan with Raphael Lemire."
+    />
+    <meta property="og:title" content="Raphael Lemire | Greater Moncton Real Estate" />
+    <meta
+      property="og:description"
+      content="Simple real estate guidance for buyers and sellers in Greater Moncton, with Listed as an easier way to search homes."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.ico?v=rl-icon-20260430b" sizes="any" />
+    <link rel="icon" href="./assets/site-icon.svg?v=rl-icon-20260430b" type="image/svg+xml" />
+    <link rel="icon" href="./assets/raphael-favicon-32.png?v=rl-icon-20260430b" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=rl-icon-20260430b" />
+    <link rel="stylesheet" href="./styles.css?v=restore-flow-frame-20260430" />
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <header class="site-header" data-elevate>
+      <a class="brand" href="#top" aria-label="Raphael Lemire home">
+        <img src="./assets/exit-logo-black.png" alt="EXIT Realty Associates" />
+      </a>
+      <nav class="desktop-nav" aria-label="Main navigation">
+        <a href="#find-home">Find a Home</a>
+        <a href="#home-value">Home Value</a>
+        <a href="#questions">Questions</a>
+        <a href="#book-consultation" data-open-consultation>Book</a>
+      </nav>
+      <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16" />
+        </svg>
+      </button>
+    </header>
+
+    <div class="mobile-menu" data-menu hidden>
+      <a href="#find-home">Find a Home</a>
+      <a href="#home-value">Home Value</a>
+      <a href="#questions">Questions</a>
+      <a href="#book-consultation" data-open-consultation>Book a Consultation</a>
+    </div>
+
+    <main id="top">
+      <section class="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <span class="hero-kicker">Greater Moncton Real Estate</span>
+            <h1>Buy or Sell in Greater Moncton with a <span>Clear Strategy.</span></h1>
+            <p class="hero-lead">Make confident real estate decisions using a simple, proven framework.</p>
+            <div class="profile-card mobile-profile-card" aria-hidden="true">
+              <img src="./assets/raphael-lemire-exit.jpg" alt="" />
+            </div>
+            <p class="hero-start">
+              Not sure where to start? Book a quick consult and I will help you choose the next step.
+            </p>
+            <div class="hero-actions" aria-label="Primary actions">
+              <a class="button primary" href="#book-consultation" data-open-consultation>Book a Consultation</a>
+              <a class="button secondary" data-listed-link href="#find-home">Find a Home</a>
+            </div>
+            <ul class="hero-highlights" aria-label="Consultation details">
+              <li>Free 15-min intro</li>
+              <li>No commitment</li>
+              <li>English and French</li>
+              <li>BGRS approved</li>
+            </ul>
+          </div>
+          <div class="profile-card">
+            <img src="./assets/raphael-lemire-exit.jpg" alt="Raphael Lemire | EXIT Realty Associates" />
+          </div>
+        </div>
+      </section>
+
+      <section class="find-home-section" id="find-home">
+        <div class="section-copy">
+          <span class="eyebrow">Exclusive search</span>
+          <h2>Search Greater Moncton homes the easy way.</h2>
+          <p>
+            Use Listed to browse by card, explore the map, save favorites, and bring a better shortlist when you are
+            ready to talk through the next step.
+          </p>
+        </div>
+
+        <div class="listed-preview" aria-label="Listed app preview">
+          <div class="listed-device listed-map" data-preview-shot="map" role="button" aria-label="Show Listed map screen">
+            <span class="phone-speaker" aria-hidden="true"></span>
+            <img src="./assets/listed-map.png" alt="Listed app map search screen" />
+          </div>
+          <div class="listed-device listed-card" data-preview-shot="card" role="button" aria-label="Show Listed card screen">
+            <span class="phone-speaker" aria-hidden="true"></span>
+            <img src="./assets/listed-liked.png" alt="Listed app card screen showing a saved home" />
+          </div>
+        </div>
+
+        <div class="find-home-actions">
+          <div class="feature-chips" aria-label="Listed features">
+            <span>Swipe homes</span>
+            <span>Map search</span>
+            <span>Save favorites</span>
+            <span>Listing alerts</span>
+          </div>
+          <a class="button primary" data-listed-link href="#find-home">Start Your Search</a>
+        </div>
+      </section>
+
+      <section class="home-value-section" id="home-value">
+        <div class="home-value-content">
+          <div class="section-copy">
+            <span class="eyebrow">Home value</span>
+            <h2>Find out what your home could sell for.</h2>
+            <p>
+              Not ready to book a consult yet? Send the address and I will help you understand a realistic market range.
+            </p>
+          </div>
+          <div class="home-value-visual" aria-label="Home value preview">
+            <div>
+              <span>Home value</span>
+              <strong>Price range, timing, and next step</strong>
+            </div>
+          </div>
+        </div>
+        <form class="home-value-form" data-home-value-form>
+          <label>
+            Name
+            <input name="name" autocomplete="name" required placeholder="Your name" />
+          </label>
+          <label>
+            Enter your email address or phone number
+            <input name="contact" autocomplete="email" required placeholder="example@email.com or 506 555 1234" />
+          </label>
+          <label>
+            Property address
+            <input name="address" autocomplete="street-address" required placeholder="Street address" />
+          </label>
+          <label>
+            Anything I should know?
+            <textarea name="note" rows="4" placeholder="Timeline, updates, questions, or situation"></textarea>
+          </label>
+          <button class="button primary full" type="submit">Get My Home Value</button>
+          <p class="form-note">I will follow up personally with the next step.</p>
+        </form>
+        <div class="home-value-thanks" data-home-value-thanks hidden>
+          <span class="eyebrow">Request received</span>
+          <h3>Thank you. I will review the details.</h3>
+          <p>I will gather the information for your property and get back to you shortly with the next step.</p>
+        </div>
+      </section>
+
+      <section class="questions-section" id="questions">
+        <span class="eyebrow">Most frequent questions</span>
+        <h2>Everything you need to know about the process and the Greater Moncton market.</h2>
+        <div class="question-list">
+          <details>
+            <summary>How does the Greater Moncton real estate market look right now?</summary>
+            <p>It depends on the area, price range, property type, and current inventory. A short consult helps put the market in context for your situation.</p>
+          </details>
+          <details>
+            <summary>What should I expect during our first consultation?</summary>
+            <p>A simple conversation about your goals, timeline, budget or property, and the next practical step. There is no commitment.</p>
+          </details>
+          <details>
+            <summary>Is there a fee for the initial booking or consultation?</summary>
+            <p>No. The intro call is free and built to help you understand your options before making a decision.</p>
+          </details>
+        </div>
+        <a class="button primary" href="#book-consultation" data-open-consultation>Book a Consultation</a>
+      </section>
+
+      <section class="contact-section" aria-label="Contact Raphael Lemire">
+        <div>
+          <span class="eyebrow">Contact Raphael</span>
+          <h2>Prefer to talk directly?</h2>
+          <p>Call, text, email, or save my contact for when you are ready.</p>
+        </div>
+        <div class="contact-actions">
+          <a href="tel:+15062275702">
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0 1 22 16.92Z" /></svg>
+            Call 506 227 5702
+          </a>
+          <a href="sms:+15062275702">
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" /></svg>
+            Text 506 227 5702
+          </a>
+          <a href="mailto:raphael@exitmoncton.ca">
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /><path d="m22 6-10 7L2 6" /></svg>
+            raphael@exitmoncton.ca
+          </a>
+          <a href="./assets/raphael-lemire.vcf" download>
+            <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12" /><path d="m7 10 5 5 5-5" /><path d="M5 21h14" /></svg>
+            Save contact
+          </a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="footer-main">
+        <div class="footer-brand">
+          <img src="./assets/exit-logo-white.png" alt="EXIT Realty Associates" />
+          <div>
+            <strong>Raphael Lemire</strong>
+            <p>Clear guidance for buying and selling in Greater Moncton.</p>
+          </div>
+        </div>
+        <div class="footer-address">
+          <span>Office</span>
+          <address>260 Champlain St, Dieppe, NB E1A 1P3</address>
+          <div class="footer-map-links" aria-label="Map links">
+            <a
+              href="https://www.google.com/maps/search/?api=1&query=260%20Champlain%20St%2C%20Dieppe%2C%20NB%20E1A%201P3"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Google Maps
+            </a>
+            <a
+              href="https://maps.apple.com/?q=260%20Champlain%20St%2C%20Dieppe%2C%20NB%20E1A%201P3"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Apple Maps
+            </a>
+          </div>
+        </div>
+        <a class="footer-top" href="#top">Back to top</a>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; <span data-current-year>2026</span> Raphael Lemire | EXIT Realty Associates</p>
+      </div>
+    </footer>
+
+    <nav class="sticky-actions" aria-label="Quick contact actions">
+      <a href="tel:+15062275702">
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.35 1.9.66 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.31 1.85.53 2.81.66A2 2 0 0 1 22 16.92Z" /></svg>
+        Call
+      </a>
+      <a href="sms:+15062275702">
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4Z" /></svg>
+        Text
+      </a>
+      <a href="#book-consultation" data-open-consultation>
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z" /></svg>
+        Book
+      </a>
+      <a href="#top">
+        <svg class="action-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m18 15-6-6-6 6" /></svg>
+        Top
+      </a>
+    </nav>
+
+    <div class="toast" data-toast hidden></div>
+    <dialog class="consult-dialog" id="book-consultation" data-consultation-dialog>
+      <form class="consult-form" data-consultation-form method="dialog" data-consultation-step="questions">
+        <div class="consult-form-header">
+          <div>
+            <span class="eyebrow">Quick consult</span>
+            <h2>Tell me where you are starting.</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-consultation aria-label="Close consultation form">
+            &times;
+          </button>
+        </div>
+        <p class="consult-form-intro">Answer a few quick questions, then choose a time that works for you.</p>
+        <label>
+          What are you looking to do?
+          <select name="intent">
+            <option value="">Choose one</option>
+            <option value="Buy">Buy</option>
+            <option value="Sell">Sell</option>
+            <option value="Buy & Sell">Buy and sell</option>
+            <option value="Just exploring">Just exploring options</option>
+          </select>
+        </label>
+        <div class="form-grid">
+          <label>
+            Time frame
+            <select name="timeline">
+              <option value="">Choose timing</option>
+              <option value="ASAP">ASAP</option>
+              <option value="0-3 months">0-3 months</option>
+              <option value="3-6 months">3-6 months</option>
+              <option value="6-12 months">6-12 months</option>
+              <option value="12+ months">12+ months</option>
+              <option value="Just exploring">Just exploring</option>
+            </select>
+          </label>
+          <label>
+            Location
+            <input name="area" autocomplete="address-level2" placeholder="Moncton, Dieppe, Riverview..." />
+          </label>
+        </div>
+        <label>
+          Budget and other questions
+          <textarea name="budget" rows="4" placeholder="Budget, property address, questions, or situation"></textarea>
+        </label>
+        <button class="button primary full" type="submit">Choose a Time</button>
+        <p class="form-note">Next: choose a time.</p>
+      </form>
+      <div class="consult-calendar" data-consultation-step="calendar" hidden>
+        <div class="consult-form-header">
+          <div>
+            <span class="eyebrow">Choose a time</span>
+            <h2>Book your consultation.</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-consultation aria-label="Close consultation form">
+            &times;
+          </button>
+        </div>
+        <button class="button secondary calendar-back" type="button" data-consultation-back>Back to questions</button>
+        <p class="consult-form-intro">Pick a time that works for you. Your quick answers will stay attached to the appointment.</p>
+        <div class="slot-status" data-slot-status>Loading available times...</div>
+        <div class="slot-list" data-slot-list></div>
+        <a class="button secondary calendar-open-link" data-calendar-fallback-link target="_blank" rel="noopener" hidden>
+          Open Booking Calendar
+        </a>
+        <iframe
+          class="calendar-frame"
+          data-calendar-frame
+          title="Raphael Lemire consultation calendar"
+          loading="lazy"
+          hidden
+        ></iframe>
+      </div>
+      <form class="consult-form consult-contact" data-consultation-step="contact" data-consultation-contact hidden>
+        <div class="consult-form-header">
+          <div>
+            <span class="eyebrow">Almost done</span>
+            <h2>Where should I send the confirmation?</h2>
+          </div>
+          <button class="dialog-close" type="button" data-close-consultation aria-label="Close consultation form">
+            &times;
+          </button>
+        </div>
+        <p class="selected-slot" data-selected-slot></p>
+        <label>
+          Name
+          <input name="name" autocomplete="name" placeholder="Your name" required />
+        </label>
+        <div class="form-grid">
+          <label>
+            Phone
+            <input name="phone" autocomplete="tel" inputmode="tel" placeholder="(506) 555-0100" required />
+          </label>
+          <label>
+            Email
+            <input name="email" autocomplete="email" inputmode="email" placeholder="you@example.com" required />
+          </label>
+        </div>
+        <label class="consent-line">
+          <input name="consent" type="checkbox" required />
+          <span>I agree to be contacted by Raphaël Lemire by phone, text, and email about buying or selling real estate.</span>
+        </label>
+        <button class="button primary full" type="submit">Book Consultation</button>
+        <p class="form-note">Your answers and appointment details will be saved together.</p>
+      </form>
+    </dialog>
+    <script src="./app.js?v=restore-flow-calendar-20260430"></script>
   </body>
 </html>

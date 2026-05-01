@@ -1,0 +1,10 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Lemire;Raphael;;;
+FN:Raphael Lemire
+ORG:EXIT Realty Associates
+TEL;TYPE=CELL,VOICE:+15062275702
+EMAIL;TYPE=INTERNET:raphael@exitmoncton.ca
+ADR;TYPE=WORK:;;260 Champlain St;Dieppe;NB;E1A 1P3;Canada
+URL:https://www.raphaellemire.com
+END:VCARD
