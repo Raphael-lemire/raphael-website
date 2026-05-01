@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "mkdir -p dist/assets && cp index.html app.js styles.css favicon.ico dist/ && cp -R assets/. dist/assets/",
+    "build": "mkdir -p dist/assets && cp index.html app.js styles.css favicon.ico dist/ && cat app.js booking-calendar-polish.js > dist/app.js && cp -R assets/. dist/assets/",
     "check": "node --check app.js"
   }
 }
