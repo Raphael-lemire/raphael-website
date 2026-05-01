@@ -1,7 +1,9 @@
 const HIGHLEVEL_BASE_URL = "https://services.leadconnectorhq.com";
 const DEFAULT_CALENDAR_ID = "m1nSKgK0Zc86d2PxUSiq";
 const CALENDAR_API_VERSION = "2021-04-15";
+const DAY_MS = 24 * 60 * 60 * 1000;
 const CALENDAR_LOOKAHEAD_DAYS = 92;
+const HIGHLEVEL_SLOT_REQUEST_DAYS = 30;
 
 function getNumber(value) {
   const number = Number(value);
@@ -95,10 +97,7 @@ function getCalendarIds() {
   return Array.from(new Set(ids));
 }
 
-async function fetchSlotsForCalendar(calendarId, token, request) {
-  const startDate = getNumber(request.query.startDate) || Date.now();
-  const endDate = startDate + CALENDAR_LOOKAHEAD_DAYS * 24 * 60 * 60 * 1000;
-  const timezone = request.query.timezone || "America/Halifax";
+async function fetchSlotRange(calendarId, token, startDate, endDate, timezone) {
   const url = new URL(`${HIGHLEVEL_BASE_URL}/calendars/${calendarId}/free-slots`);
 
   url.searchParams.set("startDate", String(startDate));
@@ -119,6 +118,33 @@ async function fetchSlotsForCalendar(calendarId, token, request) {
     ok: highLevelResponse.ok,
     status: highLevelResponse.status,
     result,
+  };
+}
+
+async function fetchSlotsForCalendar(calendarId, token, request) {
+  const startDate = getNumber(request.query.startDate) || Date.now();
+  const endDate = startDate + CALENDAR_LOOKAHEAD_DAYS * DAY_MS;
+  const timezone = request.query.timezone || "America/Halifax";
+  const results = [];
+  let cursor = startDate;
+  let lastResult = null;
+
+  while (cursor < endDate) {
+    const chunkEndDate = Math.min(cursor + HIGHLEVEL_SLOT_REQUEST_DAYS * DAY_MS, endDate);
+    lastResult = await fetchSlotRange(calendarId, token, cursor, chunkEndDate, timezone);
+
+    if (!lastResult.ok) {
+      return lastResult;
+    }
+
+    results.push(lastResult.result);
+    cursor = chunkEndDate;
+  }
+
+  return {
+    ok: true,
+    status: 200,
+    result: results,
   };
 }
 
