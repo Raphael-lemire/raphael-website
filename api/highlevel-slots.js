@@ -78,7 +78,6 @@ function normalizeSlots(payload, calendarId) {
       seen.add(slot.startTime);
       return true;
     })
-    .slice(0, 36)
     .map((slot) => ({
       ...slot,
       calendarId,
