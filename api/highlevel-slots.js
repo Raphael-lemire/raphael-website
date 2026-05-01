@@ -1,6 +1,7 @@
 const HIGHLEVEL_BASE_URL = "https://services.leadconnectorhq.com";
 const DEFAULT_CALENDAR_ID = "m1nSKgK0Zc86d2PxUSiq";
 const CALENDAR_API_VERSION = "2021-04-15";
+const MAX_SLOT_RANGE_DAYS = 30;
 
 function getNumber(value) {
   const number = Number(value);
@@ -97,7 +98,9 @@ function getCalendarIds() {
 
 async function fetchSlotsForCalendar(calendarId, token, request) {
   const startDate = getNumber(request.query.startDate) || Date.now();
-  const endDate = getNumber(request.query.endDate) || startDate + 21 * 24 * 60 * 60 * 1000;
+  const requestedEndDate = getNumber(request.query.endDate) || startDate + MAX_SLOT_RANGE_DAYS * 24 * 60 * 60 * 1000;
+  const maxEndDate = startDate + MAX_SLOT_RANGE_DAYS * 24 * 60 * 60 * 1000;
+  const endDate = Math.min(requestedEndDate, maxEndDate);
   const timezone = request.query.timezone || "America/Halifax";
   const url = new URL(`${HIGHLEVEL_BASE_URL}/calendars/${calendarId}/free-slots`);
 
