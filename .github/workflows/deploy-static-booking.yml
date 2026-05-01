@@ -1,0 +1,48 @@
+name: Deploy Static Booking Site
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/deploy-static-booking.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  deploy-static-booking-site:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Fetch backup branch
+        run: git fetch origin backup/static-booking-2026-04-30:refs/remotes/origin/backup/static-booking-2026-04-30
+
+      - name: Extract refreshed static booking site
+        run: |
+          rm -rf /tmp/static-booking
+          mkdir -p /tmp/static-booking
+          git show origin/backup/static-booking-2026-04-30:raphaellemire-fixed-booking-backup-2026-05-01.zip > /tmp/static-booking.zip
+          unzip -q /tmp/static-booking.zip -d /tmp/static-booking
+          rsync -a --delete --exclude='.git' --exclude='.github' /tmp/static-booking/ ./
+
+      - name: Remove old app files
+        run: |
+          rm -rf src public node_modules
+          rm -f package-lock.json vite.config.js eslint.config.js middleware.js
+
+      - name: Remove one-time workflow from final site commit
+        run: rm -f .github/workflows/deploy-static-booking.yml
+
+      - name: Commit deployable static booking site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Deploy static booking site [skip ci]" || exit 0
+          git push
