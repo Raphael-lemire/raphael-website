@@ -15,6 +15,7 @@ const miniForm = document.querySelector("[data-mini-form]");
 const consultationDialog = document.querySelector("[data-consultation-dialog]");
 const consultationSteps = document.querySelectorAll("[data-consultation-step]");
 const slotStatus = document.querySelector("[data-slot-status]");
+const dateList = document.querySelector("[data-date-list]");
 const slotList = document.querySelector("[data-slot-list]");
 const calendarFrame = document.querySelector("[data-calendar-frame]");
 const calendarFallbackLink = document.querySelector("[data-calendar-fallback-link]");
@@ -25,6 +26,8 @@ let toastTimer;
 let consultationDraft = {
   answers: {},
   slot: null,
+  slots: [],
+  selectedDateKey: "",
 };
 
 const consultationFieldParams = {
@@ -102,12 +105,17 @@ function resetConsultationFlow() {
   consultationDraft = {
     answers: {},
     slot: null,
+    slots: [],
+    selectedDateKey: "",
   };
   if (selectedSlotSummary) {
     selectedSlotSummary.textContent = "";
   }
   if (slotList) {
     slotList.textContent = "";
+  }
+  if (dateList) {
+    dateList.textContent = "";
   }
   if (calendarFrame) {
     calendarFrame.hidden = true;
@@ -168,6 +176,38 @@ function formatSlotDate(startTime) {
   }).format(new Date(startTime));
 }
 
+function getSlotDateKey(startTime) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    timeZone: siteConfig.timezone,
+  }).formatToParts(new Date(startTime));
+  const dateParts = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  if (!dateParts.year || !dateParts.month || !dateParts.day) {
+    return "";
+  }
+
+  return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+}
+
+function getSlotDateMeta(startTime) {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: siteConfig.timezone,
+  }).formatToParts(new Date(startTime));
+  const dateParts = Object.fromEntries(parts.map((part) => [part.type, part.value]));
+
+  return {
+    weekday: dateParts.weekday || "",
+    month: dateParts.month || "",
+    day: dateParts.day || "",
+  };
+}
+
 function formatSlotTime(startTime) {
   return new Intl.DateTimeFormat("en-CA", {
     hour: "numeric",
@@ -206,26 +246,111 @@ function renderSlotFallback(message = "Open the booking calendar to choose a tim
 
 function groupSlotsByDate(slots) {
   return slots.reduce((groups, slot) => {
-    const key = new Intl.DateTimeFormat("en-CA", {
-      dateStyle: "short",
-      timeZone: siteConfig.timezone,
-    }).format(new Date(slot.startTime));
+    const key = getSlotDateKey(slot.startTime);
 
-    if (!groups.has(key)) {
-      groups.set(key, []);
+    if (!key) {
+      return groups;
     }
 
-    groups.get(key).push(slot);
+    if (!groups.has(key)) {
+      groups.set(key, {
+        key,
+        label: formatSlotDate(slot.startTime),
+        meta: getSlotDateMeta(slot.startTime),
+        slots: [],
+      });
+    }
+
+    groups.get(key).slots.push(slot);
     return groups;
   }, new Map());
+}
+
+function renderDatePicker(dayGroups, selectedKey) {
+  if (!dateList) return;
+
+  dateList.textContent = "";
+
+  dayGroups.forEach((dayGroup) => {
+    const button = document.createElement("button");
+    button.className = `date-button${dayGroup.key === selectedKey ? " is-active" : ""}`;
+    button.type = "button";
+    button.setAttribute("aria-pressed", String(dayGroup.key === selectedKey));
+    button.setAttribute("aria-label", `Show times for ${dayGroup.label}`);
+
+    const weekday = document.createElement("span");
+    weekday.className = "date-weekday";
+    weekday.textContent = dayGroup.meta.weekday;
+
+    const day = document.createElement("span");
+    day.className = "date-number";
+    day.textContent = dayGroup.meta.day;
+
+    const month = document.createElement("span");
+    month.className = "date-month";
+    month.textContent = dayGroup.meta.month;
+
+    button.append(weekday, day, month);
+    button.addEventListener("click", () => {
+      consultationDraft.selectedDateKey = dayGroup.key;
+      renderSlots(consultationDraft.slots);
+    });
+    dateList.append(button);
+  });
+}
+
+function renderSelectedDaySlots(dayGroup) {
+  if (!slotList || !dayGroup) return;
+
+  slotList.textContent = "";
+
+  const day = document.createElement("section");
+  day.className = "slot-day";
+
+  const heading = document.createElement("h3");
+  heading.textContent = dayGroup.label;
+  day.append(heading);
+
+  const buttons = document.createElement("div");
+  buttons.className = "slot-buttons";
+
+  dayGroup.slots.forEach((slot) => {
+    const button = document.createElement("button");
+    button.className = "slot-button";
+    button.type = "button";
+    button.textContent = formatSlotTime(slot.startTime);
+    button.addEventListener("click", () => {
+      consultationDraft.slot = slot;
+      if (selectedSlotSummary) {
+        selectedSlotSummary.textContent = `Selected time: ${formatSlotSummary(slot.startTime)}`;
+      }
+      setConsultationStep("contact");
+      consultationContactForm?.querySelector("input[name='meetingMethod']")?.focus();
+    });
+    buttons.append(button);
+  });
+
+  day.append(buttons);
+  slotList.append(day);
 }
 
 function renderSlots(slots) {
   if (!slotList) return;
 
   slotList.textContent = "";
+  if (dateList) {
+    dateList.textContent = "";
+  }
 
   if (!slots.length) {
+    renderSlotFallback("No quick time buttons were found. Open the booking calendar to choose a time.");
+    return;
+  }
+
+  consultationDraft.slots = slots;
+  const dayGroups = Array.from(groupSlotsByDate(slots).values());
+
+  if (!dayGroups.length) {
     renderSlotFallback("No quick time buttons were found. Open the booking calendar to choose a time.");
     return;
   }
@@ -234,44 +359,24 @@ function renderSlots(slots) {
     calendarFallbackLink.hidden = true;
     calendarFallbackLink.removeAttribute("href");
   }
-  setSlotStatus("Select one of the available times below.");
+  setSlotStatus("Choose a date, then pick a time.");
 
-  groupSlotsByDate(slots).forEach((daySlots) => {
-    const day = document.createElement("section");
-    day.className = "slot-day";
+  const selectedKey = dayGroups.some((dayGroup) => dayGroup.key === consultationDraft.selectedDateKey)
+    ? consultationDraft.selectedDateKey
+    : dayGroups[0].key;
+  consultationDraft.selectedDateKey = selectedKey;
 
-    const heading = document.createElement("h3");
-    heading.textContent = formatSlotDate(daySlots[0].startTime);
-    day.append(heading);
-
-    const buttons = document.createElement("div");
-    buttons.className = "slot-buttons";
-
-    daySlots.forEach((slot) => {
-      const button = document.createElement("button");
-      button.className = "slot-button";
-      button.type = "button";
-      button.textContent = formatSlotTime(slot.startTime);
-      button.addEventListener("click", () => {
-        consultationDraft.slot = slot;
-        if (selectedSlotSummary) {
-          selectedSlotSummary.textContent = `Selected time: ${formatSlotSummary(slot.startTime)}`;
-        }
-        setConsultationStep("contact");
-        consultationContactForm?.querySelector("input[name='name']")?.focus();
-      });
-      buttons.append(button);
-    });
-
-    day.append(buttons);
-    slotList.append(day);
-  });
+  renderDatePicker(dayGroups, selectedKey);
+  renderSelectedDaySlots(dayGroups.find((dayGroup) => dayGroup.key === selectedKey));
 }
 
 async function loadConsultationSlots() {
   if (!slotList || !slotStatus) return;
 
   slotList.textContent = "";
+  if (dateList) {
+    dateList.textContent = "";
+  }
   if (calendarFrame) {
     calendarFrame.hidden = true;
     calendarFrame.removeAttribute("src");
@@ -288,7 +393,7 @@ async function loadConsultationSlots() {
   }
 
   const startDate = Date.now();
-  const endDate = startDate + 21 * 24 * 60 * 60 * 1000;
+  const endDate = startDate + 35 * 24 * 60 * 60 * 1000;
   const url = new URL(siteConfig.slotsEndpoint, window.location.origin);
   url.searchParams.set("startDate", String(startDate));
   url.searchParams.set("endDate", String(endDate));
@@ -386,6 +491,8 @@ async function handleConsultationForm(event) {
   consultationDraft = {
     answers: data,
     slot: null,
+    slots: [],
+    selectedDateKey: "",
   };
 
   const calendarUrl = buildCalendarUrlWithConsultationAnswers(data);

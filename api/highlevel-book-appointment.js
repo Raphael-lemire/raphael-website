@@ -115,6 +115,62 @@ function getAppointmentTimeLabel(body) {
   }).format(start);
 }
 
+function getMeetingMethodValue(body) {
+  const meetingMethod = getString(body.meetingMethod);
+  const normalized = meetingMethod.toLowerCase();
+
+  if (normalized.includes("phone")) {
+    return "Phone call";
+  }
+
+  if (normalized.includes("google") || normalized.includes("meet") || normalized.includes("video")) {
+    return "Google Meet video call";
+  }
+
+  if (normalized.includes("person") || normalized.includes("office") || normalized.includes("champlain")) {
+    return "In person at 260 Champlain St, Dieppe";
+  }
+
+  return meetingMethod;
+}
+
+function getMeetingMethodShort(body) {
+  const meetingMethod = getMeetingMethodValue(body);
+  const normalized = meetingMethod.toLowerCase();
+
+  if (normalized.includes("phone")) {
+    return "Phone call";
+  }
+
+  if (normalized.includes("google") || normalized.includes("meet") || normalized.includes("video")) {
+    return "Google Meet";
+  }
+
+  if (normalized.includes("person") || normalized.includes("office") || normalized.includes("champlain")) {
+    return "In person";
+  }
+
+  return meetingMethod;
+}
+
+function getMeetingMethodTag(body) {
+  const meetingMethod = getMeetingMethodValue(body).toLowerCase();
+
+  if (meetingMethod.includes("phone")) {
+    return "meeting: phone";
+  }
+
+  if (meetingMethod.includes("google") || meetingMethod.includes("meet") || meetingMethod.includes("video")) {
+    return "meeting: google meet";
+  }
+
+  if (meetingMethod.includes("person") || meetingMethod.includes("office") || meetingMethod.includes("champlain")) {
+    return "meeting: in person";
+  }
+
+  return "";
+}
+
 function addSlotStartTime(slots, value) {
   if (!value) return;
 
@@ -207,6 +263,7 @@ function buildAppointmentNote(body) {
     `- Budget / questions: ${getBudgetValue(body) || "Not answered"}`,
     "",
     "Appointment",
+    `- Meeting preference: ${getMeetingMethodValue(body) || "Not answered"}`,
     `- Selected time: ${getAppointmentTimeLabel(body) || getString(body.startTime)}`,
     `- Original page: ${getString(body.pageUrl) || "Not captured"}`,
   ];
@@ -254,9 +311,14 @@ function getIntentTag(body) {
 function buildTags(body) {
   const tags = new Set(["website lead", "source: consultation", "status: appointment booked"]);
   const intentTag = getIntentTag(body);
+  const meetingMethodTag = getMeetingMethodTag(body);
 
   if (intentTag) {
     tags.add(intentTag);
+  }
+
+  if (meetingMethodTag) {
+    tags.add(meetingMethodTag);
   }
 
   if (getString(body.name).toLowerCase().includes("test") || getString(body.email).toLowerCase().includes("test")) {
@@ -398,13 +460,16 @@ function buildOpportunityPayload(body, contactId) {
 }
 
 function buildAppointmentPayload(body, contactId, calendarId) {
+  const meetingMethod = getMeetingMethodShort(body);
+  const title = [getString(body.name), meetingMethod].filter(Boolean).join(" - ");
+
   return {
     locationId: LOCATION_ID,
     calendarId,
     contactId,
     startTime: getString(body.startTime),
     endTime: getString(body.endTime),
-    title: getString(body.name),
+    title: title || getString(body.name),
     appointmentStatus: "confirmed",
     toNotify: true,
     ...(process.env.HIGHLEVEL_ASSIGNED_USER_ID

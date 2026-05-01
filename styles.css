@@ -774,6 +774,55 @@ select {
   padding: 14px 16px;
 }
 
+.date-list {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.date-button {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  color: var(--ink);
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 2px;
+  justify-items: center;
+  min-height: 74px;
+  padding: 9px 6px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.date-button:hover,
+.date-button:focus-visible,
+.date-button.is-active {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+  outline: none;
+}
+
+.date-weekday,
+.date-month {
+  color: inherit;
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.date-number {
+  color: inherit;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1;
+}
+
 .slot-list {
   display: grid;
   gap: 18px;
@@ -831,6 +880,67 @@ select {
   line-height: 1.4;
   margin: 0;
   padding: 14px 16px;
+}
+
+.meeting-options {
+  border: 0;
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+}
+
+.meeting-options legend {
+  font-size: 13px;
+  font-weight: 900;
+  margin-bottom: 10px;
+}
+
+.meeting-option {
+  align-items: flex-start;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.meeting-option input {
+  flex: 0 0 auto;
+  height: 18px;
+  margin-top: 2px;
+  width: 18px;
+}
+
+.meeting-option strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+.meeting-option small {
+  color: var(--muted);
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+
+.meeting-option:has(input:checked) {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+}
+
+.meeting-option:has(input:checked) small {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .consent-line {
@@ -1241,6 +1351,10 @@ details p {
 
   .slot-list {
     max-height: none;
+  }
+
+  .date-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .slot-buttons {

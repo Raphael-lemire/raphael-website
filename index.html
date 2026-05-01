@@ -313,6 +313,7 @@
         <button class="button secondary calendar-back" type="button" data-consultation-back>Back to questions</button>
         <p class="consult-form-intro">Pick a time that works for you. Your quick answers will stay attached to the appointment.</p>
         <div class="slot-status" data-slot-status>Loading available times...</div>
+        <div class="date-list" data-date-list></div>
         <div class="slot-list" data-slot-list></div>
         <a class="button secondary calendar-open-link" data-calendar-fallback-link target="_blank" rel="noopener" hidden>
           Open Booking Calendar
@@ -336,6 +337,30 @@
           </button>
         </div>
         <p class="selected-slot" data-selected-slot></p>
+        <fieldset class="meeting-options">
+          <legend>How would you like to meet?</legend>
+          <label class="meeting-option">
+            <input name="meetingMethod" type="radio" value="Phone call" required />
+            <span>
+              <strong>Phone call</strong>
+              <small>I will call the number you provide.</small>
+            </span>
+          </label>
+          <label class="meeting-option">
+            <input name="meetingMethod" type="radio" value="Google Meet video call" required />
+            <span>
+              <strong>Google Meet video call</strong>
+              <small>Video call details will be included in the follow-up.</small>
+            </span>
+          </label>
+          <label class="meeting-option">
+            <input name="meetingMethod" type="radio" value="In person at 260 Champlain St, Dieppe" required />
+            <span>
+              <strong>In person</strong>
+              <small>260 Champlain St, Dieppe.</small>
+            </span>
+          </label>
+        </fieldset>
         <label>
           Name
           <input name="name" autocomplete="name" placeholder="Your name" required />
@@ -358,6 +383,6 @@
         <p class="form-note">Your answers and appointment details will be saved together.</p>
       </form>
     </dialog>
-    <script src="./app.js?v=restore-flow-calendar-20260430"></script>
+    <script src="./app.js?v=meeting-calendar-20260501"></script>
   </body>
 </html>
