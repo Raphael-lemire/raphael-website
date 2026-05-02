@@ -3,6 +3,13 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/tools",
+      "destination": "https://raphael-private-tools-j196ys6rc-raphael-lemires-projects.vercel.app/tools",
+      "permanent": false
+    }
+  ],
   "headers": [
     {
       "source": "/(.*)",
