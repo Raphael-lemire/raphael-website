@@ -9,6 +9,7 @@ import Terms from './pages/Terms';
 import ListingTracker from './pages/ListingTracker';
 import ToolsHome from './pages/ToolsHome';
 import RealtorOutreach from './pages/RealtorOutreach';
+import MassShowingBooker from './pages/MassShowingBooker';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
             <Route path="/tools" element={<ToolsHome />} />
             <Route path="/listing-tracker" element={<ListingTracker />} />
             <Route path="/realtor-outreach" element={<RealtorOutreach />} />
+            <Route path="/mass-showing-booker" element={<MassShowingBooker />} />
           </Routes>
         </main>
       </div>

@@ -25,6 +25,12 @@ const tools = [
     href: '/realtor-outreach',
     status: 'Live',
   },
+  {
+    title: 'Mass Showing Booker',
+    description: 'Organize client showing days, booking status, times, instructions, map links, and PDFs.',
+    href: '/mass-showing-booker',
+    status: 'New',
+  },
 ];
 
 function ToolsHome() {
