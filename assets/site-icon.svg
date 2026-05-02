@@ -1,20 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Raphael Lemire real estate icon">
-  <rect width="64" height="64" rx="14" fill="#050505" />
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="#ffffff" />
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="none" stroke="#e7e2dc" stroke-width="2" />
   <path
-    d="M13 32.5 32 16l19 16.5"
+    d="M15 27 32 14l17 13"
     fill="none"
-    stroke="#ffffff"
+    stroke="#111111"
     stroke-linecap="round"
     stroke-linejoin="round"
-    stroke-width="5"
+    stroke-width="4.6"
   />
-  <path
-    d="M19 30v19h26V30"
-    fill="none"
-    stroke="#ffffff"
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="5"
-  />
-  <text x="32" y="51" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="900" text-anchor="middle">RL</text>
+  <text x="32" y="48" fill="#111111" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="900" text-anchor="middle">RL</text>
 </svg>
