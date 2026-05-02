@@ -666,6 +666,7 @@ select {
 
 .consult-calendar,
 .consult-contact {
+  align-content: start;
   background: white;
   border: 1px solid var(--line);
   border-radius: 22px;
@@ -776,22 +777,84 @@ select {
 
 .date-list {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  grid-template-columns: 1fr;
+}
+
+.date-toolbar {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(94px, auto) 1fr minmax(94px, auto);
+}
+
+.date-range {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 1.2;
+  text-align: center;
+}
+
+.date-nav {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 900;
+  min-height: 40px;
+  padding: 0 16px;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.date-nav:hover,
+.date-nav:focus-visible {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: white;
+  outline: none;
+}
+
+.date-nav:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.month-weekdays,
+.month-grid {
+  display: grid;
+  gap: 6px;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.month-weekdays {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .date-button {
   background: white;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--ink);
   cursor: pointer;
   display: grid;
   font: inherit;
-  gap: 2px;
+  gap: 4px;
   justify-items: center;
-  min-height: 74px;
-  padding: 9px 6px;
+  min-height: 58px;
+  padding: 8px 4px;
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
@@ -807,6 +870,27 @@ select {
   outline: none;
 }
 
+.date-button:disabled {
+  cursor: not-allowed;
+}
+
+.calendar-day.is-outside-month {
+  opacity: 0.34;
+}
+
+.calendar-day.is-unavailable {
+  background: #f7f7f7;
+  color: #9a9a9a;
+}
+
+.calendar-day.has-slots {
+  border-color: rgba(17, 17, 17, 0.24);
+}
+
+.calendar-day.is-today:not(.is-active) {
+  box-shadow: inset 0 0 0 2px rgba(17, 17, 17, 0.14);
+}
+
 .date-weekday,
 .date-month {
   color: inherit;
@@ -818,9 +902,17 @@ select {
 
 .date-number {
   color: inherit;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1;
+}
+
+.date-availability {
+  color: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .slot-list {
@@ -838,6 +930,13 @@ select {
 
 .slot-day h3 {
   font-size: 15px;
+  margin: 0;
+}
+
+.slot-empty {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
   margin: 0;
 }
 
@@ -1354,7 +1453,45 @@ details p {
   }
 
   .date-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .date-toolbar {
+    gap: 8px;
+    grid-template-columns: minmax(78px, auto) 1fr minmax(78px, auto);
+  }
+
+  .date-nav {
+    font-size: 12px;
+    min-height: 38px;
+    padding: 0 10px;
+  }
+
+  .date-range {
+    font-size: 14px;
+  }
+
+  .month-weekdays,
+  .month-grid {
+    gap: 4px;
+  }
+
+  .month-weekdays {
+    font-size: 10px;
+  }
+
+  .calendar-day {
+    border-radius: 10px;
+    min-height: 44px;
+    padding: 5px 1px;
+  }
+
+  .date-number {
+    font-size: 17px;
+  }
+
+  .date-availability {
+    display: none;
   }
 
   .slot-buttons {
@@ -1409,13 +1546,16 @@ details p {
     padding: 14px 16px;
   }
 
-  .hero-actions,
-  .button {
+  .hero-actions {
     width: 100%;
   }
 
   .hero-actions {
     margin-top: 22px;
+  }
+
+  .hero-actions .button {
+    width: 100%;
   }
 
   .hero-highlights {

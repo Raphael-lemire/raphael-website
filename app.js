@@ -28,6 +28,7 @@ let consultationDraft = {
   slot: null,
   slots: [],
   selectedDateKey: "",
+  visibleMonthKey: "",
 };
 
 const consultationFieldParams = {
@@ -39,6 +40,10 @@ const consultationFieldParams = {
 
 function canUseWebsiteApi() {
   return window.location.protocol === "http:" || window.location.protocol === "https:";
+}
+
+function isLocalFilePreview() {
+  return window.location.protocol === "file:";
 }
 
 function setHeaderElevation() {
@@ -107,6 +112,7 @@ function resetConsultationFlow() {
     slot: null,
     slots: [],
     selectedDateKey: "",
+    visibleMonthKey: "",
   };
   if (selectedSlotSummary) {
     selectedSlotSummary.textContent = "";
@@ -131,12 +137,12 @@ function resetConsultationFlow() {
 
 function showCalendarInDialog(calendarUrl = siteConfig.calendarUrl) {
   setConsultationStep("calendar");
-  loadConsultationSlots();
+  loadConsultationSlots(calendarUrl);
   return true;
 }
 
 function shouldOpenCalendarDirectly() {
-  return false;
+  return isLocalFilePreview();
 }
 
 function buildCalendarUrlWithConsultationAnswers(data) {
@@ -192,6 +198,126 @@ function getSlotDateKey(startTime) {
   return `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
 }
 
+function getTodayDateKey() {
+  return getSlotDateKey(new Date().toISOString());
+}
+
+function getMonthKeyFromDateKey(dateKey) {
+  return dateKey ? dateKey.slice(0, 7) : "";
+}
+
+function getDateFromKey(dateKey) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return new Date(Number.NaN);
+  }
+
+  return new Date(Date.UTC(year, month - 1, day, 12));
+}
+
+function getDateKey(year, monthIndex, day) {
+  const date = new Date(Date.UTC(year, monthIndex, day, 12));
+  const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+  const dateDay = String(date.getUTCDate()).padStart(2, "0");
+
+  return `${date.getUTCFullYear()}-${month}-${dateDay}`;
+}
+
+function getMonthLabel(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+
+  if (!year || !month) {
+    return "Available dates";
+  }
+
+  return new Intl.DateTimeFormat("en-CA", {
+    month: "long",
+    year: "numeric",
+    timeZone: siteConfig.timezone,
+  }).format(new Date(Date.UTC(year, month - 1, 15, 12)));
+}
+
+function getShortCalendarDateLabel(dateKey) {
+  const date = getDateFromKey(dateKey);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return new Intl.DateTimeFormat("en-CA", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: siteConfig.timezone,
+  }).format(date);
+}
+
+function addMonthsToMonthKey(monthKey, offset) {
+  const [year, month] = monthKey.split("-").map(Number);
+
+  if (!year || !month) {
+    return "";
+  }
+
+  const date = new Date(Date.UTC(year, month - 1 + offset, 1, 12));
+  return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}`;
+}
+
+function getCalendarMonthRange(dayGroups) {
+  const todayMonthKey = getMonthKeyFromDateKey(getTodayDateKey());
+  const slotMonthKeys = dayGroups.map((dayGroup) => getMonthKeyFromDateKey(dayGroup.key)).filter(Boolean).sort();
+  const minMonthKey = todayMonthKey || slotMonthKeys[0] || "";
+  const maxMonthKey = slotMonthKeys[slotMonthKeys.length - 1] || minMonthKey;
+
+  return { minMonthKey, maxMonthKey };
+}
+
+function clampMonthKey(monthKey, minMonthKey, maxMonthKey) {
+  if (!monthKey) {
+    return minMonthKey;
+  }
+
+  if (minMonthKey && monthKey < minMonthKey) {
+    return minMonthKey;
+  }
+
+  if (maxMonthKey && monthKey > maxMonthKey) {
+    return maxMonthKey;
+  }
+
+  return monthKey;
+}
+
+function getFirstAvailableDateKeyInMonth(dayGroups, monthKey) {
+  return dayGroups.find((dayGroup) => getMonthKeyFromDateKey(dayGroup.key) === monthKey)?.key || "";
+}
+
+function getMonthCalendarDays(monthKey) {
+  const [year, month] = monthKey.split("-").map(Number);
+
+  if (!year || !month) {
+    return [];
+  }
+
+  const monthIndex = month - 1;
+  const daysInMonth = new Date(Date.UTC(year, month, 0, 12)).getUTCDate();
+  const firstWeekday = new Date(Date.UTC(year, monthIndex, 1, 12)).getUTCDay();
+  const totalCells = Math.ceil((firstWeekday + daysInMonth) / 7) * 7;
+
+  return Array.from({ length: totalCells }, (_, index) => {
+    const day = index - firstWeekday + 1;
+    const key = getDateKey(year, monthIndex, day);
+    const [, cellMonth] = key.split("-").map(Number);
+
+    return {
+      key,
+      day: String(Number(key.slice(-2))),
+      isCurrentMonth: cellMonth === month,
+    };
+  });
+}
+
 function getSlotDateMeta(startTime) {
   const parts = new Intl.DateTimeFormat("en-CA", {
     weekday: "short",
@@ -244,6 +370,36 @@ function renderSlotFallback(message = "Open the booking calendar to choose a tim
   }
 }
 
+function renderEmbeddedCalendarFallback(calendarUrl = siteConfig.calendarUrl) {
+  if (!slotStatus) return;
+
+  slotList.textContent = "";
+  if (dateList) {
+    dateList.textContent = "";
+  }
+
+  const isLocalPreview = isLocalFilePreview();
+  slotStatus.textContent = isLocalPreview
+    ? "The direct file preview cannot load live times. Open the booking calendar to choose a time."
+    : "The quick time buttons did not load. Use the booking calendar below to choose a time.";
+
+  if (calendarFallbackLink) {
+    calendarFallbackLink.href = calendarUrl;
+    calendarFallbackLink.hidden = false;
+  }
+
+  if (calendarFrame) {
+    if (isLocalPreview) {
+      calendarFrame.hidden = true;
+      calendarFrame.removeAttribute("src");
+      return;
+    }
+
+    calendarFrame.src = calendarUrl;
+    calendarFrame.hidden = false;
+  }
+}
+
 function groupSlotsByDate(slots) {
   return slots.reduce((groups, slot) => {
     const key = getSlotDateKey(slot.startTime);
@@ -270,37 +426,111 @@ function renderDatePicker(dayGroups, selectedKey) {
   if (!dateList) return;
 
   dateList.textContent = "";
+  const dayGroupMap = new Map(dayGroups.map((dayGroup) => [dayGroup.key, dayGroup]));
+  const { minMonthKey, maxMonthKey } = getCalendarMonthRange(dayGroups);
+  const requestedMonthKey = consultationDraft.visibleMonthKey || getMonthKeyFromDateKey(selectedKey) || minMonthKey;
+  const visibleMonthKey = clampMonthKey(requestedMonthKey, minMonthKey, maxMonthKey);
+  consultationDraft.visibleMonthKey = visibleMonthKey;
 
-  dayGroups.forEach((dayGroup) => {
+  if (!visibleMonthKey) {
+    return;
+  }
+
+  const toolbar = document.createElement("div");
+  toolbar.className = "date-toolbar";
+
+  const previousMonthKey = addMonthsToMonthKey(visibleMonthKey, -1);
+  const previousButton = document.createElement("button");
+  previousButton.className = "date-nav";
+  previousButton.type = "button";
+  previousButton.textContent = "Previous";
+  previousButton.disabled = !previousMonthKey || previousMonthKey < minMonthKey;
+  previousButton.addEventListener("click", () => {
+    consultationDraft.visibleMonthKey = previousMonthKey;
+    consultationDraft.selectedDateKey = getFirstAvailableDateKeyInMonth(dayGroups, previousMonthKey);
+    renderSlots(consultationDraft.slots);
+  });
+
+  const rangeLabel = document.createElement("span");
+  rangeLabel.className = "date-range";
+  rangeLabel.textContent = getMonthLabel(visibleMonthKey);
+
+  const nextMonthKey = addMonthsToMonthKey(visibleMonthKey, 1);
+  const nextButton = document.createElement("button");
+  nextButton.className = "date-nav";
+  nextButton.type = "button";
+  nextButton.textContent = "Next";
+  nextButton.disabled = !nextMonthKey || nextMonthKey > maxMonthKey;
+  nextButton.addEventListener("click", () => {
+    consultationDraft.visibleMonthKey = nextMonthKey;
+    consultationDraft.selectedDateKey = getFirstAvailableDateKeyInMonth(dayGroups, nextMonthKey);
+    renderSlots(consultationDraft.slots);
+  });
+
+  toolbar.append(previousButton, rangeLabel, nextButton);
+
+  const weekdays = document.createElement("div");
+  weekdays.className = "month-weekdays";
+  weekdays.setAttribute("aria-hidden", "true");
+  ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].forEach((weekday) => {
+    const label = document.createElement("span");
+    label.textContent = weekday;
+    weekdays.append(label);
+  });
+
+  const grid = document.createElement("div");
+  grid.className = "date-grid month-grid";
+
+  getMonthCalendarDays(visibleMonthKey).forEach((calendarDay) => {
+    const dayGroup = calendarDay.isCurrentMonth ? dayGroupMap.get(calendarDay.key) : null;
+    const hasSlots = Boolean(dayGroup?.slots?.length);
     const button = document.createElement("button");
-    button.className = `date-button${dayGroup.key === selectedKey ? " is-active" : ""}`;
+    button.className = [
+      "date-button",
+      "calendar-day",
+      calendarDay.key === selectedKey ? "is-active" : "",
+      calendarDay.isCurrentMonth ? "" : "is-outside-month",
+      hasSlots ? "has-slots" : "is-unavailable",
+      calendarDay.key === getTodayDateKey() ? "is-today" : "",
+    ]
+      .filter(Boolean)
+      .join(" ");
     button.type = "button";
-    button.setAttribute("aria-pressed", String(dayGroup.key === selectedKey));
-    button.setAttribute("aria-label", `Show times for ${dayGroup.label}`);
-
-    const weekday = document.createElement("span");
-    weekday.className = "date-weekday";
-    weekday.textContent = dayGroup.meta.weekday;
+    button.disabled = !calendarDay.isCurrentMonth || !hasSlots;
+    button.setAttribute("aria-pressed", String(calendarDay.key === selectedKey));
+    button.setAttribute(
+      "aria-label",
+      hasSlots
+        ? `Show times for ${dayGroup.label}`
+        : `${getShortCalendarDateLabel(calendarDay.key)} has no available times`
+    );
 
     const day = document.createElement("span");
     day.className = "date-number";
-    day.textContent = dayGroup.meta.day;
+    day.textContent = calendarDay.day;
 
-    const month = document.createElement("span");
-    month.className = "date-month";
-    month.textContent = dayGroup.meta.month;
+    button.append(day);
 
-    button.append(weekday, day, month);
-    button.addEventListener("click", () => {
-      consultationDraft.selectedDateKey = dayGroup.key;
-      renderSlots(consultationDraft.slots);
-    });
-    dateList.append(button);
+    if (hasSlots) {
+      const availability = document.createElement("span");
+      availability.className = "date-availability";
+      availability.textContent = `${dayGroup.slots.length} ${dayGroup.slots.length === 1 ? "time" : "times"}`;
+      button.append(availability);
+      button.addEventListener("click", () => {
+        consultationDraft.visibleMonthKey = visibleMonthKey;
+        consultationDraft.selectedDateKey = dayGroup.key;
+        renderSlots(consultationDraft.slots);
+      });
+    }
+
+    grid.append(button);
   });
+
+  dateList.append(toolbar, weekdays, grid);
 }
 
-function renderSelectedDaySlots(dayGroup) {
-  if (!slotList || !dayGroup) return;
+function renderSelectedDaySlots(dayGroup, visibleMonthKey = "") {
+  if (!slotList) return;
 
   slotList.textContent = "";
 
@@ -308,8 +538,17 @@ function renderSelectedDaySlots(dayGroup) {
   day.className = "slot-day";
 
   const heading = document.createElement("h3");
-  heading.textContent = dayGroup.label;
+  heading.textContent = dayGroup?.label || getMonthLabel(visibleMonthKey);
   day.append(heading);
+
+  if (!dayGroup?.slots?.length) {
+    const empty = document.createElement("p");
+    empty.className = "slot-empty";
+    empty.textContent = visibleMonthKey ? "No open times in this month." : "Select an available date to see times.";
+    day.append(empty);
+    slotList.append(day);
+    return;
+  }
 
   const buttons = document.createElement("div");
   buttons.className = "slot-buttons";
@@ -361,16 +600,28 @@ function renderSlots(slots) {
   }
   setSlotStatus("Choose a date, then pick a time.");
 
-  const selectedKey = dayGroups.some((dayGroup) => dayGroup.key === consultationDraft.selectedDateKey)
+  const { minMonthKey, maxMonthKey } = getCalendarMonthRange(dayGroups);
+  const requestedMonthKey =
+    consultationDraft.visibleMonthKey ||
+    getMonthKeyFromDateKey(consultationDraft.selectedDateKey) ||
+    getMonthKeyFromDateKey(dayGroups[0].key);
+  const visibleMonthKey = clampMonthKey(requestedMonthKey, minMonthKey, maxMonthKey);
+  const selectedDateStillVisible = dayGroups.some(
+    (dayGroup) => dayGroup.key === consultationDraft.selectedDateKey && getMonthKeyFromDateKey(dayGroup.key) === visibleMonthKey
+  );
+  const selectedKey = selectedDateStillVisible
     ? consultationDraft.selectedDateKey
-    : dayGroups[0].key;
+    : getFirstAvailableDateKeyInMonth(dayGroups, visibleMonthKey);
+  const dayGroupMap = new Map(dayGroups.map((dayGroup) => [dayGroup.key, dayGroup]));
+
+  consultationDraft.visibleMonthKey = visibleMonthKey;
   consultationDraft.selectedDateKey = selectedKey;
 
   renderDatePicker(dayGroups, selectedKey);
-  renderSelectedDaySlots(dayGroups.find((dayGroup) => dayGroup.key === selectedKey));
+  renderSelectedDaySlots(dayGroupMap.get(selectedKey), visibleMonthKey);
 }
 
-async function loadConsultationSlots() {
+async function loadConsultationSlots(calendarUrl = buildCalendarUrlWithConsultationAnswers(consultationDraft.answers || {})) {
   if (!slotList || !slotStatus) return;
 
   slotList.textContent = "";
@@ -388,7 +639,7 @@ async function loadConsultationSlots() {
   setSlotStatus("Loading available times...");
 
   if (!canUseWebsiteApi()) {
-    renderSlotFallback("Open the booking calendar to choose a time.");
+    renderEmbeddedCalendarFallback(calendarUrl);
     return;
   }
 
@@ -418,6 +669,12 @@ async function loadConsultationSlots() {
 
 function openConsultationDialog(step = "questions") {
   closeMenu();
+
+  if (step === "calendar" && isLocalFilePreview()) {
+    window.location.href = buildCalendarUrlWithConsultationAnswers(consultationDraft.answers || {});
+    return;
+  }
+
   if (step === "questions") {
     resetConsultationFlow();
   }
@@ -493,6 +750,7 @@ async function handleConsultationForm(event) {
     slot: null,
     slots: [],
     selectedDateKey: "",
+    visibleMonthKey: "",
   };
 
   const calendarUrl = buildCalendarUrlWithConsultationAnswers(data);
