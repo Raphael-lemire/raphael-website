@@ -7,6 +7,9 @@
   --paper: #ffffff;
   --soft: #f7f7f7;
   --soft-2: #f1f1f1;
+  --accent: #245c55;
+  --accent-soft: #edf6f3;
+  --gold-soft: #fff6dc;
   --shadow: 0 24px 70px rgba(0, 0, 0, 0.09);
   --radius: 18px;
   font-family:
@@ -667,7 +670,7 @@ select {
 .consult-calendar,
 .consult-contact {
   align-content: start;
-  background: white;
+  background: #fdfdfb;
   border: 1px solid var(--line);
   border-radius: 22px;
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.24);
@@ -683,6 +686,19 @@ select {
 
 .consult-calendar .consult-form-header h2 {
   font-size: clamp(28px, 4vw, 36px);
+}
+
+.consult-calendar .consult-form-header {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.04);
+  padding: clamp(14px, 2vw, 18px);
+}
+
+.calendar-title {
+  border-left: 4px solid var(--accent);
+  padding-left: 14px;
 }
 
 .consult-form-header {
@@ -726,6 +742,26 @@ select {
   margin: 0;
 }
 
+.calendar-highlights {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: -2px 0 0;
+  padding: 0;
+}
+
+.calendar-highlights li {
+  background: var(--accent-soft);
+  border: 1px solid rgba(36, 92, 85, 0.16);
+  border-radius: 999px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  padding: 9px 11px;
+}
+
 .form-grid {
   display: grid;
   gap: 14px;
@@ -766,10 +802,10 @@ select {
 }
 
 .slot-status {
-  background: var(--soft);
-  border: 1px solid var(--line);
+  background: white;
+  border: 1px solid rgba(36, 92, 85, 0.16);
   border-radius: 14px;
-  color: var(--muted);
+  color: var(--soft-ink);
   font-size: 14px;
   line-height: 1.45;
   padding: 14px 16px;
@@ -783,14 +819,18 @@ select {
 
 .date-toolbar {
   align-items: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   display: grid;
   gap: 10px;
   grid-template-columns: minmax(94px, auto) 1fr minmax(94px, auto);
+  padding: 10px;
 }
 
 .date-range {
   color: var(--ink);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 950;
   line-height: 1.2;
   text-align: center;
@@ -816,8 +856,8 @@ select {
 
 .date-nav:hover,
 .date-nav:focus-visible {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
   color: white;
   outline: none;
 }
@@ -835,7 +875,7 @@ select {
 }
 
 .month-weekdays {
-  color: var(--muted);
+  color: #676767;
   font-size: 11px;
   font-weight: 900;
   line-height: 1;
@@ -844,8 +884,8 @@ select {
 }
 
 .date-button {
-  background: white;
-  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(17, 17, 17, 0.12);
   border-radius: 12px;
   color: var(--ink);
   cursor: pointer;
@@ -858,16 +898,22 @@ select {
   transition:
     background 0.2s ease,
     border-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease,
+    transform 0.2s ease;
 }
 
 .date-button:hover,
 .date-button:focus-visible,
 .date-button.is-active {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
   color: white;
   outline: none;
+}
+
+.date-button:hover,
+.date-button:focus-visible {
+  transform: translateY(-1px);
 }
 
 .date-button:disabled {
@@ -879,16 +925,17 @@ select {
 }
 
 .calendar-day.is-unavailable {
-  background: #f7f7f7;
-  color: #9a9a9a;
+  background: #f5f5f3;
+  color: #a1a1a1;
 }
 
 .calendar-day.has-slots {
-  border-color: rgba(17, 17, 17, 0.24);
+  border-color: rgba(36, 92, 85, 0.24);
+  box-shadow: inset 0 -3px 0 rgba(36, 92, 85, 0.08);
 }
 
 .calendar-day.is-today:not(.is-active) {
-  box-shadow: inset 0 0 0 2px rgba(17, 17, 17, 0.14);
+  box-shadow: inset 0 0 0 2px rgba(36, 92, 85, 0.22);
 }
 
 .date-weekday,
@@ -912,7 +959,6 @@ select {
   font-size: 10px;
   font-weight: 900;
   line-height: 1;
-  text-transform: uppercase;
 }
 
 .slot-list {
@@ -924,11 +970,16 @@ select {
 }
 
 .slot-day {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
   display: grid;
-  gap: 10px;
+  gap: 12px;
+  padding: 14px;
 }
 
 .slot-day h3 {
+  color: var(--accent);
   font-size: 15px;
   margin: 0;
 }
@@ -947,8 +998,8 @@ select {
 }
 
 .slot-button {
-  background: white;
-  border: 1px solid var(--line);
+  background: #fbfbfa;
+  border: 1px solid rgba(17, 17, 17, 0.12);
   border-radius: 14px;
   color: var(--ink);
   cursor: pointer;
@@ -964,8 +1015,8 @@ select {
 
 .slot-button:hover,
 .slot-button:focus-visible {
-  background: var(--ink);
-  border-color: var(--ink);
+  background: var(--accent);
+  border-color: var(--accent);
   color: white;
   outline: none;
 }

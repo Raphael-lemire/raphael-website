@@ -514,7 +514,7 @@ function renderDatePicker(dayGroups, selectedKey) {
     if (hasSlots) {
       const availability = document.createElement("span");
       availability.className = "date-availability";
-      availability.textContent = `${dayGroup.slots.length} ${dayGroup.slots.length === 1 ? "time" : "times"}`;
+      availability.textContent = `${dayGroup.slots.length} ${dayGroup.slots.length === 1 ? "opening" : "openings"}`;
       button.append(availability);
       button.addEventListener("click", () => {
         consultationDraft.visibleMonthKey = visibleMonthKey;
