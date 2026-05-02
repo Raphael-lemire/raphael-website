@@ -327,6 +327,33 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
+async function writeClipboard(value) {
+  if (navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(value);
+      return;
+    } catch {
+      // Fall through to the older copy method for desktop browsers that block clipboard access.
+    }
+  }
+
+  const textarea = document.createElement('textarea');
+  textarea.value = value;
+  textarea.setAttribute('readonly', '');
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  textarea.style.top = '0';
+  document.body.append(textarea);
+  textarea.select();
+
+  const copied = document.execCommand('copy');
+  textarea.remove();
+
+  if (!copied) {
+    throw new Error('Clipboard unavailable');
+  }
+}
+
 function RealtorOutreach() {
   const [records, setRecords] = useState(loadRecords);
   const [filter, setFilter] = useState('all');
@@ -360,10 +387,19 @@ function RealtorOutreach() {
 
   async function copyMessage(property, contact) {
     try {
-      await navigator.clipboard.writeText(makeMessage(property, contact));
+      await writeClipboard(makeMessage(property, contact));
       showToast('Text copied.');
     } catch {
       showToast('Could not copy. Use the Text button instead.');
+    }
+  }
+
+  async function copyPhone(contact) {
+    try {
+      await writeClipboard(contact.displayPhone);
+      showToast('Phone number copied.');
+    } catch {
+      showToast('Could not copy phone number.');
     }
   }
 
@@ -520,7 +556,10 @@ function RealtorOutreach() {
                         <strong>{contact.name}</strong>
                         <span>{contact.displayPhone}</span>
                       </div>
-                      <a href={smsUrl(contact.phone, makeMessage(property, contact))}>Text</a>
+                      <div className="realtor-contact-actions">
+                        <a href={smsUrl(contact.phone, makeMessage(property, contact))}>Text</a>
+                        <button type="button" onClick={() => copyPhone(contact)}>Copy phone number</button>
+                      </div>
                     </div>
                   ))}
                 </div>

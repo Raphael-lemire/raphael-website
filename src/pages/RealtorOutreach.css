@@ -32,7 +32,8 @@
 .realtor-top-actions,
 .realtor-card-heading,
 .realtor-status-buttons,
-.realtor-contact {
+.realtor-contact,
+.realtor-contact-actions {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -76,7 +77,8 @@
 .realtor-report,
 .realtor-filters button,
 .realtor-status-buttons button,
-.realtor-contact a {
+.realtor-contact a,
+.realtor-contact button {
   min-height: 42px;
   display: inline-flex;
   align-items: center;
@@ -107,6 +109,12 @@
 .realtor-contact a {
   background: var(--realtor-accent);
   color: #fff;
+}
+
+.realtor-contact button {
+  border-color: var(--realtor-line);
+  background: #fff;
+  color: var(--realtor-ink);
 }
 
 .realtor-danger,
@@ -307,6 +315,12 @@
   background: #fbfcfa;
 }
 
+.realtor-contact-actions {
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 .realtor-contact strong,
 .realtor-contact span {
   display: block;
@@ -384,5 +398,14 @@
   .realtor-status-buttons,
   .realtor-contact {
     display: grid;
+  }
+
+  .realtor-contact-actions {
+    justify-content: stretch;
+  }
+
+  .realtor-contact-actions a,
+  .realtor-contact-actions button {
+    width: 100%;
   }
 }
