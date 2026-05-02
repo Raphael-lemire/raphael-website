@@ -6,7 +6,7 @@
   "redirects": [
     {
       "source": "/tools",
-      "destination": "https://raphael-private-tools-j196ys6rc-raphael-lemires-projects.vercel.app/tools",
+      "destination": "https://raphael-private-tools.vercel.app/tools",
       "permanent": false
     }
   ],
