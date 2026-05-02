@@ -10,14 +10,17 @@ Add these environment variables in Vercel:
 
 - `HIGHLEVEL_ACCESS_TOKEN`: HighLevel Private Integration token.
 - `HIGHLEVEL_LOCATION_ID`: `2LNw0pwcDBoCxk3TGiSY`
-- `HIGHLEVEL_WEBSITE_PIPELINE_ID`: Website Leads pipeline ID.
-- `HIGHLEVEL_NEW_LEAD_STAGE_ID`: stage ID for `New Website Lead`.
+- `HIGHLEVEL_WEBSITE_PIPELINE_ID`: fallback Website Leads pipeline ID.
+- `HIGHLEVEL_NEW_LEAD_STAGE_ID`: fallback stage ID for `New Website Lead`.
 - `HIGHLEVEL_CALENDAR_ID`: calendar ID for the consultation calendar, currently `m1nSKgK0Zc86d2PxUSiq`.
 - `HIGHLEVEL_CALENDAR_URL`: optional public booking URL for calendar `m1nSKgK0Zc86d2PxUSiq`. The site uses this only as a fallback if the direct calendar API cannot load time buttons.
 
 Optional:
 
 - `HIGHLEVEL_ASSIGNED_USER_ID`: assign incoming contacts to a specific HighLevel user.
+- `HIGHLEVEL_WEBSITE_PIPELINE_NAME`: defaults to `website leads`; used to find the right pipeline by name before falling back to IDs.
+- `HIGHLEVEL_NEW_LEAD_STAGE_NAME`: defaults to `New Website Lead`.
+- `HIGHLEVEL_APPOINTMENT_STAGE_NAME`: defaults to `Appointment Booked`.
 - `HIGHLEVEL_WEBSITE_NEW_STAGE_ID`: fallback alias for `HIGHLEVEL_NEW_LEAD_STAGE_ID`.
 - Existing old stage variables can stay in place while migrating: `HIGHLEVEL_CONSULT_STAGE_ID`, `HIGHLEVEL_LISTED_STAGE_ID`, and `HIGHLEVEL_HOME_VALUE_STAGE_ID`. The endpoint only uses them if the new lead stage ID is missing.
 

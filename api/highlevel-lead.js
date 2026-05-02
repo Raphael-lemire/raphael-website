@@ -3,6 +3,8 @@ const LOCATION_ID = process.env.HIGHLEVEL_LOCATION_ID || "2LNw0pwcDBoCxk3TGiSY";
 const CONTACTS_API_VERSION = "2021-07-28";
 const OPPORTUNITIES_API_VERSION = "2023-02-21";
 const DEFAULT_CALENDAR_URL = "https://api.leadconnectorhq.com/widget/booking/m1nSKgK0Zc86d2PxUSiq";
+const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
+const DEFAULT_NEW_LEAD_STAGE_NAME = "New Website Lead";
 
 const LEAD_SOURCE_LABELS = {
   consultation: "consultation",
@@ -21,6 +23,10 @@ const CUSTOM_FIELDS = {
 
 function getString(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function normalizeName(value) {
+  return getString(value).toLowerCase().replace(/\s+/g, " ");
 }
 
 function splitName(name) {
@@ -227,7 +233,7 @@ function getContactId(result) {
   );
 }
 
-function getStageId(body) {
+function getLegacyStageId(body) {
   const newLeadStageId = process.env.HIGHLEVEL_NEW_LEAD_STAGE_ID || process.env.HIGHLEVEL_WEBSITE_NEW_STAGE_ID;
 
   if (newLeadStageId) {
@@ -249,6 +255,96 @@ function getStageId(body) {
   return "";
 }
 
+function getPipelineName(pipeline) {
+  return getString(pipeline.name || pipeline.title);
+}
+
+function getStageName(stage) {
+  return getString(stage.name || stage.title);
+}
+
+function getStageIdFromStage(stage) {
+  return getString(stage.id || stage.stageId || stage.pipelineStageId);
+}
+
+function collectPipelines(value, pipelines = []) {
+  if (!value) {
+    return pipelines;
+  }
+
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectPipelines(item, pipelines));
+    return pipelines;
+  }
+
+  if (typeof value !== "object") {
+    return pipelines;
+  }
+
+  if (getString(value.id) && getPipelineName(value) && Array.isArray(value.stages)) {
+    pipelines.push(value);
+    return pipelines;
+  }
+
+  Object.entries(value).forEach(([key, child]) => {
+    if (key === "traceId") {
+      return;
+    }
+
+    collectPipelines(child, pipelines);
+  });
+
+  return pipelines;
+}
+
+function findStage(pipeline, stageNames) {
+  const normalizedNames = stageNames.map(normalizeName).filter(Boolean);
+  const stages = Array.isArray(pipeline.stages) ? pipeline.stages : [];
+
+  return (
+    stages.find((stage) => normalizedNames.includes(normalizeName(getStageName(stage)))) ||
+    stages[0] ||
+    null
+  );
+}
+
+function getWebsitePipelineName() {
+  return process.env.HIGHLEVEL_WEBSITE_PIPELINE_NAME || DEFAULT_WEBSITE_PIPELINE_NAME;
+}
+
+async function resolveOpportunityTarget(token, body) {
+  const pipelineName = getWebsitePipelineName();
+  const stageName = process.env.HIGHLEVEL_NEW_LEAD_STAGE_NAME || DEFAULT_NEW_LEAD_STAGE_NAME;
+
+  try {
+    const result = await highLevelGet("/opportunities/pipelines", token, OPPORTUNITIES_API_VERSION);
+    const pipelines = collectPipelines(result);
+    const pipeline = pipelines.find(
+      (item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)
+    );
+
+    if (!pipeline) {
+      return null;
+    }
+
+    const stage = findStage(pipeline, [stageName, DEFAULT_NEW_LEAD_STAGE_NAME]);
+    const pipelineStageId = getStageIdFromStage(stage);
+
+    if (!pipelineStageId) {
+      return null;
+    }
+
+    return {
+      pipelineId: getString(pipeline.id),
+      pipelineStageId,
+      pipelineName: getPipelineName(pipeline),
+      stageName: getStageName(stage),
+    };
+  } catch (error) {
+    return null;
+  }
+}
+
 function getCalendarUrl(body) {
   if (body.leadType !== "consultation") {
     return "";
@@ -257,10 +353,10 @@ function getCalendarUrl(body) {
   return process.env.HIGHLEVEL_CALENDAR_URL || DEFAULT_CALENDAR_URL;
 }
 
-function buildOpportunityPayload(body, contactId) {
+function buildOpportunityPayload(body, contactId, target) {
   const name = getString(body.name);
-  const pipelineId = process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
-  const pipelineStageId = getStageId(body);
+  const pipelineId = target?.pipelineId || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
+  const pipelineStageId = target?.pipelineStageId || getLegacyStageId(body);
 
   if (!pipelineId || !pipelineStageId || !contactId) {
     return null;
@@ -300,6 +396,27 @@ async function highLevelRequest(path, token, payload, version) {
       Version: version,
     },
     body: JSON.stringify(payload),
+  });
+
+  const result = await highLevelResponse.json().catch(() => ({}));
+
+  if (!highLevelResponse.ok) {
+    const error = new Error("HighLevel rejected the request");
+    error.status = highLevelResponse.status;
+    error.details = result;
+    throw error;
+  }
+
+  return result;
+}
+
+async function highLevelGet(path, token, version) {
+  const highLevelResponse = await fetch(`${HIGHLEVEL_BASE_URL}${path}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      Version: version,
+    },
   });
 
   const result = await highLevelResponse.json().catch(() => ({}));
@@ -368,7 +485,8 @@ export default async function handler(request, response) {
   }
 
   const contactId = getContactId(contactResult);
-  const opportunityPayload = buildOpportunityPayload(body, contactId);
+  const opportunityTarget = await resolveOpportunityTarget(token, body);
+  const opportunityPayload = buildOpportunityPayload(body, contactId, opportunityTarget);
   let opportunityResult = null;
 
   if (opportunityPayload) {
@@ -395,6 +513,8 @@ export default async function handler(request, response) {
     noteSaved: Boolean(noteResult),
     opportunityId: opportunityResult?.opportunity?.id || opportunityResult?.id || null,
     opportunityConfigured: Boolean(opportunityPayload),
+    opportunityPipeline: opportunityTarget?.pipelineName || null,
+    opportunityStage: opportunityTarget?.stageName || null,
     calendarUrl: getCalendarUrl(body),
   });
 }
