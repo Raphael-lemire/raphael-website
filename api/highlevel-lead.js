@@ -123,28 +123,44 @@ function getIntentTag(body) {
   return "";
 }
 
+function addNoteLine(rows, label, value) {
+  const cleanValue = getString(value);
+
+  if (cleanValue) {
+    rows.push(`${label}: ${cleanValue}`);
+  }
+}
+
+function getLeadNoteTitle(body) {
+  if (body.leadType === "home-value") {
+    return "Home Value Request";
+  }
+
+  if (body.leadType === "listed-funnel") {
+    return "Listed Search Lead";
+  }
+
+  if (body.leadType === "consultation") {
+    return "Consultation Request";
+  }
+
+  return "Website Lead";
+}
+
 function buildReadableSurveyNotes(body) {
+  const { email, phone } = getContactMethods(body);
   const rawNote = getString(body.note || body.message || body.question);
-  const title =
-    body.leadType === "home-value"
-      ? "Home value lead summary"
-      : body.leadType === "listed-funnel"
-        ? "Listed search lead summary"
-        : "Website lead summary";
-  const rows = [
-    title,
-    "",
-    "Contact request",
-    `- Name: ${getString(body.name) || "Not answered"}`,
-    `- Lead source: ${getLeadSourceLabel(body) || "website"}`,
-    `- Intent: ${getIntentValue(body) || "Not answered"}`,
-    `- Timeline: ${getString(body.timeline) || "Not answered"}`,
-    `- Area: ${getAreaValue(body) || "Not answered"}`,
-    `- Budget / price range: ${getBudgetValue(body) || "Not answered"}`,
-    `- Property address: ${getPropertyAddressValue(body) || "Not answered"}`,
-    `- Notes: ${rawNote || "Not answered"}`,
-    `- Original page: ${getString(body.pageUrl) || "Not captured"}`,
-  ];
+  const contact = [phone, email].filter(Boolean).join(" / ");
+  const rows = [getLeadNoteTitle(body)];
+
+  addNoteLine(rows, "Name", body.name);
+  addNoteLine(rows, "Contact", contact);
+  addNoteLine(rows, "Looking to", body.intent || body.goal);
+  addNoteLine(rows, "Timeline", body.timeline);
+  addNoteLine(rows, "Area", getAreaValue(body));
+  addNoteLine(rows, "Budget", getBudgetValue(body));
+  addNoteLine(rows, "Property", getPropertyAddressValue(body));
+  addNoteLine(rows, "Message", rawNote);
 
   return rows.join("\n");
 }

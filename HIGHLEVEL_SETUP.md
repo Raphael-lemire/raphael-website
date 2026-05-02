@@ -118,7 +118,17 @@ Home value:
 - Address: `123 Test Street`
 - Note: `Testing home value intake`
 
-Confirm `website lead`, `source: home value`, readable custom field notes, a contact note, and one `Home Value Request` opportunity.
+Confirm `website lead`, `source: home value`, compact custom field notes, a contact note, and one `Home Value Request` opportunity.
+
+The contact note should stay short and omit unanswered fields, for example:
+
+```text
+Home Value Request
+Name: Website Home Value Test
+Contact: website-home-value-test@example.com
+Property: 123 Test Street
+Message: Testing home value intake
+```
 
 Listed search:
 
@@ -126,4 +136,4 @@ Listed search:
 - Email or phone: `website-listed-test@example.com`
 - Note: `Testing Listed search lead without appointment`
 
-Confirm `website lead`, `source: listed`, `status: appointment not booked`, readable custom field notes, a contact note, and one `Listed Search Lead` opportunity.
+Confirm `website lead`, `source: listed`, `status: appointment not booked`, compact custom field notes, a contact note, and one `Listed Search Lead` opportunity.
