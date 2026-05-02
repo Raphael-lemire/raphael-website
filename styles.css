@@ -246,6 +246,13 @@ svg {
   margin-top: 34px;
 }
 
+.hero-actions .button.primary {
+  font-size: 18px;
+  min-height: 66px;
+  min-width: 190px;
+  padding: 0 34px;
+}
+
 .hero-start {
   color: var(--ink);
   font-size: 16px;
@@ -317,6 +324,29 @@ svg {
 
 .button.full {
   width: 100%;
+}
+
+.questions-cta {
+  display: grid;
+  gap: 14px;
+  justify-items: center;
+  margin: 26px auto 0;
+  max-width: 420px;
+}
+
+.questions-cta p {
+  color: var(--soft-ink);
+  font-size: 17px;
+  font-weight: 850;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.questions-cta .button {
+  font-size: 16px;
+  min-height: 60px;
+  min-width: 180px;
+  padding: 0 30px;
 }
 
 .find-home-section,
@@ -1829,7 +1859,13 @@ details p {
   }
 
   .hero-actions .button {
+    min-height: 58px;
     width: 100%;
+  }
+
+  .hero-actions .button.primary {
+    font-size: 17px;
+    min-height: 64px;
   }
 
   .hero-highlights {
@@ -1838,8 +1874,8 @@ details p {
   }
 
   .hero-highlights li {
-    font-size: 12px;
-    padding: 9px 11px;
+    font-size: 11px;
+    padding: 8px 10px;
   }
 
   .hero-highlights li:nth-child(n + 3) {
@@ -1852,7 +1888,34 @@ details p {
   .questions-section,
   .newsletter-section,
   .contact-section {
-    padding: 70px 18px;
+    padding: 52px 18px;
+  }
+
+  .eyebrow {
+    font-size: 11px;
+    margin-bottom: 10px;
+  }
+
+  .section-copy h2,
+  .questions-section h2,
+  .trust-copy h2,
+  .newsletter-copy h2,
+  .newsletter-thanks h3 {
+    font-size: clamp(29px, 8.5vw, 36px);
+    line-height: 1.04;
+  }
+
+  .section-copy p,
+  .questions-section p,
+  .trust-copy p,
+  .newsletter-copy p {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-top: 12px;
+  }
+
+  .find-home-section {
+    gap: 22px;
   }
 
   .trust-grid {
@@ -1861,9 +1924,44 @@ details p {
 
   .newsletter-section {
     border-radius: 0;
+    gap: 22px;
     grid-template-columns: 1fr;
     margin-left: 0;
     margin-right: 0;
+    padding-bottom: calc(112px + env(safe-area-inset-bottom));
+    padding-top: 44px;
+  }
+
+  .questions-cta {
+    margin-top: 20px;
+    max-width: none;
+    width: 100%;
+  }
+
+  .questions-cta p {
+    font-size: 15px;
+  }
+
+  .questions-cta .button {
+    min-height: 60px;
+    width: 100%;
+  }
+
+  .newsletter-form {
+    gap: 12px;
+  }
+
+  .newsletter-form label:not(.newsletter-consent) input {
+    padding: 13px 14px;
+  }
+
+  .newsletter-consent {
+    font-size: 12px;
+    line-height: 1.35;
+  }
+
+  .newsletter-form .form-note {
+    display: none;
   }
 
   .home-value-section {
@@ -1897,8 +1995,8 @@ details p {
   }
 
   .listed-preview {
-    min-height: clamp(500px, 130vw, 620px);
-    max-width: 430px;
+    min-height: clamp(350px, 96vw, 430px);
+    max-width: 360px;
   }
 
   .listed-device {
@@ -1930,14 +2028,14 @@ details p {
 
   .listed-map {
     right: 0;
-    top: 42px;
-    width: min(54%, 222px);
+    top: 28px;
+    width: min(53%, 184px);
   }
 
   .listed-card {
     left: 0;
     top: 0;
-    width: min(62%, 258px);
+    width: min(60%, 214px);
   }
 
   .site-footer {
@@ -1965,20 +2063,21 @@ details p {
     gap: 0;
     justify-content: space-around;
     left: 0;
-    padding: 8px 10px max(8px, env(safe-area-inset-bottom));
+    padding: 6px 8px max(6px, env(safe-area-inset-bottom));
     right: 0;
   }
 
   .sticky-actions a {
     flex-direction: column;
     flex: 1;
-    gap: 4px;
-    padding: 12px 6px;
+    font-size: 12px;
+    gap: 3px;
+    padding: 8px 4px;
     text-align: center;
   }
 
   .sticky-actions .action-icon {
-    height: 18px;
-    width: 18px;
+    height: 16px;
+    width: 16px;
   }
 }
