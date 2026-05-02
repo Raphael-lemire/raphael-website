@@ -1,0 +1,380 @@
+.realtor-outreach-page {
+  --realtor-bg: #f5f7f2;
+  --realtor-panel: #ffffff;
+  --realtor-panel-soft: #eef3ea;
+  --realtor-ink: #1d2520;
+  --realtor-muted: #647069;
+  --realtor-line: #d8e0d6;
+  --realtor-accent: #2d6f5d;
+  --realtor-accent-dark: #214f43;
+  --realtor-danger: #ad3d3d;
+  --realtor-success: #1f7a55;
+  --realtor-warning: #8b650f;
+  --realtor-shadow: 0 18px 45px rgba(34, 52, 44, 0.12);
+
+  min-height: 100vh;
+  padding: 32px max(16px, calc((100vw - 1180px) / 2)) 48px;
+  background: var(--realtor-bg);
+  color: var(--realtor-ink);
+}
+
+.realtor-outreach-page button,
+.realtor-outreach-page input,
+.realtor-outreach-page textarea {
+  font: inherit;
+}
+
+.realtor-outreach-page button {
+  cursor: pointer;
+}
+
+.realtor-topbar,
+.realtor-top-actions,
+.realtor-card-heading,
+.realtor-status-buttons,
+.realtor-contact {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.realtor-topbar {
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.realtor-top-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.realtor-eyebrow {
+  margin: 0 0 6px;
+  color: var(--realtor-accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.realtor-outreach-page h1 {
+  margin: 0;
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.realtor-intro {
+  max-width: 680px;
+  margin: 10px 0 0;
+  color: var(--realtor-muted);
+}
+
+.realtor-secondary,
+.realtor-primary,
+.realtor-danger,
+.realtor-filters button,
+.realtor-status-buttons button,
+.realtor-contact a {
+  min-height: 42px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 0 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.realtor-secondary,
+.realtor-filters button,
+.realtor-status-buttons button {
+  border-color: var(--realtor-line);
+  background: #fff;
+  color: var(--realtor-ink);
+}
+
+.realtor-primary,
+.realtor-contact a {
+  background: var(--realtor-accent);
+  color: #fff;
+}
+
+.realtor-danger,
+.realtor-status-buttons .not-work {
+  background: var(--realtor-danger);
+  color: #fff;
+}
+
+.realtor-status-buttons .works {
+  background: var(--realtor-success);
+  color: #fff;
+}
+
+.realtor-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.realtor-summary article {
+  min-height: 92px;
+  padding: 18px;
+  background: var(--realtor-panel);
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(34, 52, 44, 0.06);
+}
+
+.realtor-summary span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.realtor-summary p {
+  margin: 0;
+  color: var(--realtor-muted);
+}
+
+.realtor-toolbar {
+  display: grid;
+  grid-template-columns: minmax(260px, 1fr) auto;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 16px;
+}
+
+.realtor-toolbar label,
+.realtor-actions label {
+  display: grid;
+  gap: 7px;
+  color: var(--realtor-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.realtor-toolbar input,
+.realtor-actions textarea {
+  width: 100%;
+  border: 1px solid var(--realtor-line);
+  border-radius: 6px;
+  background: #fbfcfa;
+  color: var(--realtor-ink);
+  padding: 11px 12px;
+  outline: none;
+}
+
+.realtor-toolbar input:focus,
+.realtor-actions textarea:focus {
+  border-color: var(--realtor-accent);
+  box-shadow: 0 0 0 3px rgba(45, 111, 93, 0.16);
+}
+
+.realtor-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.realtor-filters button.active {
+  background: var(--realtor-ink);
+  border-color: var(--realtor-ink);
+  color: #fff;
+}
+
+.realtor-list {
+  display: grid;
+  gap: 14px;
+}
+
+.realtor-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 18px;
+  padding: 18px;
+  background: var(--realtor-panel);
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  box-shadow: var(--realtor-shadow);
+}
+
+.realtor-card[data-status='works'] {
+  border-color: rgba(31, 122, 85, 0.36);
+  box-shadow: inset 4px 0 0 var(--realtor-success), var(--realtor-shadow);
+}
+
+.realtor-card[data-status='notWork'] {
+  border-color: rgba(173, 61, 61, 0.36);
+  box-shadow: inset 4px 0 0 var(--realtor-danger), var(--realtor-shadow);
+}
+
+.realtor-card-heading {
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.realtor-card h2 {
+  margin: 6px 0 0;
+  font-size: 1.35rem;
+  letter-spacing: 0;
+}
+
+.realtor-status,
+.realtor-type {
+  display: inline-flex;
+  border-radius: 999px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  font-weight: 900;
+}
+
+.realtor-status {
+  background: #fff7d6;
+  color: var(--realtor-warning);
+}
+
+.realtor-card[data-status='works'] .realtor-status {
+  background: #e8f6ef;
+  color: var(--realtor-success);
+}
+
+.realtor-card[data-status='notWork'] .realtor-status {
+  background: #fff0ed;
+  color: var(--realtor-danger);
+}
+
+.realtor-type {
+  background: var(--realtor-panel-soft);
+  color: var(--realtor-accent-dark);
+  white-space: nowrap;
+}
+
+.realtor-type.new-build {
+  background: #e9f5ff;
+  color: #185b82;
+}
+
+.realtor-details {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.realtor-details div {
+  padding: 12px;
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.realtor-details dt {
+  margin: 0;
+  color: var(--realtor-muted);
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.realtor-details dd {
+  margin: 5px 0 0;
+  font-weight: 800;
+}
+
+.realtor-contacts {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.realtor-contact {
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  background: #fbfcfa;
+}
+
+.realtor-contact strong,
+.realtor-contact span {
+  display: block;
+}
+
+.realtor-contact span {
+  margin-top: 3px;
+  color: var(--realtor-muted);
+  font-weight: 700;
+}
+
+.realtor-actions {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+}
+
+.realtor-status-buttons {
+  flex-wrap: wrap;
+}
+
+.realtor-status-buttons button {
+  flex: 1;
+}
+
+.realtor-actions textarea {
+  min-height: 84px;
+  resize: vertical;
+}
+
+.realtor-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 18px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--realtor-ink);
+  color: #fff;
+  font-weight: 800;
+  box-shadow: 0 18px 45px rgba(34, 52, 44, 0.18);
+}
+
+@media (max-width: 920px) {
+  .realtor-topbar,
+  .realtor-toolbar,
+  .realtor-card {
+    grid-template-columns: 1fr;
+  }
+
+  .realtor-topbar,
+  .realtor-card-heading {
+    display: grid;
+  }
+
+  .realtor-top-actions {
+    justify-content: flex-start;
+  }
+
+  .realtor-summary,
+  .realtor-details {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .realtor-summary,
+  .realtor-details {
+    grid-template-columns: 1fr;
+  }
+
+  .realtor-top-actions,
+  .realtor-filters,
+  .realtor-status-buttons,
+  .realtor-contact {
+    display: grid;
+  }
+}

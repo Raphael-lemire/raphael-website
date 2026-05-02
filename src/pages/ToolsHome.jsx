@@ -19,6 +19,12 @@ const tools = [
     href: '/tax-vault/',
     status: 'Live',
   },
+  {
+    title: 'Realtor Outreach',
+    description: 'Text listing agents, track replies, and classify which homes will work for the client.',
+    href: '/realtor-outreach',
+    status: 'Live',
+  },
 ];
 
 function ToolsHome() {
