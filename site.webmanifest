@@ -1,0 +1,19 @@
+{
+  "name": "Raphael Lemire Real Estate",
+  "short_name": "Raphael Lemire",
+  "icons": [
+    {
+      "src": "/assets/raphael-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/raphael-site-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#111111",
+  "background_color": "#ffffff",
+  "display": "standalone"
+}
