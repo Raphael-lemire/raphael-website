@@ -7,13 +7,6 @@ const DEFAULT_CALENDAR_URL = "https://api.leadconnectorhq.com/widget/booking/m1n
 const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
 const DEFAULT_NEW_LEAD_STAGE_NAME = "New Website Lead";
 
-const LEAD_SOURCE_LABELS = {
-  consultation: "consultation",
-  "home-value": "home value",
-  "listed-funnel": "listed",
-  newsletter: "newsletter",
-};
-
 const CUSTOM_FIELDS = {
   intent: "hsXnTsP8vjCKtgEtkqSR",
   timeline: "z9OkdeXN9YcA70o0x8Ft",
@@ -82,10 +75,6 @@ function addCustomField(fields, id, value) {
   }
 }
 
-function getLeadSourceLabel(body) {
-  return LEAD_SOURCE_LABELS[body.leadType] || "website";
-}
-
 function getBudgetValue(body) {
   return getString(body.budget || body.priceRange || body.maxPrice);
 }
@@ -102,26 +91,38 @@ function getIntentValue(body) {
   return getString(body.intent || body.goal || body.leadType);
 }
 
-function getIntentTag(body) {
+function getDescriptorTags(body) {
+  if (body.leadType === "newsletter") {
+    return ["subscribe to newsletter"];
+  }
+
+  if (body.leadType === "home-value") {
+    return ["seller"];
+  }
+
+  if (body.leadType === "listed-funnel") {
+    return ["buyer"];
+  }
+
   const intent = getIntentValue(body).toLowerCase();
 
   if (intent.includes("buy") && intent.includes("sell")) {
-    return "intent: buy-sell";
+    return ["buyer", "seller"];
   }
 
   if (intent.includes("buy")) {
-    return "intent: buyer";
+    return ["buyer"];
   }
 
   if (intent.includes("sell")) {
-    return "intent: seller";
+    return ["seller"];
   }
 
   if (intent.includes("explor")) {
-    return "intent: exploring";
+    return ["exploring"];
   }
 
-  return "";
+  return [];
 }
 
 function addNoteLine(rows, label, value) {
@@ -192,23 +193,9 @@ function isTestLead(body) {
 }
 
 function buildTags(body) {
-  const tags = new Set(["website lead", `source: ${getLeadSourceLabel(body)}`]);
-  const intentTag = getIntentTag(body);
+  const tags = new Set(["website lead"]);
 
-  if (intentTag) {
-    tags.add(intentTag);
-  }
-
-  if (body.leadType === "consultation" || body.leadType === "listed-funnel") {
-    tags.add("status: appointment not booked");
-  }
-
-  if (body.leadType === "newsletter") {
-    tags.add("newsletter");
-    tags.add("subscribe to my newsletter");
-    tags.add("newsletter subscriber");
-    tags.add("real estate market update list");
-  }
+  getDescriptorTags(body).forEach((tag) => tags.add(tag));
 
   if (isTestLead(body)) {
     tags.add("test lead");

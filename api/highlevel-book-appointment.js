@@ -161,24 +161,6 @@ function getMeetingMethodShort(body) {
   return meetingMethod;
 }
 
-function getMeetingMethodTag(body) {
-  const meetingMethod = getMeetingMethodValue(body).toLowerCase();
-
-  if (meetingMethod.includes("phone")) {
-    return "meeting: phone";
-  }
-
-  if (meetingMethod.includes("google") || meetingMethod.includes("meet") || meetingMethod.includes("video")) {
-    return "meeting: google meet";
-  }
-
-  if (meetingMethod.includes("person") || meetingMethod.includes("office") || meetingMethod.includes("champlain")) {
-    return "meeting: in person";
-  }
-
-  return "";
-}
-
 function addSlotStartTime(slots, value) {
   if (!value) return;
 
@@ -294,40 +276,32 @@ function buildCustomFields(body) {
   return fields;
 }
 
-function getIntentTag(body) {
+function getDescriptorTags(body) {
   const intent = getIntentValue(body).toLowerCase();
 
   if (intent.includes("buy") && intent.includes("sell")) {
-    return "intent: buy-sell";
+    return ["buyer", "seller"];
   }
 
   if (intent.includes("buy")) {
-    return "intent: buyer";
+    return ["buyer"];
   }
 
   if (intent.includes("sell")) {
-    return "intent: seller";
+    return ["seller"];
   }
 
   if (intent.includes("explor")) {
-    return "intent: exploring";
+    return ["exploring"];
   }
 
-  return "";
+  return [];
 }
 
 function buildTags(body) {
-  const tags = new Set(["website lead", "source: consultation", "status: appointment booked"]);
-  const intentTag = getIntentTag(body);
-  const meetingMethodTag = getMeetingMethodTag(body);
+  const tags = new Set(["website lead"]);
 
-  if (intentTag) {
-    tags.add(intentTag);
-  }
-
-  if (meetingMethodTag) {
-    tags.add(meetingMethodTag);
-  }
+  getDescriptorTags(body).forEach((tag) => tags.add(tag));
 
   if (getString(body.name).toLowerCase().includes("test") || getString(body.email).toLowerCase().includes("test")) {
     tags.add("test lead");

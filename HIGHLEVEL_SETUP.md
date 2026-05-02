@@ -38,12 +38,12 @@ Optional:
 - Email or phone -> HighLevel email/phone.
 - Type -> `lead`.
 - Source -> `raphaellemire.com consultation`, `raphaellemire.com home value`, `raphaellemire.com listed download`, or `raphaellemire.com website`.
-- Tags -> clean management tags:
-  - `website lead`
-  - `source: consultation`, `source: home value`, or `source: listed`
-  - `intent: buyer`, `intent: seller`, `intent: buy-sell`, or `intent: exploring` when known
-  - `status: appointment not booked` for consultation and Listed search leads
+- Tags -> simple manual-friendly labels:
+  - `website lead` for any website submission
+  - `buyer`, `seller`, or `exploring` when useful
+  - `subscribe to newsletter` for market update signups
   - `test lead` for fake/test submissions
+- Lead source, appointment status, meeting method, and form details stay in the Source field, pipeline, appointment, custom fields, and notes instead of becoming extra tags.
 - Survey answers -> existing HighLevel custom fields:
   - Intent: `hsXnTsP8vjCKtgEtkqSR`
   - Timeline: `z9OkdeXN9YcA70o0x8Ft`
@@ -89,9 +89,8 @@ Create or update a HighLevel workflow:
 
 - Trigger: appointment booked on calendar `m1nSKgK0Zc86d2PxUSiq`.
 - Actions:
-  - Add tag `status: appointment booked`.
-  - Remove tag `status: appointment not booked`.
-  - Move the related Website Leads opportunity to `Appointment Booked`.
+  - Move the related Website Leads opportunity to `Appointment Booked` if it is not already there.
+  - Do not add extra source, status, or meeting-method tags.
 
 Do not add marketing follow-up emails or texts unless consent is handled separately.
 
@@ -118,7 +117,7 @@ Home value:
 - Address: `123 Test Street`
 - Note: `Testing home value intake`
 
-Confirm `website lead`, `source: home value`, compact custom field notes, a contact note, and one `Home Value Request` opportunity.
+Confirm `website lead`, `seller`, compact custom field notes, a contact note, and one `Home Value Request` opportunity.
 
 The contact note should stay short and omit unanswered fields, for example:
 
@@ -136,11 +135,11 @@ Listed search:
 - Email or phone: `website-listed-test@example.com`
 - Note: `Testing Listed search lead without appointment`
 
-Confirm `website lead`, `source: listed`, `status: appointment not booked`, compact custom field notes, a contact note, and one `Listed Search Lead` opportunity.
+Confirm `website lead`, `buyer`, compact custom field notes, a contact note, and one `Listed Search Lead` opportunity.
 
 Newsletter:
 
 - Name: optional
 - Email: required
 
-Confirm `website lead`, `source: newsletter`, `newsletter`, `subscribe to my newsletter`, `newsletter subscriber`, `real estate market update list`, compact contact note, interest `Greater Moncton market update`, and no opportunity.
+Confirm `website lead`, `subscribe to newsletter`, compact contact note, interest `Greater Moncton market update`, and no opportunity.
