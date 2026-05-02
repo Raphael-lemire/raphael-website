@@ -1918,6 +1918,11 @@ details p {
     gap: 22px;
   }
 
+  .find-home-actions {
+    position: relative;
+    z-index: 5;
+  }
+
   .trust-grid {
     grid-template-columns: 1fr;
   }
@@ -1995,8 +2000,8 @@ details p {
   }
 
   .listed-preview {
-    min-height: clamp(350px, 96vw, 430px);
-    max-width: 360px;
+    min-height: clamp(360px, 94vw, 400px);
+    max-width: 330px;
   }
 
   .listed-device {
@@ -2028,14 +2033,14 @@ details p {
 
   .listed-map {
     right: 0;
-    top: 28px;
-    width: min(53%, 184px);
+    top: 24px;
+    width: min(50%, 160px);
   }
 
   .listed-card {
     left: 0;
     top: 0;
-    width: min(60%, 214px);
+    width: min(56%, 178px);
   }
 
   .site-footer {
