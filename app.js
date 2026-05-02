@@ -30,6 +30,7 @@ let consultationDraft = {
   selectedDateKey: "",
   visibleMonthKey: "",
 };
+let ignoreNextOutsideMenuClick = false;
 
 const consultationFieldParams = {
   intent: ["intent", "hsXnTsP8vjCKtgEtkqSR"],
@@ -54,6 +55,14 @@ function closeMenu() {
   document.body.classList.remove("menu-open");
   mobileMenu.hidden = true;
   menuToggle.setAttribute("aria-expanded", "false");
+}
+
+function isMenuOpen() {
+  return menuToggle?.getAttribute("aria-expanded") === "true";
+}
+
+function isMenuClick(target) {
+  return mobileMenu?.contains(target) || menuToggle?.contains(target);
 }
 
 function showToast(message) {
@@ -936,6 +945,48 @@ menuToggle?.addEventListener("click", () => {
 
 mobileMenu?.querySelectorAll("a").forEach((link) => {
   link.addEventListener("click", closeMenu);
+});
+
+document.addEventListener(
+  "pointerdown",
+  (event) => {
+    if (!isMenuOpen() || isMenuClick(event.target)) {
+      return;
+    }
+
+    ignoreNextOutsideMenuClick = true;
+    event.preventDefault();
+    event.stopPropagation();
+    closeMenu();
+  },
+  true
+);
+
+document.addEventListener(
+  "click",
+  (event) => {
+    if (ignoreNextOutsideMenuClick) {
+      ignoreNextOutsideMenuClick = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    if (!isMenuOpen() || isMenuClick(event.target)) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    closeMenu();
+  },
+  true
+);
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && isMenuOpen()) {
+    closeMenu();
+  }
 });
 
 document.querySelectorAll("[data-tab]").forEach((tab) => {
