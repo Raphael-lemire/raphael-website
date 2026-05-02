@@ -11,6 +11,7 @@ const LEAD_SOURCE_LABELS = {
   consultation: "consultation",
   "home-value": "home value",
   "listed-funnel": "listed",
+  newsletter: "newsletter",
 };
 
 const CUSTOM_FIELDS = {
@@ -132,6 +133,10 @@ function addNoteLine(rows, label, value) {
 }
 
 function getLeadNoteTitle(body) {
+  if (body.leadType === "newsletter") {
+    return "Newsletter Signup";
+  }
+
   if (body.leadType === "home-value") {
     return "Home Value Request";
   }
@@ -155,6 +160,7 @@ function buildReadableSurveyNotes(body) {
 
   addNoteLine(rows, "Name", body.name);
   addNoteLine(rows, "Contact", contact);
+  addNoteLine(rows, "Interest", body.interest);
   addNoteLine(rows, "Looking to", body.intent || body.goal);
   addNoteLine(rows, "Timeline", body.timeline);
   addNoteLine(rows, "Area", getAreaValue(body));
@@ -197,6 +203,13 @@ function buildTags(body) {
     tags.add("status: appointment not booked");
   }
 
+  if (body.leadType === "newsletter") {
+    tags.add("newsletter");
+    tags.add("subscribe to my newsletter");
+    tags.add("newsletter subscriber");
+    tags.add("real estate market update list");
+  }
+
   if (isTestLead(body)) {
     tags.add("test lead");
   }
@@ -205,6 +218,10 @@ function buildTags(body) {
 }
 
 function getLeadSource(body) {
+  if (body.leadType === "newsletter") {
+    return "raphaellemire.com newsletter";
+  }
+
   if (body.leadType === "home-value") {
     return "raphaellemire.com home value";
   }
@@ -226,8 +243,8 @@ function buildHighLevelPayload(body) {
 
   return {
     locationId: LOCATION_ID,
-    ...splitName(name),
-    name,
+    ...(name ? splitName(name) : {}),
+    ...(name ? { name } : {}),
     ...(email ? { email } : {}),
     ...(phone ? { phone } : {}),
     type: "lead",
@@ -375,6 +392,10 @@ function getCalendarUrl(body) {
 }
 
 function buildOpportunityPayload(body, contactId, target) {
+  if (body.leadType === "newsletter") {
+    return null;
+  }
+
   const name = getString(body.name);
   const pipelineId = target?.pipelineId || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
   const pipelineStageId = target?.pipelineStageId || getLegacyStageId(body);
@@ -479,7 +500,11 @@ export default async function handler(request, response) {
   const name = getString(body.name);
   const { email, phone } = getContactMethods(body);
 
-  if (!name || (!email && !phone)) {
+  if (body.leadType === "newsletter" && !email) {
+    return response.status(400).json({ error: "Email is required" });
+  }
+
+  if (body.leadType !== "newsletter" && (!name || (!email && !phone))) {
     return response.status(400).json({ error: "Name and email or phone are required" });
   }
 
@@ -506,7 +531,7 @@ export default async function handler(request, response) {
   }
 
   const contactId = getContactId(contactResult);
-  const opportunityTarget = await resolveOpportunityTarget(token, body);
+  const opportunityTarget = body.leadType === "newsletter" ? null : await resolveOpportunityTarget(token, body);
   const opportunityPayload = buildOpportunityPayload(body, contactId, opportunityTarget);
   let opportunityResult = null;
 

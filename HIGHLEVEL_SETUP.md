@@ -137,3 +137,10 @@ Listed search:
 - Note: `Testing Listed search lead without appointment`
 
 Confirm `website lead`, `source: listed`, `status: appointment not booked`, compact custom field notes, a contact note, and one `Listed Search Lead` opportunity.
+
+Newsletter:
+
+- Name: optional
+- Email: required
+
+Confirm `website lead`, `source: newsletter`, `newsletter`, `subscribe to my newsletter`, `newsletter subscriber`, `real estate market update list`, compact contact note, interest `Greater Moncton market update`, and no opportunity.

@@ -18,7 +18,7 @@
     <link rel="icon" href="./assets/site-icon.svg?v=rl-icon-20260430b" type="image/svg+xml" />
     <link rel="icon" href="./assets/raphael-favicon-32.png?v=rl-icon-20260430b" type="image/png" sizes="32x32" />
     <link rel="apple-touch-icon" href="./assets/apple-touch-icon.png?v=rl-icon-20260430b" />
-    <link rel="stylesheet" href="./styles.css?v=booking-polish-20260502" />
+    <link rel="stylesheet" href="./styles.css?v=newsletter-20260502" />
   </head>
   <body>
     <header class="site-header" data-elevate>
@@ -29,6 +29,7 @@
         <a href="#find-home">Find a Home</a>
         <a href="#home-value">Home Value</a>
         <a href="#questions">Questions</a>
+        <a class="nav-subscribe" href="#market-update">Subscribe to Newsletter</a>
         <a href="#book-consultation" data-open-consultation>Book</a>
       </nav>
       <button class="menu-button" type="button" data-menu-toggle aria-expanded="false" aria-label="Open menu">
@@ -42,6 +43,7 @@
       <a href="#find-home">Find a Home</a>
       <a href="#home-value">Home Value</a>
       <a href="#questions">Questions</a>
+      <a href="#market-update">Subscribe to Newsletter</a>
       <a href="#book-consultation" data-open-consultation>Book a Consultation</a>
     </div>
 
@@ -168,6 +170,37 @@
           </details>
         </div>
         <a class="button primary" href="#book-consultation" data-open-consultation>Book a Consultation</a>
+      </section>
+
+      <section class="newsletter-section" id="market-update" aria-label="Greater Moncton market update signup">
+        <div class="newsletter-copy">
+          <span class="eyebrow">Market update</span>
+          <h2>Wondering how the Greater Moncton market is moving?</h2>
+          <p>
+            Get a short local update with price trends, inventory shifts, and what buyers and sellers should watch next.
+          </p>
+        </div>
+        <form class="newsletter-form" data-newsletter-form>
+          <input name="interest" type="hidden" value="Greater Moncton market update" />
+          <label>
+            Name
+            <input name="name" autocomplete="name" placeholder="Your name" />
+          </label>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" />
+          </label>
+          <label class="consent-line newsletter-consent">
+            <input name="consent" type="checkbox" required />
+            <span>I agree to receive market updates from Raphael Lemire and can unsubscribe anytime.</span>
+          </label>
+          <button class="button primary full" type="submit">Get the Market Update</button>
+          <p class="form-note">Clear local updates. No spam.</p>
+        </form>
+        <div class="newsletter-thanks" data-newsletter-thanks hidden>
+          <span class="eyebrow">You are on the list</span>
+          <h3>Thanks. I will send the next market update your way.</h3>
+        </div>
       </section>
 
       <section class="contact-section" aria-label="Contact Raphael Lemire">
@@ -388,6 +421,6 @@
         <p class="form-note">Your answers and appointment details will be saved together.</p>
       </form>
     </dialog>
-  <script src="./app.js?v=booking-polish-20260502"></script>
+  <script src="./app.js?v=newsletter-20260502"></script>
 </body>
 </html>

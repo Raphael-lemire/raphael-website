@@ -736,6 +736,35 @@ async function handleHomeValueForm(event) {
   showToast("Thank you. I will gather the info and get back to you shortly.");
 }
 
+async function handleNewsletterForm(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const thanks = form.parentElement?.querySelector("[data-newsletter-thanks]");
+  const data = Object.fromEntries(new FormData(form).entries());
+
+  setSubmitting(form, true);
+
+  try {
+    await submitLead(data, "newsletter");
+  } catch (error) {
+    showToast("The signup could not connect. Try again in a moment.");
+    setSubmitting(form, false);
+    return;
+  }
+
+  setSubmitting(form, false);
+  form.reset();
+
+  if (thanks) {
+    form.hidden = true;
+    thanks.hidden = false;
+    thanks.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  showToast("You are on the list. Thank you.");
+}
+
 async function handleConsultationForm(event) {
   event.preventDefault();
   const form = event.currentTarget;
@@ -967,4 +996,8 @@ consultationContactForm?.addEventListener("submit", handleConsultationContactFor
 
 document.querySelectorAll("[data-home-value-form]").forEach((form) => {
   form.addEventListener("submit", handleHomeValueForm);
+});
+
+document.querySelectorAll("[data-newsletter-form]").forEach((form) => {
+  form.addEventListener("submit", handleNewsletterForm);
 });
