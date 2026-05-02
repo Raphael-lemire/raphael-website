@@ -187,6 +187,146 @@ function smsUrl(phone, message) {
   return `sms:+1${phone}?&body=${encodeURIComponent(message)}`;
 }
 
+function pdfText(value) {
+  return String(value)
+    .replace(/[^\x20-\x7E]/g, '?')
+    .replaceAll('\\', '\\\\')
+    .replaceAll('(', '\\(')
+    .replaceAll(')', '\\)');
+}
+
+function wrapText(value, maxChars) {
+  const words = String(value || '').split(/\s+/).filter(Boolean);
+  const lines = [];
+
+  words.forEach((word) => {
+    const current = lines[lines.length - 1] || '';
+    const next = current ? `${current} ${word}` : word;
+
+    if (next.length <= maxChars) {
+      lines[lines.length - 1] = next;
+      return;
+    }
+
+    lines.push(word);
+  });
+
+  return lines.length ? lines : [''];
+}
+
+function buildClientReportPdf(rows, counts) {
+  const pageWidth = 612;
+  const pageHeight = 792;
+  const margin = 46;
+  const usableWidth = pageWidth - margin * 2;
+  const pages = [[]];
+  let y = pageHeight - margin;
+
+  function currentPage() {
+    return pages[pages.length - 1];
+  }
+
+  function addPage() {
+    pages.push([]);
+    y = pageHeight - margin;
+  }
+
+  function ensureSpace(height) {
+    if (y - height < margin) {
+      addPage();
+    }
+  }
+
+  function text(value, x, size = 10, font = 'F1', leading = 13) {
+    currentPage().push(`BT /${font} ${size} Tf ${x} ${y} Td (${pdfText(value)}) Tj ET`);
+    y -= leading;
+  }
+
+  function wrapped(value, x, width, size = 10, font = 'F1', leading = 13) {
+    const maxChars = Math.max(20, Math.floor(width / (size * 0.52)));
+    wrapText(value, maxChars).forEach((line) => text(line, x, size, font, leading));
+  }
+
+  const today = new Intl.DateTimeFormat(undefined, {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date());
+
+  text('Client Home Shortlist', margin, 22, 'F2', 27);
+  text(`Prepared ${today}`, margin, 10, 'F1', 17);
+  text(`Summary: ${counts.works} will work, ${counts.notWork} will not work, ${counts.pending} pending`, margin, 11, 'F2', 25);
+
+  [
+    ['works', 'Will Work'],
+    ['pending', 'Pending / Waiting on Confirmation'],
+    ['notWork', 'Will Not Work'],
+  ].forEach(([status, heading]) => {
+    const group = rows.filter((row) => row.status === status);
+    if (!group.length) return;
+
+    ensureSpace(42);
+    text(heading, margin, 15, 'F2', 20);
+
+    group.forEach((row, index) => {
+      ensureSpace(86);
+      text(`${index + 1}. ${row.address}`, margin, 12, 'F2', 15);
+      wrapped(`MLS ${row.mls} | ${row.category} | Occupancy: ${row.occupancy}`, margin + 14, usableWidth - 14, 9.5, 'F1', 12);
+      if (row.note) {
+        wrapped(`Note: ${row.note}`, margin + 14, usableWidth - 14, 9.5, 'F1', 12);
+      }
+      y -= 7;
+    });
+  });
+
+  const objects = [
+    '<< /Type /Catalog /Pages 2 0 R >>',
+    '',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
+    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>',
+  ];
+
+  const pageRefs = [];
+  pages.forEach((ops) => {
+    const pageObjectNumber = objects.length + 1;
+    const contentObjectNumber = objects.length + 2;
+    pageRefs.push(`${pageObjectNumber} 0 R`);
+    objects.push(`<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pageWidth} ${pageHeight}] /Resources << /Font << /F1 3 0 R /F2 4 0 R >> >> /Contents ${contentObjectNumber} 0 R >>`);
+    const stream = ops.join('\n');
+    objects.push(`<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`);
+  });
+
+  objects[1] = `<< /Type /Pages /Kids [${pageRefs.join(' ')}] /Count ${pageRefs.length} >>`;
+
+  let pdf = '%PDF-1.4\n';
+  const offsets = [0];
+
+  objects.forEach((object, index) => {
+    offsets.push(pdf.length);
+    pdf += `${index + 1} 0 obj\n${object}\nendobj\n`;
+  });
+
+  const xrefOffset = pdf.length;
+  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`;
+  offsets.slice(1).forEach((offset) => {
+    pdf += `${String(offset).padStart(10, '0')} 00000 n \n`;
+  });
+  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefOffset}\n%%EOF`;
+
+  return pdf;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.append(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
 function RealtorOutreach() {
   const [records, setRecords] = useState(loadRecords);
   const [filter, setFilter] = useState('all');
@@ -259,6 +399,26 @@ function RealtorOutreach() {
     return matchesFilter && (!query || searchable.includes(query));
   });
 
+  function downloadClientReport() {
+    const reportRows = properties.map((property) => {
+      const record = getRecord(property.id);
+
+      return {
+        address: property.address,
+        mls: property.mls,
+        category: property.category,
+        occupancy: property.occupancy,
+        status: record.status,
+        note: record.note?.trim() || '',
+      };
+    });
+    const pdf = buildClientReportPdf(reportRows, counts);
+    const date = new Date().toISOString().slice(0, 10);
+
+    downloadBlob(new Blob([pdf], { type: 'application/pdf' }), `client-home-shortlist-${date}.pdf`);
+    showToast('Client report downloaded.');
+  }
+
   return (
     <main className="realtor-outreach-page">
       <header className="realtor-topbar">
@@ -269,6 +429,7 @@ function RealtorOutreach() {
         </div>
         <div className="realtor-top-actions">
           <a className="realtor-secondary" href="/tools">Tools Home</a>
+          <button className="realtor-report" type="button" onClick={downloadClientReport}>Download report</button>
           <button className="realtor-danger" type="button" onClick={resetTracker}>Reset</button>
         </div>
       </header>

@@ -73,6 +73,7 @@
 .realtor-secondary,
 .realtor-primary,
 .realtor-danger,
+.realtor-report,
 .realtor-filters button,
 .realtor-status-buttons button,
 .realtor-contact a {
@@ -88,11 +89,18 @@
 }
 
 .realtor-secondary,
+.realtor-report,
 .realtor-filters button,
 .realtor-status-buttons button {
   border-color: var(--realtor-line);
   background: #fff;
   color: var(--realtor-ink);
+}
+
+.realtor-report {
+  background: var(--realtor-accent-dark);
+  border-color: var(--realtor-accent-dark);
+  color: #fff;
 }
 
 .realtor-primary,
