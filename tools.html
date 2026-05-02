@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Realtor Outreach Tool | Raphael Lemire</title>
+    <meta
+      name="description"
+      content="A private realtor outreach tracker for classifying Greater Moncton homes."
+    />
+    <link rel="icon" href="./favicon.ico?v=rl-tools-20260502" sizes="any" />
+    <link rel="icon" href="./assets/site-icon.svg?v=rl-tools-20260502" type="image/svg+xml" />
+    <link rel="stylesheet" href="./tools.css?v=rl-tools-20260502" />
+  </head>
+  <body>
+    <header class="tools-header">
+      <a class="tools-brand" href="/" aria-label="Back to Raphael Lemire homepage">
+        <img src="./assets/exit-logo-black.png" alt="EXIT Realty Associates" />
+      </a>
+      <div class="header-actions">
+        <button class="ghost-button" type="button" data-export-csv>Export CSV</button>
+        <button class="ghost-button danger" type="button" data-reset-status>Reset</button>
+      </div>
+    </header>
+
+    <main class="tools-shell">
+      <section class="tools-intro">
+        <span class="eyebrow">Private tool</span>
+        <h1>Realtor outreach tracker</h1>
+        <p>
+          Text each listing agent, then classify the home as soon as you know whether it works for the client.
+        </p>
+      </section>
+
+      <section class="summary-grid" aria-label="Outreach summary">
+        <article>
+          <span>Total homes</span>
+          <strong data-count-total>0</strong>
+        </article>
+        <article>
+          <span>Pending</span>
+          <strong data-count-pending>0</strong>
+        </article>
+        <article>
+          <span>Will work</span>
+          <strong data-count-works>0</strong>
+        </article>
+        <article>
+          <span>Won't work</span>
+          <strong data-count-not-work>0</strong>
+        </article>
+      </section>
+
+      <section class="toolbar" aria-label="Filters">
+        <label class="search-field">
+          Search
+          <input data-search-input type="search" placeholder="Address, agent, MLS, brokerage..." />
+        </label>
+        <div class="filter-group" aria-label="Status filter">
+          <button class="filter-chip is-active" type="button" data-status-filter="all">All</button>
+          <button class="filter-chip" type="button" data-status-filter="pending">Pending</button>
+          <button class="filter-chip" type="button" data-status-filter="works">Will work</button>
+          <button class="filter-chip" type="button" data-status-filter="notWork">Won't work</button>
+        </div>
+      </section>
+
+      <section class="property-list" data-property-list aria-label="Property outreach list"></section>
+    </main>
+
+    <div class="toast" data-toast hidden></div>
+
+    <template data-property-template>
+      <article class="property-card">
+        <div class="property-main">
+          <div class="property-title-row">
+            <div>
+              <span class="property-status" data-status-label>Pending</span>
+              <h2 data-address></h2>
+            </div>
+            <span class="type-pill" data-type></span>
+          </div>
+          <dl class="property-details">
+            <div>
+              <dt>MLS</dt>
+              <dd data-mls></dd>
+            </div>
+            <div>
+              <dt>Brokerage</dt>
+              <dd data-brokerage></dd>
+            </div>
+            <div>
+              <dt>Occupancy</dt>
+              <dd data-occupancy></dd>
+            </div>
+          </dl>
+          <div class="contact-list" data-contact-list></div>
+        </div>
+        <div class="property-actions">
+          <button class="action-button copy" type="button" data-copy-message>Copy text</button>
+          <div class="status-actions" aria-label="Classify property">
+            <button class="action-button works" type="button" data-set-status="works">Will work</button>
+            <button class="action-button not-work" type="button" data-set-status="notWork">Won't work</button>
+            <button class="action-button pending" type="button" data-set-status="pending">Pending</button>
+          </div>
+          <label class="note-field">
+            Note
+            <textarea data-note rows="3" placeholder="Ex: Seller said vacant, possession flexible, client passed..."></textarea>
+          </label>
+        </div>
+      </article>
+    </template>
+
+    <script src="./tools.js?v=rl-tools-20260502"></script>
+  </body>
+</html>

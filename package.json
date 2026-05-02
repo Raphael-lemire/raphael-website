@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "build": "mkdir -p dist/assets && cp index.html app.js styles.css favicon.ico robots.txt sitemap.xml apple-touch-icon.png site.webmanifest dist/ && cat app.js booking-calendar-polish.js > dist/app.js && cp -R assets/. dist/assets/",
-    "check": "node --check app.js"
+    "build": "mkdir -p dist/assets && cp index.html app.js styles.css tools.html tools.js tools.css favicon.ico robots.txt sitemap.xml apple-touch-icon.png site.webmanifest dist/ && cat app.js booking-calendar-polish.js > dist/app.js && cp -R assets/. dist/assets/",
+    "check": "node --check app.js && node --check tools.js"
   }
 }
