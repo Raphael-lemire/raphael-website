@@ -3,6 +3,7 @@ const LOCATION_ID = process.env.HIGHLEVEL_LOCATION_ID || "2LNw0pwcDBoCxk3TGiSY";
 const DEFAULT_CALENDAR_ID = "m1nSKgK0Zc86d2PxUSiq";
 const CONTACTS_API_VERSION = "2021-07-28";
 const OPPORTUNITIES_API_VERSION = "2023-02-21";
+const PIPELINES_API_VERSION = "2021-07-28";
 const CALENDAR_API_VERSION = "2023-02-21";
 const CALENDAR_SLOTS_API_VERSION = "2021-04-15";
 const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
@@ -445,7 +446,11 @@ async function resolveOpportunityTarget(token) {
   const stageName = process.env.HIGHLEVEL_APPOINTMENT_STAGE_NAME || DEFAULT_APPOINTMENT_STAGE_NAME;
 
   try {
-    const result = await highLevelGet("/opportunities/pipelines", token, OPPORTUNITIES_API_VERSION);
+    const result = await highLevelGet(
+      `/opportunities/pipelines?locationId=${encodeURIComponent(LOCATION_ID)}`,
+      token,
+      PIPELINES_API_VERSION
+    );
     const pipelines = collectPipelines(result);
     const pipeline = pipelines.find(
       (item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)

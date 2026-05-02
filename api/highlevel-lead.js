@@ -2,6 +2,7 @@ const HIGHLEVEL_BASE_URL = "https://services.leadconnectorhq.com";
 const LOCATION_ID = process.env.HIGHLEVEL_LOCATION_ID || "2LNw0pwcDBoCxk3TGiSY";
 const CONTACTS_API_VERSION = "2021-07-28";
 const OPPORTUNITIES_API_VERSION = "2023-02-21";
+const PIPELINES_API_VERSION = "2021-07-28";
 const DEFAULT_CALENDAR_URL = "https://api.leadconnectorhq.com/widget/booking/m1nSKgK0Zc86d2PxUSiq";
 const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
 const DEFAULT_NEW_LEAD_STAGE_NAME = "New Website Lead";
@@ -317,7 +318,11 @@ async function resolveOpportunityTarget(token, body) {
   const stageName = process.env.HIGHLEVEL_NEW_LEAD_STAGE_NAME || DEFAULT_NEW_LEAD_STAGE_NAME;
 
   try {
-    const result = await highLevelGet("/opportunities/pipelines", token, OPPORTUNITIES_API_VERSION);
+    const result = await highLevelGet(
+      `/opportunities/pipelines?locationId=${encodeURIComponent(LOCATION_ID)}`,
+      token,
+      PIPELINES_API_VERSION
+    );
     const pipelines = collectPipelines(result);
     const pipeline = pipelines.find(
       (item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)
