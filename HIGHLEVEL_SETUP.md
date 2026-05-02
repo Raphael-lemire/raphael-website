@@ -1,6 +1,6 @@
 # HighLevel Lead Intake And Booking Setup
 
-The home value and Listed forms post to `/api/highlevel-lead`. The endpoint creates or updates a HighLevel contact, saves readable survey answers, and creates or updates one Website Leads opportunity.
+The home value and Listed forms post to `/api/highlevel-lead`. The endpoint creates or updates a HighLevel contact, saves readable survey answers, creates a contact note, and creates or updates one Website Leads opportunity.
 
 Consultation booking uses the short planning questions first: intent, time frame, location, and budget/questions. Then the site pulls available times from the GoHighLevel calendar, asks for name, phone, and email, and creates the appointment directly in GoHighLevel with the first-form answers attached.
 
@@ -115,7 +115,7 @@ Home value:
 - Address: `123 Test Street`
 - Note: `Testing home value intake`
 
-Confirm `website lead`, `source: home value`, readable notes, and one `Home Value Request` opportunity.
+Confirm `website lead`, `source: home value`, readable custom field notes, a contact note, and one `Home Value Request` opportunity.
 
 Listed search:
 
@@ -123,4 +123,4 @@ Listed search:
 - Email or phone: `website-listed-test@example.com`
 - Note: `Testing Listed search lead without appointment`
 
-Confirm `website lead`, `source: listed`, `status: appointment not booked`, readable notes, and one `Listed Search Lead` opportunity.
+Confirm `website lead`, `source: listed`, `status: appointment not booked`, readable custom field notes, a contact note, and one `Listed Search Lead` opportunity.

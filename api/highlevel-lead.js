@@ -118,21 +118,28 @@ function getIntentTag(body) {
 
 function buildReadableSurveyNotes(body) {
   const rawNote = getString(body.note || body.message || body.question);
+  const title =
+    body.leadType === "home-value"
+      ? "Home value lead summary"
+      : body.leadType === "listed-funnel"
+        ? "Listed search lead summary"
+        : "Website lead summary";
   const rows = [
-    ["Lead source", getLeadSourceLabel(body)],
-    ["Intent", getIntentValue(body)],
-    ["Timeline", getString(body.timeline)],
-    ["Area", getAreaValue(body)],
-    ["Budget / price range", getBudgetValue(body)],
-    ["Property address", getPropertyAddressValue(body)],
-    ["Notes", rawNote],
-    ["Original page", getString(body.pageUrl)],
+    title,
+    "",
+    "Contact request",
+    `- Name: ${getString(body.name) || "Not answered"}`,
+    `- Lead source: ${getLeadSourceLabel(body) || "website"}`,
+    `- Intent: ${getIntentValue(body) || "Not answered"}`,
+    `- Timeline: ${getString(body.timeline) || "Not answered"}`,
+    `- Area: ${getAreaValue(body) || "Not answered"}`,
+    `- Budget / price range: ${getBudgetValue(body) || "Not answered"}`,
+    `- Property address: ${getPropertyAddressValue(body) || "Not answered"}`,
+    `- Notes: ${rawNote || "Not answered"}`,
+    `- Original page: ${getString(body.pageUrl) || "Not captured"}`,
   ];
 
-  return rows
-    .filter(([, value]) => value)
-    .map(([label, value]) => `${label}: ${value}`)
-    .join("\n");
+  return rows.join("\n");
 }
 
 function buildCustomFields(body) {
@@ -307,6 +314,23 @@ async function highLevelRequest(path, token, payload, version) {
   return result;
 }
 
+async function tryCreateContactNote(token, contactId, body) {
+  if (!contactId) {
+    return null;
+  }
+
+  try {
+    return await highLevelRequest(
+      `/contacts/${encodeURIComponent(contactId)}/notes`,
+      token,
+      { body: buildReadableSurveyNotes(body) },
+      CONTACTS_API_VERSION
+    );
+  } catch (error) {
+    return null;
+  }
+}
+
 export default async function handler(request, response) {
   if (request.method !== "POST") {
     response.setHeader("Allow", "POST");
@@ -363,9 +387,12 @@ export default async function handler(request, response) {
     }
   }
 
+  const noteResult = await tryCreateContactNote(token, contactId, body);
+
   return response.status(200).json({
     ok: true,
     contactId,
+    noteSaved: Boolean(noteResult),
     opportunityId: opportunityResult?.opportunity?.id || opportunityResult?.id || null,
     opportunityConfigured: Boolean(opportunityPayload),
     calendarUrl: getCalendarUrl(body),
