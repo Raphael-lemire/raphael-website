@@ -159,6 +159,55 @@ const properties = [
     occupancy: 'Not publicly confirmed',
     contacts: [{ name: 'Dennis Wilson', phone: '5068710223', displayPhone: '(506) 871-0223' }],
   },
+  {
+    id: '60-crowbush',
+    address: '60 Crowbush Crescent, Moncton',
+    mls: 'NB136153',
+    brokerage: 'Creativ Realty',
+    category: 'Resale / not new',
+    isNew: false,
+    occupancy: 'Early closing to confirm',
+    outreachQuestion: 'can you confirm if the seller would consider an early closing date?',
+    contacts: [
+      { name: 'Marley Churchill', phone: '5068638078', displayPhone: '(506) 863-8078' },
+      { name: 'Talia Hughes', phone: '5068503816', displayPhone: '(506) 850-3816' },
+      { name: 'Karlee Guenther', phone: '5063778962', displayPhone: '(506) 377-8962' },
+      { name: 'Shane Moore', phone: '5068690802', displayPhone: '(506) 869-0802' },
+    ],
+  },
+  {
+    id: '133-centennial',
+    address: '133 Centennial Drive, Moncton',
+    mls: 'NB136330',
+    brokerage: 'Keller Williams Capital Realty',
+    category: 'Resale / not new',
+    isNew: false,
+    occupancy: 'Early closing to confirm',
+    outreachQuestion: 'can you confirm if the seller would consider an early closing date?',
+    contacts: [{ name: 'Kelly Fletcher', phone: '5068690884', displayPhone: '(506) 869-0884' }],
+  },
+  {
+    id: '64-amity',
+    address: '64 Amity Street, Moncton',
+    mls: 'NB135672',
+    brokerage: '3 Percent Realty Atlantic Inc.',
+    category: 'Resale / not new',
+    isNew: false,
+    occupancy: 'Early closing to confirm',
+    outreachQuestion: 'can you confirm if the seller would consider an early closing date?',
+    contacts: [{ name: 'Tracey Mullin', phone: '5068666954', displayPhone: '(506) 866-6954' }],
+  },
+  {
+    id: '109-doiron',
+    address: '109 Doiron Street, Dieppe',
+    mls: 'NB132353',
+    brokerage: 'PG Direct Realty Ltd.',
+    category: 'Resale / not new',
+    isNew: false,
+    occupancy: 'Early closing to confirm',
+    outreachQuestion: 'can you confirm if the seller would consider an early closing date?',
+    contacts: [{ name: 'Jonathan David', phone: '8777090027', displayPhone: '(877) 709-0027' }],
+  },
 ];
 
 function loadRecords() {
@@ -176,6 +225,10 @@ function statusLabel(status) {
 }
 
 function makeMessage(property, contact) {
+  if (property.outreachQuestion) {
+    return `Hi ${contact.name}, this is Raphael Lemire. I am checking ${property.address}, MLS ${property.mls}, for a client. Before I request the showing, ${property.outreachQuestion}`;
+  }
+
   if (property.isNew) {
     return `Hi ${contact.name}, this is Raphael Lemire. I am checking ${property.address}, MLS ${property.mls}, for a client. Is it still available, and can you confirm the builder, HST/rebate details, and expected possession?`;
   }
@@ -429,6 +482,7 @@ function RealtorOutreach() {
       property.brokerage,
       property.category,
       property.occupancy,
+      property.outreachQuestion,
       ...property.contacts.flatMap((contact) => [contact.name, contact.displayPhone]),
     ].join(' ').toLowerCase();
 
