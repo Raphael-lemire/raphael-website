@@ -5,9 +5,20 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/dashboard",
+      "destination": "/dashboard/",
+      "permanent": false
+    },
+    {
       "source": "/tools",
       "destination": "https://raphael-private-tools.vercel.app/tools",
       "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/dashboard/(.*)",
+      "destination": "https://raphael-home-dashboard.vercel.app/dashboard/$1"
     }
   ],
   "headers": [
