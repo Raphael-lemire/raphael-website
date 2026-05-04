@@ -2,6 +2,9 @@ import { useState } from 'react';
 import './RealtorOutreach.css';
 
 const STORAGE_KEY = 'realtor-outreach-v1';
+const PROJECT_STORAGE_KEY = 'realtor-outreach-projects-v2';
+const ACTIVE_PROJECT_STORAGE_KEY = 'realtor-outreach-active-project-v2';
+const DEFAULT_PROJECT_ID = 'client-shortlist-2026-05-04';
 
 const properties = [
   {
@@ -218,10 +221,70 @@ function loadRecords() {
   }
 }
 
+function defaultProject(records = {}) {
+  return {
+    id: DEFAULT_PROJECT_ID,
+    name: 'Client shortlist - Moncton / Dieppe / Riverview',
+    client: 'Active buyer client',
+    status: 'active',
+    createdAt: '2026-05-04',
+    updatedAt: new Date().toISOString(),
+    notes: 'Working file created from the homes pasted in chat. Use this while texting listing agents and booking showings.',
+    properties,
+    records,
+  };
+}
+
+function loadProjects() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PROJECT_STORAGE_KEY));
+    if (Array.isArray(saved) && saved.length) return saved;
+  } catch {
+    // Fall back to the original one-list tracker below.
+  }
+
+  return [defaultProject(loadRecords())];
+}
+
+function saveProjectsToStorage(projects) {
+  localStorage.setItem(PROJECT_STORAGE_KEY, JSON.stringify(projects));
+}
+
 function statusLabel(status) {
+  if (status === 'notContacted') return 'Not contacted';
+  if (status === 'requested') return 'Requested';
+  if (status === 'confirmed') return 'Confirmed';
+  if (status === 'noResponse') return 'No response';
+  if (status === 'followUp') return 'Follow up';
+  if (status === 'done') return 'Done';
+  if (status === 'removed') return 'Removed';
   if (status === 'works') return 'Will work';
   if (status === 'notWork') return "Won't work";
   return 'Pending';
+}
+
+function normalizeProject(project) {
+  return {
+    ...project,
+    status: project.status || 'active',
+    records: project.records || {},
+    properties: Array.isArray(project.properties) ? project.properties : [],
+  };
+}
+
+function createBlankProject(name) {
+  const now = new Date().toISOString();
+  return {
+    id: crypto.randomUUID(),
+    name: name || 'New client outreach file',
+    client: name || 'New client',
+    status: 'active',
+    createdAt: now,
+    updatedAt: now,
+    notes: 'Paste the homes in chat, then load the extracted MLS details and copy-ready messages into this file.',
+    properties: [],
+    records: {},
+  };
 }
 
 function makeMessage(property, contact) {
@@ -408,28 +471,115 @@ async function writeClipboard(value) {
 }
 
 function RealtorOutreach() {
-  const [records, setRecords] = useState(loadRecords);
+  const [projects, setProjects] = useState(() => loadProjects().map(normalizeProject));
+  const [activeProjectId, setActiveProjectId] = useState(
+    () => localStorage.getItem(ACTIVE_PROJECT_STORAGE_KEY) || DEFAULT_PROJECT_ID,
+  );
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [toast, setToast] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+  const [newProjectName, setNewProjectName] = useState('');
+
+  const activeProjects = projects.filter((project) => project.status !== 'archived');
+  const archivedProjects = projects.filter((project) => project.status === 'archived');
+  const visibleProjects = showArchived ? archivedProjects : activeProjects;
+  const activeProject = projects.find((project) => project.id === activeProjectId)
+    || activeProjects[0]
+    || projects[0]
+    || defaultProject();
+  const activeProperties = activeProject.properties || [];
+  const activeRecords = activeProject.records || {};
 
   function getRecord(id) {
-    return records[id] || { status: 'pending', note: '' };
+    return activeRecords[id] || { status: 'notContacted', note: '' };
   }
 
-  function saveRecords(next) {
-    setRecords(next);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+  function saveProjects(nextProjects, nextActiveId = activeProjectId) {
+    const normalized = nextProjects.map(normalizeProject);
+    setProjects(normalized);
+    saveProjectsToStorage(normalized);
+    if (nextActiveId) {
+      setActiveProjectId(nextActiveId);
+      localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, nextActiveId);
+    }
+  }
+
+  function updateActiveProject(updater) {
+    const nextProjects = projects.map((project) => {
+      if (project.id !== activeProject.id) return project;
+      return normalizeProject({
+        ...updater(project),
+        updatedAt: new Date().toISOString(),
+      });
+    });
+    saveProjects(nextProjects, activeProject.id);
   }
 
   function updateRecord(id, updates) {
-    saveRecords({
-      ...records,
-      [id]: {
-        ...getRecord(id),
-        ...updates,
+    updateActiveProject((project) => ({
+      ...project,
+      records: {
+        ...(project.records || {}),
+        [id]: {
+          ...getRecord(id),
+          ...updates,
+        },
       },
-    });
+    }));
+  }
+
+  function createProject(event) {
+    event.preventDefault();
+    const project = createBlankProject(newProjectName.trim());
+    saveProjects([...projects, project], project.id);
+    setNewProjectName('');
+    setShowArchived(false);
+    showToast('Active outreach file created.');
+  }
+
+  function archiveProject() {
+    if (!window.confirm('Archive this active outreach file? You can recover it from the archive view.')) return;
+    const nextProjects = projects.map((project) =>
+      project.id === activeProject.id
+        ? { ...project, status: 'archived', updatedAt: new Date().toISOString() }
+        : project,
+    );
+    const nextActive = nextProjects.find((project) => project.status !== 'archived')?.id || nextProjects[0]?.id;
+    saveProjects(nextProjects, nextActive);
+    setShowArchived(false);
+    showToast('Outreach file archived.');
+  }
+
+  function restoreProject(projectId) {
+    const nextProjects = projects.map((project) =>
+      project.id === projectId
+        ? { ...project, status: 'active', updatedAt: new Date().toISOString() }
+        : project,
+    );
+    saveProjects(nextProjects, projectId);
+    setShowArchived(false);
+    showToast('Outreach file restored.');
+  }
+
+  function deleteProject() {
+    if (!window.confirm(`Delete "${activeProject.name}" completely? This cannot be undone.`)) return;
+    const nextProjects = projects.filter((project) => project.id !== activeProject.id);
+    const fallback = nextProjects.find((project) => project.status !== 'archived')?.id || nextProjects[0]?.id || '';
+    saveProjects(nextProjects.length ? nextProjects : [defaultProject()], fallback || DEFAULT_PROJECT_ID);
+    showToast('Outreach file deleted.');
+  }
+
+  function selectProject(projectId) {
+    setActiveProjectId(projectId);
+    localStorage.setItem(ACTIVE_PROJECT_STORAGE_KEY, projectId);
+  }
+
+  function updateProjectNotes(notes) {
+    updateActiveProject((project) => ({
+      ...project,
+      notes,
+    }));
   }
 
   function showToast(message) {
@@ -457,23 +607,42 @@ function RealtorOutreach() {
   }
 
   function resetTracker() {
-    if (!window.confirm('Reset all realtor outreach statuses and notes?')) return;
-    saveRecords({});
-    showToast('Realtor tracker reset.');
+    if (!window.confirm(`Reset statuses and notes for "${activeProject.name}"?`)) return;
+    updateActiveProject((project) => ({
+      ...project,
+      records: {},
+    }));
+    showToast('Active file reset.');
   }
 
-  const counts = properties.reduce(
+  const counts = activeProperties.reduce(
     (summary, property) => {
       const status = getRecord(property.id).status;
       summary.total += 1;
-      summary[status] += 1;
+      if (summary[status] !== undefined) summary[status] += 1;
+      if (['works', 'confirmed', 'done'].includes(status)) summary.ready += 1;
+      if (['followUp', 'noResponse', 'requested'].includes(status)) summary.needsFollowUp += 1;
       return summary;
     },
-    { total: 0, pending: 0, works: 0, notWork: 0 },
+    {
+      total: 0,
+      notContacted: 0,
+      pending: 0,
+      requested: 0,
+      confirmed: 0,
+      noResponse: 0,
+      followUp: 0,
+      done: 0,
+      removed: 0,
+      works: 0,
+      notWork: 0,
+      ready: 0,
+      needsFollowUp: 0,
+    },
   );
 
   const query = search.trim().toLowerCase();
-  const visibleProperties = properties.filter((property) => {
+  const visibleProperties = activeProperties.filter((property) => {
     const record = getRecord(property.id);
     const matchesFilter = filter === 'all' || record.status === filter;
     const searchable = [
@@ -490,15 +659,20 @@ function RealtorOutreach() {
   });
 
   function downloadClientReport() {
-    const reportRows = properties.map((property) => {
+    const reportRows = activeProperties.map((property) => {
       const record = getRecord(property.id);
+      const reportStatus = record.status === 'notWork'
+        ? 'notWork'
+        : ['works', 'confirmed', 'done'].includes(record.status)
+          ? 'works'
+          : 'pending';
 
       return {
         address: property.address,
         mls: property.mls,
         category: property.category,
         occupancy: property.occupancy,
-        status: record.status,
+        status: reportStatus,
         note: record.note?.trim() || '',
       };
     });
@@ -515,14 +689,83 @@ function RealtorOutreach() {
         <div>
           <p className="realtor-eyebrow">Private realtor workspace</p>
           <h1>Realtor Outreach</h1>
-          <p className="realtor-intro">Text listing agents, then classify whether each home works for the client.</p>
+          <p className="realtor-intro">Use active client files for pasted home shortlists, MLS details, copy-ready texts, and showing follow-up.</p>
         </div>
         <div className="realtor-top-actions">
           <a className="realtor-secondary" href="/tools">Tools Home</a>
           <button className="realtor-report" type="button" onClick={downloadClientReport}>Download report</button>
+          <button className="realtor-secondary" type="button" onClick={archiveProject}>Archive file</button>
+          <button className="realtor-danger" type="button" onClick={deleteProject}>Delete file</button>
           <button className="realtor-danger" type="button" onClick={resetTracker}>Reset</button>
         </div>
       </header>
+
+      <section className="realtor-files" aria-label="Client outreach files">
+        <aside className="realtor-file-switcher">
+          <div className="realtor-file-switcher-heading">
+            <div>
+              <p className="realtor-mini-label">Outreach files</p>
+              <h2>{showArchived ? 'Archive' : 'Active work'}</h2>
+            </div>
+            <button className="realtor-secondary" type="button" onClick={() => setShowArchived(!showArchived)}>
+              {showArchived ? 'Active' : 'Archive'}
+            </button>
+          </div>
+
+          <div className="realtor-project-list">
+            {visibleProjects.map((project) => (
+              <button
+                className={project.id === activeProject.id ? 'active' : ''}
+                key={project.id}
+                type="button"
+                onClick={() => selectProject(project.id)}
+              >
+                <strong>{project.name}</strong>
+                <span>{project.properties.length} homes</span>
+              </button>
+            ))}
+            {!visibleProjects.length && (
+              <div className="realtor-empty-file">No {showArchived ? 'archived' : 'active'} files.</div>
+            )}
+          </div>
+
+          {showArchived ? (
+            activeProject?.status === 'archived' && (
+              <button className="realtor-report realtor-full-width" type="button" onClick={() => restoreProject(activeProject.id)}>
+                Restore selected file
+              </button>
+            )
+          ) : (
+            <form className="realtor-new-file" onSubmit={createProject}>
+              <label>
+                New file name
+                <input
+                  value={newProjectName}
+                  onChange={(event) => setNewProjectName(event.target.value)}
+                  placeholder="Client name or shortlist"
+                  type="text"
+                />
+              </label>
+              <button className="realtor-report" type="submit">Create file</button>
+            </form>
+          )}
+        </aside>
+
+        <div className="realtor-file-summary">
+          <p className="realtor-mini-label">Current file</p>
+          <h2>{activeProject.name}</h2>
+          <p>{activeProject.notes}</p>
+          <label>
+            Notes for this file
+            <textarea
+              rows="3"
+              value={activeProject.notes || ''}
+              onChange={(event) => updateProjectNotes(event.target.value)}
+              placeholder="Quick closing, showing plan, client preferences..."
+            />
+          </label>
+        </div>
+      </section>
 
       <section className="realtor-summary" aria-label="Realtor outreach summary">
         <article>
@@ -530,16 +773,16 @@ function RealtorOutreach() {
           <p>Total homes</p>
         </article>
         <article>
-          <span>{counts.pending}</span>
-          <p>Pending</p>
+          <span>{counts.notContacted + counts.pending}</span>
+          <p>Not contacted</p>
         </article>
         <article>
-          <span>{counts.works}</span>
-          <p>Will work</p>
+          <span>{counts.ready}</span>
+          <p>Confirmed / ready</p>
         </article>
         <article>
-          <span>{counts.notWork}</span>
-          <p>Won&apos;t work</p>
+          <span>{counts.needsFollowUp}</span>
+          <p>Needs follow-up</p>
         </article>
       </section>
 
@@ -556,7 +799,11 @@ function RealtorOutreach() {
         <div className="realtor-filters" aria-label="Status filters">
           {[
             ['all', 'All'],
-            ['pending', 'Pending'],
+            ['notContacted', 'Not contacted'],
+            ['requested', 'Requested'],
+            ['confirmed', 'Confirmed'],
+            ['followUp', 'Follow up'],
+            ['noResponse', 'No response'],
             ['works', 'Will work'],
             ['notWork', "Won't work"],
           ].map(([value, label]) => (
@@ -573,6 +820,13 @@ function RealtorOutreach() {
       </section>
 
       <section className="realtor-list" aria-label="Homes to contact">
+        {!activeProperties.length && (
+          <div className="realtor-empty-state">
+            <h2>No homes loaded in this file yet</h2>
+            <p>Paste the homes in chat and this file can become the active workspace with MLS numbers, listing agents, and copy-ready messages.</p>
+          </div>
+        )}
+
         {visibleProperties.map((property) => {
           const record = getRecord(property.id);
           const primaryContact = property.contacts[0];
@@ -627,11 +881,20 @@ function RealtorOutreach() {
                   <button type="button" className="works" onClick={() => updateRecord(property.id, { status: 'works' })}>
                     Will work
                   </button>
+                  <button type="button" className="confirmed" onClick={() => updateRecord(property.id, { status: 'confirmed' })}>
+                    Confirmed
+                  </button>
+                  <button type="button" onClick={() => updateRecord(property.id, { status: 'requested' })}>
+                    Requested
+                  </button>
+                  <button type="button" onClick={() => updateRecord(property.id, { status: 'followUp' })}>
+                    Follow up
+                  </button>
                   <button type="button" className="not-work" onClick={() => updateRecord(property.id, { status: 'notWork' })}>
                     Won&apos;t work
                   </button>
-                  <button type="button" onClick={() => updateRecord(property.id, { status: 'pending' })}>
-                    Pending
+                  <button type="button" onClick={() => updateRecord(property.id, { status: 'notContacted' })}>
+                    Not contacted
                   </button>
                 </div>
                 <label>

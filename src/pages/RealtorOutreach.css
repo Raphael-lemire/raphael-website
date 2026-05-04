@@ -30,6 +30,7 @@
 
 .realtor-topbar,
 .realtor-top-actions,
+.realtor-file-switcher-heading,
 .realtor-card-heading,
 .realtor-status-buttons,
 .realtor-contact,
@@ -128,6 +129,12 @@
   color: #fff;
 }
 
+.realtor-status-buttons .confirmed {
+  background: #e8f6ef;
+  border-color: rgba(31, 122, 85, 0.22);
+  color: var(--realtor-success);
+}
+
 .realtor-summary {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -174,6 +181,8 @@
 }
 
 .realtor-toolbar input,
+.realtor-new-file input,
+.realtor-file-summary textarea,
 .realtor-actions textarea {
   width: 100%;
   border: 1px solid var(--realtor-line);
@@ -185,6 +194,8 @@
 }
 
 .realtor-toolbar input:focus,
+.realtor-new-file input:focus,
+.realtor-file-summary textarea:focus,
 .realtor-actions textarea:focus {
   border-color: var(--realtor-accent);
   box-shadow: 0 0 0 3px rgba(45, 111, 93, 0.16);
@@ -200,6 +211,131 @@
   background: var(--realtor-ink);
   border-color: var(--realtor-ink);
   color: #fff;
+}
+
+.realtor-files {
+  display: grid;
+  grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+  gap: 14px;
+  margin-bottom: 18px;
+}
+
+.realtor-file-switcher,
+.realtor-file-summary,
+.realtor-empty-state {
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  background: var(--realtor-panel);
+  box-shadow: 0 8px 24px rgba(34, 52, 44, 0.06);
+}
+
+.realtor-file-switcher,
+.realtor-file-summary {
+  padding: 14px;
+}
+
+.realtor-file-switcher-heading {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.realtor-file-switcher h2,
+.realtor-file-summary h2,
+.realtor-empty-state h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.realtor-mini-label {
+  margin: 0 0 5px;
+  color: var(--realtor-accent);
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.realtor-project-list {
+  display: grid;
+  gap: 8px;
+}
+
+.realtor-project-list button {
+  min-height: 68px;
+  border: 1px solid var(--realtor-line);
+  border-radius: 8px;
+  background: #fbfcfa;
+  color: var(--realtor-ink);
+  padding: 10px;
+  text-align: left;
+}
+
+.realtor-project-list button.active {
+  border-color: rgba(45, 111, 93, 0.42);
+  background: #eef7f2;
+  box-shadow: inset 4px 0 0 var(--realtor-accent);
+}
+
+.realtor-project-list strong,
+.realtor-project-list span {
+  display: block;
+}
+
+.realtor-project-list span {
+  margin-top: 4px;
+  color: var(--realtor-muted);
+  font-size: 0.84rem;
+  font-weight: 750;
+}
+
+.realtor-empty-file {
+  border: 1px dashed var(--realtor-line);
+  border-radius: 8px;
+  color: var(--realtor-muted);
+  padding: 14px;
+  text-align: center;
+}
+
+.realtor-new-file {
+  display: grid;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.realtor-new-file label,
+.realtor-file-summary label {
+  display: grid;
+  gap: 7px;
+  color: var(--realtor-muted);
+  font-size: 0.88rem;
+  font-weight: 700;
+}
+
+.realtor-file-summary p:not(.realtor-mini-label) {
+  margin: 8px 0 12px;
+  color: var(--realtor-muted);
+}
+
+.realtor-file-summary textarea {
+  min-height: 74px;
+  resize: vertical;
+}
+
+.realtor-full-width {
+  width: 100%;
+  margin-top: 12px;
+}
+
+.realtor-empty-state {
+  padding: 28px;
+  text-align: center;
+}
+
+.realtor-empty-state p {
+  max-width: 560px;
+  margin: 8px auto 0;
+  color: var(--realtor-muted);
 }
 
 .realtor-list {
@@ -223,9 +359,22 @@
   box-shadow: inset 4px 0 0 var(--realtor-success), var(--realtor-shadow);
 }
 
+.realtor-card[data-status='confirmed'],
+.realtor-card[data-status='done'] {
+  border-color: rgba(31, 122, 85, 0.36);
+  box-shadow: inset 4px 0 0 var(--realtor-success), var(--realtor-shadow);
+}
+
 .realtor-card[data-status='notWork'] {
   border-color: rgba(173, 61, 61, 0.36);
   box-shadow: inset 4px 0 0 var(--realtor-danger), var(--realtor-shadow);
+}
+
+.realtor-card[data-status='requested'],
+.realtor-card[data-status='followUp'],
+.realtor-card[data-status='noResponse'] {
+  border-color: rgba(139, 101, 15, 0.36);
+  box-shadow: inset 4px 0 0 var(--realtor-warning), var(--realtor-shadow);
 }
 
 .realtor-card-heading {
@@ -258,9 +407,22 @@
   color: var(--realtor-success);
 }
 
+.realtor-card[data-status='confirmed'] .realtor-status,
+.realtor-card[data-status='done'] .realtor-status {
+  background: #e8f6ef;
+  color: var(--realtor-success);
+}
+
 .realtor-card[data-status='notWork'] .realtor-status {
   background: #fff0ed;
   color: var(--realtor-danger);
+}
+
+.realtor-card[data-status='requested'] .realtor-status,
+.realtor-card[data-status='followUp'] .realtor-status,
+.realtor-card[data-status='noResponse'] .realtor-status {
+  background: #fff7d6;
+  color: var(--realtor-warning);
 }
 
 .realtor-type {
@@ -368,6 +530,7 @@
 @media (max-width: 920px) {
   .realtor-topbar,
   .realtor-toolbar,
+  .realtor-files,
   .realtor-card {
     grid-template-columns: 1fr;
   }
