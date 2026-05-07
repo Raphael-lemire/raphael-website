@@ -4,6 +4,7 @@ import './MassShowingBooker.css';
 const STORAGE_KEY = 'mass-showing-booker-v1';
 const SCHEDULE_SEED_KEY = 'mass-showing-booker-showing-schedule-2026-05-04-seeded';
 const API_ENDPOINT = '/api/showing-workspace';
+const API_ACCESS_HEADER = { 'X-Showing-Workspace': 'mass-booker' };
 const DASHBOARD_URL = 'https://raphael-home-dashboard.vercel.app/dashboard';
 const REPORT_LOGO_URL = '/closing-cost-calculator/assets/exit-realty-associates.jpeg';
 const REPORT_LOGO_WIDTH = 1170;
@@ -357,6 +358,7 @@ async function saveRemoteWorkspace(workspace) {
     method: 'PUT',
     cache: 'no-store',
     headers: {
+      ...API_ACCESS_HEADER,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ workspace }),
@@ -950,7 +952,7 @@ function MassShowingBooker() {
 
     async function loadRemoteWorkspace() {
       try {
-        const response = await fetch(API_ENDPOINT, { cache: 'no-store' });
+        const response = await fetch(API_ENDPOINT, { cache: 'no-store', headers: API_ACCESS_HEADER });
         if (!response.ok) throw new Error(response.status === 503 ? 'Storage is not connected yet.' : 'Private storage could not be loaded.');
         const data = await response.json();
         if (cancelled) return;

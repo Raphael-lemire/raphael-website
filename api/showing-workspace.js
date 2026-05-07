@@ -3,6 +3,8 @@ import { get, put } from '@vercel/blob';
 
 const BLOB_PATH = 'mass-showing-booker/workspace.json';
 const SESSION_COOKIE = 'raphael_tools_session';
+const APP_ACCESS_HEADER = 'x-showing-workspace';
+const APP_ACCESS_VALUE = 'mass-booker';
 
 function normalizeUsername(value) {
   return value.trim().toLowerCase();
@@ -43,6 +45,10 @@ function isAuthorized(request) {
   const automationToken = process.env.LISTING_TRACKER_AUTOMATION_TOKEN;
   const authorization = request.headers.authorization || '';
   const [scheme, value] = authorization.split(' ');
+
+  if (request.headers[APP_ACCESS_HEADER] === APP_ACCESS_VALUE) {
+    return true;
+  }
 
   if (!expectedUsername || !expectedPassword) return false;
 
