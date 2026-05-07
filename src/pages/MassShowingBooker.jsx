@@ -28,8 +28,8 @@ const quickStatuses = [
 
 const offerChoices = [
   { value: 'yes', label: 'Yes' },
-  { value: 'no', label: 'No' },
   { value: 'maybe', label: 'Maybe' },
+  { value: 'no', label: 'No' },
 ];
 
 const listingDetails = {
@@ -1298,11 +1298,11 @@ function MassShowingBooker() {
                 ))}
               </div>
 
-              <section className="showing-feedback-panel" aria-label={`Client feedback for ${home.address || `stop ${index + 1}`}`}>
+              <section className="showing-feedback-panel" aria-label={`Showing feedback for ${home.address || `stop ${index + 1}`}`}>
                 <div className="showing-feedback-header">
                   <div>
-                    <span>Client feedback</span>
-                    <h3>After the showing</h3>
+                    <span>Showing feedback</span>
+                    <h3>Buyer notes for this listing</h3>
                   </div>
                   <button
                     type="button"
@@ -1316,7 +1316,7 @@ function MassShowingBooker() {
 
                 <div className="showing-feedback-grid">
                   <label>
-                    Score
+                    1-10 scale
                     <select value={home.feedbackScore} onChange={(event) => updateHome(home.id, { feedbackScore: event.target.value })}>
                       <option value="">Choose 1-10</option>
                       {Array.from({ length: 10 }, (_, scoreIndex) => String(scoreIndex + 1)).map((score) => (
@@ -1325,7 +1325,7 @@ function MassShowingBooker() {
                     </select>
                   </label>
                   <div className="showing-offer-field">
-                    <span>Offer</span>
+                    <span>Will make an offer?</span>
                     <div className="showing-offer-options" role="group" aria-label={`Offer interest for ${home.address || `stop ${index + 1}`}`}>
                       {offerChoices.map((choice) => (
                         <button
@@ -1340,15 +1340,15 @@ function MassShowingBooker() {
                     </div>
                   </div>
                   <label>
-                    What did they like?
+                    Pros
                     <textarea value={home.liked} onChange={(event) => updateHome(home.id, { liked: event.target.value })} placeholder="Layout, location, price, finishes..." />
                   </label>
                   <label>
-                    What did they hate?
+                    Cons
                     <textarea value={home.disliked} onChange={(event) => updateHome(home.id, { disliked: event.target.value })} placeholder="Repairs, smell, layout, traffic..." />
                   </label>
                   <label className="wide">
-                    Question for the selling agent
+                    Questions to listing agent
                     <textarea value={home.sellingAgentQuestion} onChange={(event) => updateHome(home.id, { sellingAgentQuestion: event.target.value })} placeholder="What should I ask the listing agent before the next step?" />
                   </label>
                 </div>
