@@ -1246,7 +1246,6 @@ function MassShowingBooker() {
             <article className="showing-card" data-status={home.status} key={home.id}>
               <div className="showing-card-header">
                 <div>
-                  <span>Stop {index + 1}</span>
                   <h2>{home.address || 'Address needed'}</h2>
                 </div>
                 <div className="showing-order-actions">
