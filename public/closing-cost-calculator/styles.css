@@ -305,11 +305,27 @@ summary {
   color: white;
 }
 
+.secondary-total-card {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
+
 .total-card span,
 .stats span {
   display: block;
   font-size: 0.82rem;
   font-weight: 800;
+  opacity: 0.78;
+}
+
+.total-card small {
+  display: block;
+  margin-top: 7px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  line-height: 1.35;
   opacity: 0.78;
 }
 
@@ -319,6 +335,10 @@ summary {
   font-size: clamp(2rem, 5vw, 3.7rem);
   line-height: 1;
   letter-spacing: 0;
+}
+
+.secondary-total-card strong {
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
 }
 
 .stats {

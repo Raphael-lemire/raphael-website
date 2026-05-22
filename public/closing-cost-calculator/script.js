@@ -341,6 +341,7 @@ function calculate() {
   const cashBeforeEquity = purchaseCashBeforeEquity();
   const cashNeeded = cashBeforeEquity - equityApplied;
   const closingCosts = cashBeforeEquity - downPayment + depositPaid;
+  const savingsTarget = downPayment + closingCosts;
   const otherBuyerCosts = otherBuyerLineItems.reduce((sum, [, amount]) => sum + amount, 0);
   const sellerCommissionHst = value("sellerCommission") * (value("sellerCommissionHstRate") / 100);
   const sellerLineItems =
@@ -369,6 +370,7 @@ function calculate() {
     loanToValue,
     mortgageAmount,
     payment,
+    savingsTarget,
     cashNeeded,
     closingCosts,
     otherBuyerCosts,
@@ -391,6 +393,7 @@ function render() {
   document.querySelector("#agentPrintPhone").textContent = agentPhone;
   document.querySelector("#agentPrintEmail").textContent = agentEmail;
   document.querySelector("#clientLabel").textContent = `${result.clientName} estimate`;
+  document.querySelector("#savingsTarget").textContent = money(result.savingsTarget);
   document.querySelector("#cashNeeded").textContent = money(result.cashNeeded);
   document.querySelector("#closingCosts").textContent = money(result.closingCosts);
   document.querySelector("#otherBuyerCosts").textContent = money(result.otherBuyerCosts);
@@ -486,6 +489,7 @@ function summaryText() {
     `Purchase price: ${money(result.purchasePrice)}`,
     `Down payment: ${money(result.downPayment)}`,
     `Deposit already paid: ${money(result.depositPaid)}`,
+    `Total to save for down payment and closing costs: ${money(result.savingsTarget)}`,
     `Estimated cash to bring to lawyer: ${money(result.cashNeeded)}`,
     `Estimated closing costs only: ${money(result.closingCosts)}`,
     `Other buyer costs not usually paid to lawyer: ${money(result.otherBuyerCosts)}`,
