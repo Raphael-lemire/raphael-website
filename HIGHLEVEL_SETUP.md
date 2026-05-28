@@ -1,6 +1,6 @@
 # HighLevel Lead Intake And Booking Setup
 
-The home value and Listed forms post to `/api/highlevel-lead`. The endpoint creates or updates a HighLevel contact, saves readable survey answers, creates a contact note, and creates or updates one Website Leads opportunity.
+The home value and Listed forms post to `/api/highlevel-lead`. The endpoint creates or updates a HighLevel contact, saves readable survey answers, creates a contact note, and creates or updates one Client Journey opportunity.
 
 Consultation booking uses the short planning questions first: intent, time frame, location, and budget/questions. Then the site pulls available times from the GoHighLevel calendar, asks for name, phone, and email, and creates the appointment directly in GoHighLevel with the first-form answers attached.
 
@@ -10,19 +10,19 @@ Add these environment variables in Vercel:
 
 - `HIGHLEVEL_ACCESS_TOKEN`: HighLevel Private Integration token.
 - `HIGHLEVEL_LOCATION_ID`: `2LNw0pwcDBoCxk3TGiSY`
-- `HIGHLEVEL_WEBSITE_PIPELINE_ID`: fallback Website Leads pipeline ID.
-- `HIGHLEVEL_NEW_LEAD_STAGE_ID`: fallback stage ID for `New Website Lead`.
+- `HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_ID`: optional override for the Client Journey pipeline ID. Defaults to `HjlpGqRjfF84myk6eI3h`.
+- `HIGHLEVEL_CLIENT_JOURNEY_NEW_LEAD_STAGE_ID`: optional override for the Client Journey `New Lead` stage ID. Defaults to `510d9be9-da7b-47fe-b831-4e8a20722d05`.
+- `HIGHLEVEL_CLIENT_JOURNEY_APPOINTMENT_STAGE_ID`: optional override for the Client Journey `Appointment Booked` stage ID. Defaults to `af295347-1e81-4e76-b5d0-4e659a4a0412`.
 - `HIGHLEVEL_CALENDAR_ID`: calendar ID for the consultation calendar, currently `m1nSKgK0Zc86d2PxUSiq`.
 - `HIGHLEVEL_CALENDAR_URL`: optional public booking URL for calendar `m1nSKgK0Zc86d2PxUSiq`. The site uses this only as a fallback if the direct calendar API cannot load time buttons.
 
 Optional:
 
 - `HIGHLEVEL_ASSIGNED_USER_ID`: assign incoming contacts to a specific HighLevel user.
-- `HIGHLEVEL_WEBSITE_PIPELINE_NAME`: defaults to `website leads`; used to find the right pipeline by name before falling back to IDs.
-- `HIGHLEVEL_NEW_LEAD_STAGE_NAME`: defaults to `New Website Lead`.
+- `HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_NAME`: defaults to `Client Journey`; used to find the right pipeline by name if the ID lookup fails.
+- `HIGHLEVEL_NEW_LEAD_STAGE_NAME`: defaults to `New Lead`.
 - `HIGHLEVEL_APPOINTMENT_STAGE_NAME`: defaults to `Appointment Booked`.
-- `HIGHLEVEL_WEBSITE_NEW_STAGE_ID`: fallback alias for `HIGHLEVEL_NEW_LEAD_STAGE_ID`.
-- Existing old stage variables can stay in place while migrating: `HIGHLEVEL_CONSULT_STAGE_ID`, `HIGHLEVEL_LISTED_STAGE_ID`, and `HIGHLEVEL_HOME_VALUE_STAGE_ID`. The endpoint only uses them if the new lead stage ID is missing.
+- Old website pipeline variables can stay in Vercel while migrating, but the code now prefers Client Journey by its exact IDs.
 
 ## Required Private Integration Scopes
 
@@ -66,16 +66,18 @@ Original page: https://www.raphaellemire.com/
 
 ## Pipeline Setup
 
-Use one simple `Website Leads` pipeline:
+Use one simple `Client Journey` pipeline:
 
-- `New Website Lead`
-- `Needs Follow-Up`
+- `New Lead`
+- `Contacted`
 - `Appointment Booked`
 - `Active Client`
-- `Nurture`
-- `Closed / Lost`
+- `Under Contract`
+- `Closed`
+- `Past Client`
+- `Cold / Nurture`
 
-Incoming website opportunities should enter `New Website Lead` through `HIGHLEVEL_NEW_LEAD_STAGE_ID`.
+Incoming website opportunities should enter `New Lead`. Booked consultations should enter `Appointment Booked`.
 
 Opportunity names:
 
@@ -89,7 +91,7 @@ Create or update a HighLevel workflow:
 
 - Trigger: appointment booked on calendar `m1nSKgK0Zc86d2PxUSiq`.
 - Actions:
-  - Move the related Website Leads opportunity to `Appointment Booked` if it is not already there.
+  - Move the related Client Journey opportunity to `Appointment Booked` if it is not already there.
   - Do not add extra source, status, or meeting-method tags.
 
 Do not add marketing follow-up emails or texts unless consent is handled separately.

@@ -6,8 +6,10 @@ const OPPORTUNITIES_API_VERSION = "2023-02-21";
 const PIPELINES_API_VERSION = "2021-07-28";
 const CALENDAR_API_VERSION = "2023-02-21";
 const CALENDAR_SLOTS_API_VERSION = "2021-04-15";
-const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
-const DEFAULT_NEW_LEAD_STAGE_NAME = "New Website Lead";
+const DEFAULT_CLIENT_JOURNEY_PIPELINE_ID = "HjlpGqRjfF84myk6eI3h";
+const DEFAULT_CLIENT_JOURNEY_APPOINTMENT_STAGE_ID = "af295347-1e81-4e76-b5d0-4e659a4a0412";
+const DEFAULT_WEBSITE_PIPELINE_NAME = "Client Journey";
+const DEFAULT_NEW_LEAD_STAGE_NAME = "New Lead";
 const DEFAULT_APPOINTMENT_STAGE_NAME = "Appointment Booked";
 
 const CUSTOM_FIELDS = {
@@ -358,6 +360,14 @@ function getLegacyStageId() {
   );
 }
 
+function getConfiguredPipelineId() {
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_ID || DEFAULT_CLIENT_JOURNEY_PIPELINE_ID;
+}
+
+function getConfiguredAppointmentStageId() {
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_APPOINTMENT_STAGE_ID || DEFAULT_CLIENT_JOURNEY_APPOINTMENT_STAGE_ID;
+}
+
 function getPipelineName(pipeline) {
   return getString(pipeline.name || pipeline.title);
 }
@@ -412,11 +422,13 @@ function findStage(pipeline, stageNames) {
 }
 
 function getWebsitePipelineName() {
-  return process.env.HIGHLEVEL_WEBSITE_PIPELINE_NAME || DEFAULT_WEBSITE_PIPELINE_NAME;
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_NAME || DEFAULT_WEBSITE_PIPELINE_NAME;
 }
 
 async function resolveOpportunityTarget(token) {
+  const pipelineId = getConfiguredPipelineId();
   const pipelineName = getWebsitePipelineName();
+  const configuredStageId = getConfiguredAppointmentStageId();
   const stageName = process.env.HIGHLEVEL_APPOINTMENT_STAGE_NAME || DEFAULT_APPOINTMENT_STAGE_NAME;
 
   try {
@@ -426,15 +438,20 @@ async function resolveOpportunityTarget(token) {
       PIPELINES_API_VERSION
     );
     const pipelines = collectPipelines(result);
-    const pipeline = pipelines.find(
-      (item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)
-    );
+    const pipeline =
+      pipelines.find((item) => getString(item.id) === pipelineId) ||
+      pipelines.find((item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)) ||
+      pipelines.find(
+        (item) => normalizeName(getPipelineName(item)) === normalizeName(process.env.HIGHLEVEL_WEBSITE_PIPELINE_NAME)
+      );
 
     if (!pipeline) {
       return null;
     }
 
-    const stage = findStage(pipeline, [stageName, DEFAULT_APPOINTMENT_STAGE_NAME, DEFAULT_NEW_LEAD_STAGE_NAME]);
+    const stage =
+      (pipeline.stages || []).find((item) => getStageIdFromStage(item) === configuredStageId) ||
+      findStage(pipeline, [stageName, DEFAULT_APPOINTMENT_STAGE_NAME, DEFAULT_NEW_LEAD_STAGE_NAME, "New Website Lead"]);
     const pipelineStageId = getStageIdFromStage(stage);
 
     if (!pipelineStageId) {
@@ -516,8 +533,8 @@ async function findAvailableCalendarId(body, token) {
 }
 
 function buildOpportunityPayload(body, contactId, target) {
-  const pipelineId = target?.pipelineId || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
-  const pipelineStageId = target?.pipelineStageId || getLegacyStageId();
+  const pipelineId = target?.pipelineId || getConfiguredPipelineId() || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
+  const pipelineStageId = target?.pipelineStageId || getConfiguredAppointmentStageId() || getLegacyStageId();
 
   if (!pipelineId || !pipelineStageId || !contactId) {
     return null;

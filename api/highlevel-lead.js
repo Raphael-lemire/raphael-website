@@ -4,8 +4,10 @@ const CONTACTS_API_VERSION = "2021-07-28";
 const OPPORTUNITIES_API_VERSION = "2023-02-21";
 const PIPELINES_API_VERSION = "2021-07-28";
 const DEFAULT_CALENDAR_URL = "https://api.leadconnectorhq.com/widget/booking/m1nSKgK0Zc86d2PxUSiq";
-const DEFAULT_WEBSITE_PIPELINE_NAME = "website leads";
-const DEFAULT_NEW_LEAD_STAGE_NAME = "New Website Lead";
+const DEFAULT_CLIENT_JOURNEY_PIPELINE_ID = "HjlpGqRjfF84myk6eI3h";
+const DEFAULT_CLIENT_JOURNEY_NEW_LEAD_STAGE_ID = "510d9be9-da7b-47fe-b831-4e8a20722d05";
+const DEFAULT_WEBSITE_PIPELINE_NAME = "Client Journey";
+const DEFAULT_NEW_LEAD_STAGE_NAME = "New Lead";
 
 const CUSTOM_FIELDS = {
   intent: "hsXnTsP8vjCKtgEtkqSR",
@@ -276,6 +278,14 @@ function getLegacyStageId(body) {
   return "";
 }
 
+function getConfiguredPipelineId() {
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_ID || DEFAULT_CLIENT_JOURNEY_PIPELINE_ID;
+}
+
+function getConfiguredNewLeadStageId() {
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_NEW_LEAD_STAGE_ID || DEFAULT_CLIENT_JOURNEY_NEW_LEAD_STAGE_ID;
+}
+
 function getPipelineName(pipeline) {
   return getString(pipeline.name || pipeline.title);
 }
@@ -330,11 +340,13 @@ function findStage(pipeline, stageNames) {
 }
 
 function getWebsitePipelineName() {
-  return process.env.HIGHLEVEL_WEBSITE_PIPELINE_NAME || DEFAULT_WEBSITE_PIPELINE_NAME;
+  return process.env.HIGHLEVEL_CLIENT_JOURNEY_PIPELINE_NAME || DEFAULT_WEBSITE_PIPELINE_NAME;
 }
 
 async function resolveOpportunityTarget(token, body) {
+  const pipelineId = getConfiguredPipelineId();
   const pipelineName = getWebsitePipelineName();
+  const configuredStageId = getConfiguredNewLeadStageId();
   const stageName = process.env.HIGHLEVEL_NEW_LEAD_STAGE_NAME || DEFAULT_NEW_LEAD_STAGE_NAME;
 
   try {
@@ -344,15 +356,20 @@ async function resolveOpportunityTarget(token, body) {
       PIPELINES_API_VERSION
     );
     const pipelines = collectPipelines(result);
-    const pipeline = pipelines.find(
-      (item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)
-    );
+    const pipeline =
+      pipelines.find((item) => getString(item.id) === pipelineId) ||
+      pipelines.find((item) => normalizeName(getPipelineName(item)) === normalizeName(pipelineName)) ||
+      pipelines.find(
+        (item) => normalizeName(getPipelineName(item)) === normalizeName(process.env.HIGHLEVEL_WEBSITE_PIPELINE_NAME)
+      );
 
     if (!pipeline) {
       return null;
     }
 
-    const stage = findStage(pipeline, [stageName, DEFAULT_NEW_LEAD_STAGE_NAME]);
+    const stage =
+      (pipeline.stages || []).find((item) => getStageIdFromStage(item) === configuredStageId) ||
+      findStage(pipeline, [stageName, DEFAULT_NEW_LEAD_STAGE_NAME, "New Website Lead"]);
     const pipelineStageId = getStageIdFromStage(stage);
 
     if (!pipelineStageId) {
@@ -384,8 +401,8 @@ function buildOpportunityPayload(body, contactId, target) {
   }
 
   const name = getString(body.name);
-  const pipelineId = target?.pipelineId || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
-  const pipelineStageId = target?.pipelineStageId || getLegacyStageId(body);
+  const pipelineId = target?.pipelineId || getConfiguredPipelineId() || process.env.HIGHLEVEL_WEBSITE_PIPELINE_ID;
+  const pipelineStageId = target?.pipelineStageId || getConfiguredNewLeadStageId() || getLegacyStageId(body);
 
   if (!pipelineId || !pipelineStageId || !contactId) {
     return null;
